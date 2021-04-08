@@ -3,8 +3,6 @@ package com.carlosedp.scalautils
 import org.scalatest.flatspec._
 import org.scalatest.matchers.should._
 
-import Utilities._
-
 class ParseArgumentsSpec extends AnyFlatSpec with Matchers {
 
   "ParseArguments" should "parse one parameter" in {
@@ -46,5 +44,4 @@ class ParseArgumentsSpec extends AnyFlatSpec with Matchers {
     assert(params === Map("param1" -> "data1"))
     assert(remainingargs === List("generated", "--anotherparam", "mydata", "-param2", "data2"))
   }
-
 }

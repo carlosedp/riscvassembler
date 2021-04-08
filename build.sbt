@@ -1,11 +1,11 @@
-organization := "carlosedp"
+organization := "com.carlosedp"
 name := "scalautils"
-version := "0.1.0-SNAPSHOT"
+version := "0.1.0"
 scalaVersion := "2.12.10"
 semanticdbEnabled := true
 semanticdbVersion := scalafixSemanticdb.revision
 
-crossScalaVersions := Seq("2.12.10", "2.11.12", "2.13.4")
+crossScalaVersions := Seq("2.11.12", "2.12.10", "2.13.4")
 
 githubOwner := "carlosedp"
 githubRepository := "scalautils"
