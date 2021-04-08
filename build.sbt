@@ -6,6 +6,8 @@ semanticdbEnabled := true
 semanticdbVersion := scalafixSemanticdb.revision
 
 crossScalaVersions := Seq("2.11.12", "2.12.10", "2.13.4")
+publishConfiguration := publishConfiguration.value.withOverwrite(true)
+publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true)
 
 githubOwner := "carlosedp"
 githubRepository := "scalautils"

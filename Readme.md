@@ -23,11 +23,11 @@ If you use `mill` build tool, I recommend adding the following way to your `buil
 ```scala
 // Create a trait
 trait HasGithubLibs extends CrossSbtModule {
-  override def ivyDeps = super.ivyDeps() ++ Agg(
-    ivy"com.carlosedp::scalautils:0.1.0"
-  )
   def repositories = super.repositories ++ Seq(
     MavenRepository("https://maven.pkg.github.com/carlosedp/scalautils")
+  )
+  override def ivyDeps = super.ivyDeps() ++ Agg(
+    ivy"com.carlosedp::scalautils:0.1.0"
   )
 }
 ...
