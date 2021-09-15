@@ -10,34 +10,25 @@ When using SBT, add the following lines to your `build.sbt` file.
 
 ```scala
 // Import libraries
-externalResolvers += "Scalautils" at "https://maven.pkg.github.com/carlosedp/scalautils"
-libraryDependencies += "com.carlosedp" %% "scalautils" % "0.1.0"
+libraryDependencies += "com.carlosedp" %% "scalautils" % "0.4.0"
 ```
 
-Replace `0.1.0` with latest version.
+Replace `0.4.0` with latest version.
 
 ### Mill
 
 If you use `mill` build tool, I recommend adding the following way to your `build.sc`:
 
 ```scala
-// Create a trait
-trait HasGithubLibs extends CrossSbtModule {
-  def repositories = super.repositories ++ Seq(
-    MavenRepository("https://maven.pkg.github.com/carlosedp/scalautils")
-  )
-  override def ivyDeps = super.ivyDeps() ++ Agg(
-    ivy"com.carlosedp::scalautils:0.1.0"
-  )
-}
-...
-// And add it to your object
-object myobject
-    extends CrossSbtModule
-    with HasGithubLibs
-    {
-        ...
-    }
+// Add to your ivyDeps
+
+def ivyDeps = Agg(
+  ivy"com.carlosedp::scalautils:0.4.0"
+  ...
+)
 ```
 
-Or override directly in your object `repositories` and `ivyDeps` functions.
+The library has been published to Maven Central thru Sonatype:
+
+* <https://search.maven.org/artifact/com.carlosedp/scalautils>
+* <https://mvnrepository.com/artifact/com.carlosedp/scalautils>
