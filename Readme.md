@@ -2,6 +2,8 @@
 
 A generic library adding some frequently used methods in Scala and Chisel development.
 
+[![codecov](https://codecov.io/gh/carlosedp/scalautils/branch/main/graph/badge.svg?token=YNEKF3OO04)](https://codecov.io/gh/carlosedp/scalautils)
+
 ## Adding to your project
 
 ### SBT

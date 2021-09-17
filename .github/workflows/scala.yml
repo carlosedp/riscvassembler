@@ -18,8 +18,11 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt'
-    - name: Run tests
+    - name: Run tests for all versions
       run: sbt +test
-
+    - name: Run code coverage
+      run: sbt clean coverage test coverageReport
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
