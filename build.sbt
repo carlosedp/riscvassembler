@@ -1,5 +1,8 @@
+import ReleaseTransformations._
+
+name := "scalautils"
 ThisBuild / organization := "com.carlosedp"
-ThisBuild / version := "0.4.0"
+// ThisBuild / version := "0.4.0"
 ThisBuild / scalaVersion := "2.13.6"
 ThisBuild / homepage := Some(url("https://carlosedp.com"))
 ThisBuild / licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT"))
@@ -15,7 +18,6 @@ ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "scalautils",
     crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.6", "3.0.2"),
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.9",
     sonatypeRepository := "https://s01.oss.sonatype.org/service/local",
@@ -24,6 +26,21 @@ lazy val root = (project in file("."))
     publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true),
     publishMavenStyle := true
   )
+
+releaseCrossBuild := true
+releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies,
+  inquireVersions,
+  runClean,
+  runTest,
+  setReleaseVersion,
+  commitReleaseVersion,
+  releaseStepCommandAndRemaining("+publishSigned"),
+  setNextVersion,
+  commitNextVersion,
+  releaseStepCommand("sonatypeReleaseAll"),
+  pushChanges
+)
 
 ThisBuild / publishTo := {
   val nexus = "https://s01.oss.sonatype.org/"
@@ -36,14 +53,4 @@ addCommandAlias("fmt", "all scalafmtSbt scalafmtAll")
 addCommandAlias("lint", "fmt;fix")
 addCommandAlias("deps", "dependencyUpdates")
 addCommandAlias("xtest", "+test")
-addCommandAlias("release", "+publishSigned;sonatypeBundleRelease")
-
-scalacOptions ++= Seq(
-  "-deprecation",
-  "-explaintypes",
-  "-unchecked",
-  "-feature",
-  "-Ywarn-value-discard",
-  "-Ywarn-dead-code",
-  "-Ywarn-unused"
-)
+addCommandAlias("pub", "+publishSigned;sonatypeBundleRelease")
