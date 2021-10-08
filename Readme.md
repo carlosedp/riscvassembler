@@ -5,6 +5,7 @@ A generic library adding some frequently used methods in Scala and Chisel develo
 For details, check the  [scaladoc](https://www.javadoc.io/doc/com.carlosedp/scalautils_2.13/latest/com/carlosedp/scalautils/index.html).
 
 [![codecov](https://codecov.io/gh/carlosedp/scalautils/branch/main/graph/badge.svg?token=YNEKF3OO04)](https://codecov.io/gh/carlosedp/scalautils)
+[![Scala CI](https://github.com/carlosedp/scalautils/actions/workflows/scala.yml/badge.svg)](https://github.com/carlosedp/scalautils/actions/workflows/scala.yml)
 
 ## Adding to your project
 
