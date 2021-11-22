@@ -1,6 +1,7 @@
 package com.carlosedp.scalautils.riscvassembler
 
 import scala.io.Source
+import util.control.Breaks._
 
 object RISCVAssembler {
 
@@ -46,14 +47,25 @@ object RISCVAssembler {
   ): String = {
     var outputString = ""
     val instList     = input.split("\n").toList.filter(_.nonEmpty).filter(!_.isBlank()).map(_.trim)
-    var numInst      = instList.length
 
+    val ignores = Seq(".", "_", "/")
     for (instruction <- instList) {
-      val (op, opdata) = InstructionParser(instruction)
-      val outputBin    = FillInstruction(op("inst_type"), opdata, op)
-      outputString += GenHex(outputBin)
-      if (numInst > 1) outputString += "\n"
-      numInst -= 1
+      // Ignore asm labels and directives
+      breakable {
+        for (i <- ignores) {
+          if (instruction.trim.startsWith(i)) break()
+        }
+        // Look for labels and remove them if found
+        val hasLabel = instruction.indexOf(":")
+        val inst =
+          if (hasLabel != -1) instruction.substring(hasLabel + 1)
+          else instruction
+        // Parse arguments
+        val (op, opdata) = InstructionParser(inst)
+        val outputBin    = FillInstruction(op("inst_type"), opdata, op)
+        outputString += GenHex(outputBin)
+        outputString += "\n"
+      }
     }
     outputString
   }

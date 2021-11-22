@@ -30,21 +30,35 @@ object InstructionParser {
           )
         )
       case "INST_I" => {
-        val imm =
-          if (instructionParts(3).take(2) == "0x") BigInt(instructionParts(3).takeRight(8), 16).toLong
-          else instructionParts(3).toLong
-        (
-          inst,
-          Map(
-            "rd"  -> RegMap(instructionParts(1)),
-            "rs1" -> RegMap(instructionParts(2)),
-            "imm" -> imm
+        if (inst.contains("has_offset")) {
+          val imm =
+            if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
+            else instructionParts(2).toLong
+          (
+            inst,
+            Map(
+              "rd"  -> RegMap(instructionParts(1)),
+              "rs1" -> RegMap(instructionParts(3)),
+              "imm" -> imm
+            )
           )
-        )
+        } else {
+          val imm =
+            if (instructionParts(3).startsWith("0x")) BigInt(instructionParts(3).substring(2), 16).toLong
+            else instructionParts(3).toLong
+          (
+            inst,
+            Map(
+              "rd"  -> RegMap(instructionParts(1)),
+              "rs1" -> RegMap(instructionParts(2)),
+              "imm" -> imm
+            )
+          )
+        }
       }
       case "INST_S" => {
         val imm =
-          if (instructionParts(2).take(2) == "0x") BigInt(instructionParts(2).takeRight(8), 16).toLong
+          if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
           else instructionParts(2).toLong
         (
           inst,
@@ -57,7 +71,7 @@ object InstructionParser {
       }
       case "INST_B" => {
         val imm =
-          if (instructionParts(3).take(2) == "0x") BigInt(instructionParts(3).takeRight(8), 16).toLong
+          if (instructionParts(3).startsWith("0x")) BigInt(instructionParts(3).substring(2), 16).toLong
           else instructionParts(3).toLong
         (
           inst,
@@ -70,14 +84,14 @@ object InstructionParser {
       }
       case "INST_U" => {
         val imm =
-          if (instructionParts(2).take(2) == "0x") BigInt(instructionParts(2).takeRight(8), 16).toLong
+          if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
           else instructionParts(2).toLong
         (inst, Map("rd" -> RegMap(instructionParts(1)), "imm" -> imm))
       }
 
       case "INST_J" => {
         val imm =
-          if (instructionParts(2).take(2) == "0x") BigInt(instructionParts(2).takeRight(8), 16).toLong
+          if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
           else instructionParts(2).toLong
         (inst, Map("rd" -> RegMap(instructionParts(1)), "imm" -> imm))
       }

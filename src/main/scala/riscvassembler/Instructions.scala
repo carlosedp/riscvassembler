@@ -83,24 +83,107 @@ object Instructions {
           "opcode"    -> "0110011",
           "inst_type" -> "INST_R"
         )
-      case "ADDI"   => Map("inst_name" -> "ADDI", "funct3" -> "000", "opcode" -> "0010011", "inst_type" -> "INST_I")
-      case "XORI"   => Map("inst_name" -> "XORI", "funct3" -> "100", "opcode" -> "0010011", "inst_type" -> "INST_I")
-      case "ORI"    => Map("inst_name" -> "ORI", "funct3" -> "110", "opcode" -> "0010011", "inst_type" -> "INST_I")
-      case "ANDI"   => Map("inst_name" -> "ANDI", "funct3" -> "111", "opcode" -> "0010011", "inst_type" -> "INST_I")
-      case "SLTI"   => Map("inst_name" -> "SLTI", "funct3" -> "010", "opcode" -> "0010011", "inst_type" -> "INST_I")
-      case "SLTIU"  => Map("inst_name" -> "SLTIU", "funct3" -> "011", "opcode" -> "0010011", "inst_type" -> "INST_I")
-      case "CSRRW"  => Map("inst_name" -> "CSRRW", "funct3" -> "001", "opcode" -> "1110011", "inst_type" -> "INST_I")
-      case "CSRRS"  => Map("inst_name" -> "CSRRS", "funct3" -> "010", "opcode" -> "1110011", "inst_type" -> "INST_I")
-      case "CSRRC"  => Map("inst_name" -> "CSRRC", "funct3" -> "011", "opcode" -> "1110011", "inst_type" -> "INST_I")
-      case "CSRRWI" => Map("inst_name" -> "CSRRWI", "funct3" -> "101", "opcode" -> "1110011", "inst_type" -> "INST_I")
-      case "CSRRSI" => Map("inst_name" -> "CSRRSI", "funct3" -> "110", "opcode" -> "1110011", "inst_type" -> "INST_I")
-      case "CSRRCI" => Map("inst_name" -> "CSRRCI", "funct3" -> "111", "opcode" -> "1110011", "inst_type" -> "INST_I")
-      case "LB"     => Map("inst_name" -> "LB", "funct3" -> "000", "opcode" -> "0000011", "inst_type" -> "INST_I")
-      case "LH"     => Map("inst_name" -> "LH", "funct3" -> "001", "opcode" -> "0000011", "inst_type" -> "INST_I")
-      case "LBU"    => Map("inst_name" -> "LBU", "funct3" -> "100", "opcode" -> "0000011", "inst_type" -> "INST_I")
-      case "LHU"    => Map("inst_name" -> "LHU", "funct3" -> "101", "opcode" -> "0000011", "inst_type" -> "INST_I")
-      case "LW"     => Map("inst_name" -> "LW", "funct3" -> "010", "opcode" -> "0000011", "inst_type" -> "INST_I")
-      case "JALR"   => Map("inst_name" -> "JALR", "funct3" -> "000", "opcode" -> "1100111", "inst_type" -> "INST_I")
+      case "ADDI"  => Map("inst_name" -> "ADDI", "funct3" -> "000", "opcode" -> "0010011", "inst_type" -> "INST_I")
+      case "XORI"  => Map("inst_name" -> "XORI", "funct3" -> "100", "opcode" -> "0010011", "inst_type" -> "INST_I")
+      case "ORI"   => Map("inst_name" -> "ORI", "funct3" -> "110", "opcode" -> "0010011", "inst_type" -> "INST_I")
+      case "ANDI"  => Map("inst_name" -> "ANDI", "funct3" -> "111", "opcode" -> "0010011", "inst_type" -> "INST_I")
+      case "SLTI"  => Map("inst_name" -> "SLTI", "funct3" -> "010", "opcode" -> "0010011", "inst_type" -> "INST_I")
+      case "SLTIU" => Map("inst_name" -> "SLTIU", "funct3" -> "011", "opcode" -> "0010011", "inst_type" -> "INST_I")
+      case "CSRRW" =>
+        Map(
+          "inst_name" -> "CSRRW",
+          "is_csr"    -> "true",
+          "funct3"    -> "001",
+          "opcode"    -> "1110011",
+          "inst_type" -> "INST_I"
+        )
+      case "CSRRS" =>
+        Map(
+          "inst_name" -> "CSRRS",
+          "is_csr"    -> "true",
+          "funct3"    -> "010",
+          "opcode"    -> "1110011",
+          "inst_type" -> "INST_I"
+        )
+      case "CSRRC" =>
+        Map(
+          "inst_name" -> "CSRRC",
+          "is_csr"    -> "true",
+          "funct3"    -> "011",
+          "opcode"    -> "1110011",
+          "inst_type" -> "INST_I"
+        )
+      case "CSRRWI" =>
+        Map(
+          "inst_name" -> "CSRRWI",
+          "is_csr"    -> "true",
+          "funct3"    -> "101",
+          "opcode"    -> "1110011",
+          "inst_type" -> "INST_I"
+        )
+      case "CSRRSI" =>
+        Map(
+          "inst_name" -> "CSRRSI",
+          "is_csr"    -> "true",
+          "funct3"    -> "110",
+          "opcode"    -> "1110011",
+          "inst_type" -> "INST_I"
+        )
+      case "CSRRCI" =>
+        Map(
+          "inst_name" -> "CSRRCI",
+          "is_csr"    -> "true",
+          "funct3"    -> "111",
+          "opcode"    -> "1110011",
+          "inst_type" -> "INST_I"
+        )
+      case "LB" =>
+        Map(
+          "inst_name"  -> "LB",
+          "has_offset" -> "true",
+          "funct3"     -> "000",
+          "opcode"     -> "0000011",
+          "inst_type"  -> "INST_I"
+        )
+      case "LH" =>
+        Map(
+          "inst_name"  -> "LH",
+          "has_offset" -> "true",
+          "funct3"     -> "001",
+          "opcode"     -> "0000011",
+          "inst_type"  -> "INST_I"
+        )
+      case "LBU" =>
+        Map(
+          "inst_name"  -> "LBU",
+          "has_offset" -> "true",
+          "funct3"     -> "100",
+          "opcode"     -> "0000011",
+          "inst_type"  -> "INST_I"
+        )
+      case "LHU" =>
+        Map(
+          "inst_name"  -> "LHU",
+          "has_offset" -> "true",
+          "funct3"     -> "101",
+          "opcode"     -> "0000011",
+          "inst_type"  -> "INST_I"
+        )
+      case "LW" =>
+        Map(
+          "inst_name"  -> "LW",
+          "has_offset" -> "true",
+          "funct3"     -> "010",
+          "opcode"     -> "0000011",
+          "inst_type"  -> "INST_I"
+        )
+      case "JALR" =>
+        Map(
+          "inst_name" -> "JALR",
+          "funct3"    -> "000",
+          "opcode"    -> "1100111",
+          "inst_type" -> "INST_I"
+        )
       case "SLLI" =>
         Map(
           "inst_name" -> "SLLI",

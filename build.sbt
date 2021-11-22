@@ -15,6 +15,8 @@ Global / semanticdbEnabled := true
 Global / semanticdbVersion := "4.4.28" //scalafixSemanticdb.revision // Force version due to compatibility issues
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
+Test / logBuffered := false
+
 lazy val root = (project in file("."))
   .settings(
     name := "scalautils",
@@ -45,8 +47,6 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommand("sonatypeReleaseAll"),
   pushChanges
 )
-
-Test / logBuffered := false
 
 ThisBuild / publishTo := {
   val nexus = "https://s01.oss.sonatype.org/"
