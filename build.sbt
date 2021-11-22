@@ -45,7 +45,8 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommand("sonatypeReleaseAll"),
   pushChanges
 )
-logBuffered in Test := false
+
+Test / logBuffered := false
 
 ThisBuild / publishTo := {
   val nexus = "https://s01.oss.sonatype.org/"
