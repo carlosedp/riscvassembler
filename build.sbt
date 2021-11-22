@@ -14,6 +14,7 @@ ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports"
 Global / semanticdbEnabled := true
 Global / semanticdbVersion := "4.4.28" //scalafixSemanticdb.revision // Force version due to compatibility issues
 Global / onChangedBuildSource := ReloadOnSourceChanges
+ThisBuild / versionScheme := Some("early-semver")
 
 Test / logBuffered := false
 
