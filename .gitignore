@@ -64,3 +64,4 @@ project/metals.sbt
 generated
 docs/generated
 test_run_dir
+tmpasm
