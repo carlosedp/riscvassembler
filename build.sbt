@@ -19,7 +19,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "scalautils",
     scalaVersion := "2.13.6",
-    crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.6", "3.0.2"),
+    crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.6", "3.1.0"),
     // Libraries
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.10" % "test",
     // Sonatype publishing repository
@@ -45,6 +45,7 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommand("sonatypeReleaseAll"),
   pushChanges
 )
+logBuffered in Test := false
 
 ThisBuild / publishTo := {
   val nexus = "https://s01.oss.sonatype.org/"
@@ -52,9 +53,12 @@ ThisBuild / publishTo := {
   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
 
-addCommandAlias("fix", "all Compile / scalafixAll Test / scalafixAll")
-addCommandAlias("fmt", "all scalafmtSbt scalafmtAll")
+addCommandAlias("com", "all compile test:compile")
+addCommandAlias("rel", "reload")
+addCommandAlias("fmt", "all scalafmtSbt scalafmtAll;all Compile / scalafix; Test / scalafix")
+addCommandAlias("fix", "all Compile / scalafixAll; Test / scalafixAll")
 addCommandAlias("lint", "fmt;fix")
 addCommandAlias("deps", "dependencyUpdates")
 addCommandAlias("xtest", "+test")
 addCommandAlias("pub", "+publishSigned;sonatypeBundleRelease")
+// To release new versions, use `sbt release`
