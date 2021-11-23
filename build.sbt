@@ -1,3 +1,4 @@
+import sbtrelease.Version
 import ReleaseTransformations._
 
 ThisBuild / organization := "com.carlosedp"
@@ -33,7 +34,8 @@ lazy val root = (project in file("."))
     publishMavenStyle         := true
   )
 
-releaseCrossBuild := true
+releaseCrossBuild  := true
+releaseVersionBump := Version.Bump.Minor
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,
   inquireVersions,
