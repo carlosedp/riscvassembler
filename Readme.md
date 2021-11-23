@@ -2,7 +2,7 @@
 
 A generic library adding some frequently used methods in Scala and Chisel development.
 
-For details, check the  [scaladoc](https://www.javadoc.io/doc/com.carlosedp/scalautils_2.13/latest/com/carlosedp/scalautils/index.html).
+For details, check the [scaladoc](https://www.javadoc.io/doc/com.carlosedp/scalautils_2.13/latest/com/carlosedp/scalautils/index.html).
 
 [![codecov](https://codecov.io/gh/carlosedp/scalautils/branch/main/graph/badge.svg?token=YNEKF3OO04)](https://codecov.io/gh/carlosedp/scalautils)
 [![Scala CI](https://github.com/carlosedp/scalautils/actions/workflows/scala.yml/badge.svg)](https://github.com/carlosedp/scalautils/actions/workflows/scala.yml)
@@ -16,22 +16,38 @@ When using SBT, add the following lines to your `build.sbt` file.
 
 ```scala
 // Import libraries
-libraryDependencies += "com.carlosedp" %% "scalautils" % "0.6.0"
+libraryDependencies += "com.carlosedp" %% "scalautils" % "0.7.1"
 ```
 
-Replace `0.6.0` with latest version.
+Replace `0.7.1` with latest version.
+
+If you plan to use the `-SNAPSHOT` versions, add the new Sonatype repository to your `build.sbt` resolvers:
+
+```scala
+resolvers ++= Seq(
+  Resolver.sonatypeRepo("snapshots"),
+  Resolver.sonatypeRepo("releases"),
+  "Sonatype New OSS Snapshots" at "https://s01.oss.sonatype.org/content/repositories/snapshots"
+)
+```
 
 ### Mill
 
 If you use `mill` build tool, I recommend adding the following way to your `build.sc`:
 
 ```scala
-// Add to your ivyDeps
+import coursier.MavenRepository
 
+// Add to your ivyDeps
 def ivyDeps = Agg(
-  ivy"com.carlosedp::scalautils:0.6.0"
+  ivy"com.carlosedp::scalautils:0.7.1"
   ...
 )
+
+// And add the snapshot resolver
+def repositoriesTask = T.task { super.repositoriesTask() ++ Seq(
+  MavenRepository("https://s01.oss.sonatype.org/content/repositories/snapshots")
+) }
 ```
 
 The library has been published to Maven Central thru Sonatype:
