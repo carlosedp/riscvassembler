@@ -2,26 +2,32 @@ import com.carlosedp.scalautils.riscvassembler._
 import org.scalatest._
 
 import java.io.{File, PrintWriter}
-import java.nio.file.{Files, Paths}
+import java.nio.file.{DirectoryNotEmptyException, Files, Paths}
 
 import flatspec._
 import matchers.should._
 
 class RISCVAssemblerProgsSpec extends AnyFlatSpec with BeforeAndAfterEach with BeforeAndAfter with Matchers {
+  val tmpdir     = "tmpasm"
   var memoryfile = ""
 
   // Create a temporary directory before executing tests and delete it after
   before {
-    Files.createDirectories(Paths.get("tmpasm"));
+    Files.createDirectories(Paths.get(tmpdir));
   }
   after {
-    Files.deleteIfExists(Paths.get("tmpasm"));
+    try {
+      Files.deleteIfExists(Paths.get(tmpdir));
+    } catch {
+      case _: DirectoryNotEmptyException =>
+      // println("Directory not empty")
+    }
   }
 
-  //Create a random temporary file for the asm source and delete it after use
+  // Create a random temporary file for the asm source and delete it after use
   override def beforeEach(): Unit =
     memoryfile =
-      Paths.get("tmpasm/", scala.util.Random.alphanumeric.filter(_.isLetter).take(15).mkString + ".s").toString()
+      Paths.get(tmpdir, scala.util.Random.alphanumeric.filter(_.isLetter).take(15).mkString + ".s").toString()
   override def afterEach(): Unit = {
     val _ = new File(memoryfile).delete()
   }

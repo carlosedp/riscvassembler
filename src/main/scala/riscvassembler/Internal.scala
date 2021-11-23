@@ -4,12 +4,13 @@ import com.carlosedp.scalautils.ObjectUtils._
 
 object InstructionParser {
 
-  /**
-   * Parse an assembly instruction and return the opcode and opdata
-   *
-   * @param input the assembly instruction string
-   * @return the opcode and opdata
-   */
+  /** Parse an assembly instruction and return the opcode and opdata
+    *
+    * @param input
+    *   the assembly instruction string
+    * @return
+    *   the opcode and opdata
+    */
   def apply(
     input: String
   ): (Map[String, String], Map[String, Long]) = {
@@ -101,14 +102,17 @@ object InstructionParser {
 
 object FillInstruction {
 
-  /**
-   * Fills the instruction arguments based on instruction type
-   *
-   * @param instType the instruction type
-   * @param data the received instruction arguments
-   * @param op the instruction opcode and type
-   * @return the filled instruction binary
-   */
+  /** Fills the instruction arguments based on instruction type
+    *
+    * @param instType
+    *   the instruction type
+    * @param data
+    *   the received instruction arguments
+    * @param op
+    *   the instruction opcode and type
+    * @return
+    *   the filled instruction binary
+    */
   def apply(instType: String, data: Map[String, Long], op: Map[String, String]): String =
     instType match {
       case "INST_R" => {
@@ -160,12 +164,13 @@ object FillInstruction {
 
 object GenHex {
 
-  /**
-   *  Generate the hex string of the instruction from binary
-   *
-   * @param input the binary string of the instruction
-   * @return the hex string of the instruction
-   */
+  /** Generate the hex string of the instruction from binary
+    *
+    * @param input
+    *   the binary string of the instruction
+    * @return
+    *   the hex string of the instruction
+    */
   def apply(
     input: String
   ): String = {
@@ -177,12 +182,13 @@ object GenHex {
 
 object RegMap {
 
-  /**
-   * Maps the register name or ABI name to the register number
-   *
-   * @param regName the register name
-   * @return the register number
-   */
+  /** Maps the register name or ABI name to the register number
+    *
+    * @param regName
+    *   the register name
+    * @return
+    *   the register number
+    */
   def apply(
     input: String
   ): Long =

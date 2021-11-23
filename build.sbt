@@ -1,9 +1,9 @@
 import ReleaseTransformations._
 
 ThisBuild / organization := "com.carlosedp"
-ThisBuild / description := "scalautils contains misc utility functions to be used on Scala and Chisel projects"
-ThisBuild / homepage := Some(url("https://carlosedp.com"))
-ThisBuild / licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT"))
+ThisBuild / description  := "scalautils contains misc utility functions to be used on Scala and Chisel projects"
+ThisBuild / homepage     := Some(url("https://carlosedp.com"))
+ThisBuild / licenses     := Seq("MIT" -> url("https://opensource.org/licenses/MIT"))
 ThisBuild / scmInfo := Some(
   ScmInfo(url("https://github.com/carlosedp/scalautils"), "git@github.com:carlosedp/scalautils.git")
 )
@@ -11,26 +11,26 @@ ThisBuild / developers := List(
   Developer("carlosedp", "Carlos Eduardo de Paula", "carlosedp@gmail.com", url("https://github.com/carlosedp"))
 )
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
-Global / semanticdbEnabled := true
-Global / semanticdbVersion := "4.4.28" //scalafixSemanticdb.revision // Force version due to compatibility issues
-Global / onChangedBuildSource := ReloadOnSourceChanges
-ThisBuild / versionScheme := Some("early-semver")
+Global / semanticdbEnabled                                 := true
+Global / semanticdbVersion                                 := "4.4.28" //scalafixSemanticdb.revision // Force version due to compatibility issues
+Global / onChangedBuildSource                              := ReloadOnSourceChanges
+ThisBuild / versionScheme                                  := Some("early-semver")
 
 Test / logBuffered := false
 
 lazy val root = (project in file("."))
   .settings(
-    name := "scalautils",
-    scalaVersion := "2.13.6",
+    name               := "scalautils",
+    scalaVersion       := "2.13.6",
     crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.6", "3.1.0"),
     // Libraries
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.10" % "test",
     // Sonatype publishing repository
-    sonatypeRepository := "https://s01.oss.sonatype.org/service/local",
-    sonatypeCredentialHost := "s01.oss.sonatype.org",
-    publishConfiguration := publishConfiguration.value.withOverwrite(true),
+    sonatypeRepository        := "https://s01.oss.sonatype.org/service/local",
+    sonatypeCredentialHost    := "s01.oss.sonatype.org",
+    publishConfiguration      := publishConfiguration.value.withOverwrite(true),
     publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true),
-    publishMavenStyle := true
+    publishMavenStyle         := true
   )
 
 releaseCrossBuild := true
