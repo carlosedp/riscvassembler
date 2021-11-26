@@ -1,36 +1,31 @@
 import com.carlosedp.scalautils.riscvassembler._
 import org.scalatest._
 
-import java.io.{File, PrintWriter}
-import java.nio.file.{DirectoryNotEmptyException, Files, Paths}
-
 import flatspec._
 import matchers.should._
 
 class RISCVAssemblerProgsSpec extends AnyFlatSpec with BeforeAndAfterEach with BeforeAndAfter with Matchers {
-  val tmpdir     = "tmpasm"
-  var memoryfile = ""
+  val tmpdir = "tmpasm"
+  var memoryfile: os.Path = _
 
   // Create a temporary directory before executing tests and delete it after
   before {
-    Files.createDirectories(Paths.get(tmpdir));
+    os.makeDir(os.pwd / tmpdir)
+
   }
   after {
     try {
-      Files.deleteIfExists(Paths.get(tmpdir));
+      os.remove(os.pwd / tmpdir)
     } catch {
-      case _: DirectoryNotEmptyException =>
-      // println("Directory not empty")
+      case _: Exception => // not empty, ignore
     }
   }
 
   // Create a random temporary file for the asm source and delete it after use
   override def beforeEach(): Unit =
-    memoryfile =
-      Paths.get(tmpdir, scala.util.Random.alphanumeric.filter(_.isLetter).take(15).mkString + ".s").toString()
-  override def afterEach(): Unit = {
-    val _ = new File(memoryfile).delete()
-  }
+    memoryfile = os.pwd / tmpdir / (scala.util.Random.alphanumeric.filter(_.isLetter).take(15).mkString + ".s")
+  override def afterEach(): Unit =
+    os.remove.all(memoryfile)
 
   behavior of "RISCVAssembler"
   it should "generate hex output for multiple I-type instructions" in {
@@ -119,8 +114,8 @@ class RISCVAssemblerProgsSpec extends AnyFlatSpec with BeforeAndAfterEach with B
     lw x4, 80(x1)
     jal x1, +2048
     """.stripMargin
-    new PrintWriter(new File(memoryfile)) { write(prog); close }
-    val output = RISCVAssembler.fromFile(memoryfile)
+    os.write(memoryfile, prog)
+    val output = RISCVAssembler.fromFile(memoryfile.toString)
 
     val correct =
       """c0000137
@@ -150,8 +145,8 @@ class RISCVAssemblerProgsSpec extends AnyFlatSpec with BeforeAndAfterEach with B
       addi x4 , x3,  -2000  /* x4  = 0    0x000 */
       addi x5 , x4,   1000  /* x5  = 1000 0x3E8 */
     """.stripMargin
-    new PrintWriter(new File(memoryfile)) { write(prog); close }
-    val output = RISCVAssembler.fromFile(memoryfile)
+    os.write(memoryfile, prog)
+    val output = RISCVAssembler.fromFile(memoryfile.toString)
 
     val correct =
       """3e800093
@@ -175,8 +170,8 @@ class RISCVAssemblerProgsSpec extends AnyFlatSpec with BeforeAndAfterEach with B
             bne x2, x3, -4
     cont2:  addi x3, x0, 2
     """.stripMargin
-    new PrintWriter(new File(memoryfile)) { write(prog); close }
-    val output = RISCVAssembler.fromFile(memoryfile)
+    os.write(memoryfile, prog)
+    val output = RISCVAssembler.fromFile(memoryfile.toString)
 
     val correct =
       """300030b7

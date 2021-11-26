@@ -25,7 +25,10 @@ lazy val root = (project in file("."))
     scalaVersion       := "2.13.6",
     crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.6", "3.1.0"),
     // Libraries
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.10" % "test",
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % "3.2.10" % "test",
+      "com.lihaoyi"   %% "os-lib"    % "0.7.8"  % "test"
+    ),
     // Sonatype publishing repository
     sonatypeRepository        := "https://s01.oss.sonatype.org/service/local",
     sonatypeCredentialHost    := "s01.oss.sonatype.org",
