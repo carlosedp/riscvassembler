@@ -1,4 +1,4 @@
-package com.carlosedp.scalautils.riscvassembler
+package com.carlosedp.scalautils.riscvassembler.internal
 
 import com.carlosedp.scalautils.ObjectUtils._
 
