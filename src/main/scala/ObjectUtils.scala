@@ -2,6 +2,10 @@ package com.carlosedp.scalautils
 
 object ObjectUtils {
 
+  /** String padding functions
+    *
+    * @param s
+    */
   implicit class StringWithPad(s: String) {
 
     /** Left-pads a string to a certain length with a certain character.
@@ -21,19 +25,14 @@ object ObjectUtils {
       s.padStr(length, '0')
   }
 
-  implicit class Long32Bit(n: Long) {
-    /*
-     * Truncstes a long to 32-bit.
-     * @return The 32-bit long.
-     */
-    def to32Bit: Long = n & 0xffffffffL
-  }
+  /** Number manipulation functions
+    */
+  implicit class NumericManipulation[T: Numeric](x: T)(implicit n: Numeric[T]) {
 
-  /*
-   * Truncstes a int to 32-bit and converts to long.
-   * @return The 32-bit long.
-   */
-  implicit class Int32Bit(n: Int) {
-    def to32Bit: Long = n.toLong & 0xffffffffL
+    /** Truncates a number to 32-bit and returns a Long.
+      * @return
+      *   The 32-bit long.
+      */
+    def to32Bit: Long = n.toLong(x) & 0xffffffffL
   }
 }

@@ -38,9 +38,9 @@ class ObjectUtilsSpec extends AnyFlatSpec with Matchers {
     output should be(0xffffffffL)
   }
 
-  it should "truncate int bigger than 0xffffffff to 32 bits" in {
-    val myInt  = 0xaaffffffffL
-    val output = myInt.to32Bit
+  it should "truncate BigInt bigger than 0xffffffff to 32 bits" in {
+    val myBigInt = BigInt("aaffffffff", 16)
+    val output   = myBigInt.to32Bit
     output should be(0xffffffffL)
   }
 
