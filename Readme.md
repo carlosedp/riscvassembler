@@ -21,10 +21,10 @@ When using SBT, add the following lines to your `build.sbt` file.
 
 ```scala
 // Import libraries
-libraryDependencies += "com.carlosedp" %% "scalautils" % "0.7.2"
+libraryDependencies += "com.carlosedp" %% "scalautils" % "0.8.0"
 ```
 
-Replace `0.7.2` with latest version.
+Replace `0.8.0` with latest version.
 
 If you plan to use the `-SNAPSHOT` versions, add the new Sonatype repository to your `build.sbt` resolvers:
 

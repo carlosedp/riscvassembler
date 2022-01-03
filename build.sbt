@@ -13,17 +13,15 @@ ThisBuild / developers := List(
 )
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 Global / semanticdbEnabled                                 := true
-Global / semanticdbVersion                                 := "4.4.28" //scalafixSemanticdb.revision // Force version due to compatibility issues
+Global / semanticdbVersion                                 := scalafixSemanticdb.revision
 Global / onChangedBuildSource                              := ReloadOnSourceChanges
 ThisBuild / versionScheme                                  := Some("early-semver")
-
-Test / logBuffered := false
 
 lazy val root = (project in file("."))
   .settings(
     name               := "scalautils",
-    scalaVersion       := "2.13.6",
-    crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.6", "3.1.0"),
+    scalaVersion       := "2.13.7",
+    crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.7", "3.1.0"),
     // Libraries
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.2.10" % "test",
