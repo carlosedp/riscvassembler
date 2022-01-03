@@ -25,6 +25,17 @@ object RISCVAssembler {
     fromString(f)
   }
 
+  /** Generate the binary output for the input instruction
+    * @param input
+    *   the input instruction (eg. add x1, x2, x3)
+    * @return
+    *   the binary output in string format
+    */
+  def binOutput(input: String): String = {
+    val (op, opdata) = InstructionParser(input)
+    FillInstruction(op("inst_type"), opdata, op)
+  }
+
   /** Generate an hex string output fom the assembly string
     *
     * Usage:
@@ -65,9 +76,8 @@ object RISCVAssembler {
           if (hasLabel != -1) instruction.substring(hasLabel + 1)
           else instruction
         // Parse arguments
-        val (op, opdata) = InstructionParser(inst)
-        val outputBin    = FillInstruction(op("inst_type"), opdata, op)
-        outputString += GenHex(outputBin)
+        val binString = binOutput(inst)
+        outputString += GenHex(binString)
         outputString += "\n"
       }
     }
