@@ -15,6 +15,10 @@ jobs:
       uses: olafurpg/setup-scala@v13
       with:
         java-version: adopt@1.11
+    - name: Cache Scala
+      uses: coursier/cache-action@v5
+    - name: Check Formatting
+      run: sbt scalafmtCheckAll
     - name: Run tests for all versions
       run: sbt +test
     - name: Run code coverage
