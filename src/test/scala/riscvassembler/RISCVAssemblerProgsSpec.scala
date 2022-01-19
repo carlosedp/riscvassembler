@@ -29,11 +29,19 @@ class RISCVAssemblerProgsSpec extends AnyFlatSpec with BeforeAndAfterEach with B
 
   behavior of "RISCVAssembler"
 
-  it should "generate binary output for single I-type instructions" in {
+  it should "generate binary output for I-type instructions" in {
     val input  = "addi x1, x2, 10"
     val output = RISCVAssembler.binOutput(input)
 
     val correct = "00000000101000010000000010010011"
+    output should be(correct)
+  }
+
+  it should "generate binary output for I-type instructions with max IMM" in {
+    val input  = "addi x1, x2, -1"
+    val output = RISCVAssembler.binOutput(input)
+
+    val correct = "11111111111100010000000010010011"
     output should be(correct)
   }
 
