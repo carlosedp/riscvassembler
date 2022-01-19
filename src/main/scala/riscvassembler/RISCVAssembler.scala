@@ -31,9 +31,9 @@ object RISCVAssembler {
     * @return
     *   the binary output in string format
     */
-  def binOutput(input: String): String = {
+  def binOutput(input: String, width: Int = 32): String = {
     val (op, opdata) = InstructionParser(input)
-    FillInstruction(op("inst_type"), opdata, op)
+    FillInstruction(op("inst_type"), opdata, op).takeRight(width)
   }
 
   /** Generate an hex string output fom the assembly string
