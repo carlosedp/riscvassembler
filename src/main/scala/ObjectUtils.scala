@@ -35,4 +35,15 @@ object ObjectUtils {
       */
     def to32Bit: Long = n.toLong(x) & 0xffffffffL
   }
+
+  /** Convert a string in a specified base to a BigInt
+    * @return
+    *   The BigInt converted from the string.
+    */
+  implicit class IntToBase(val digits: String) extends AnyVal {
+    def base(b: Int) = BigInt(digits, b)
+    def b            = base(2)
+    def o            = base(8)
+    def x            = base(16)
+  }
 }

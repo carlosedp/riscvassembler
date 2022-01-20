@@ -6,13 +6,15 @@ import matchers.should._
 
 class ObjectUtilsSpec extends AnyFlatSpec with Matchers {
 
-  behavior of "ObjectUtils"
+  behavior of "Padding"
 
   it should "pad binary string with zeros" in {
     val myBinary = "100"
     val output   = myBinary.padZero(12)
     output should be("000000000100")
   }
+
+  behavior of "Truncating"
 
   it should "truncate long 1L to 32 bits" in {
     val myLong = 1L
@@ -44,4 +46,20 @@ class ObjectUtilsSpec extends AnyFlatSpec with Matchers {
     output should be(0xffffffffL)
   }
 
+  behavior of "Converting"
+
+  it should "convert a binary string to BigInt" in {
+    val output = "101010".b
+    output should be(42)
+  }
+
+  it should "convert an hex string to BigInt" in {
+    val output = "abc".x
+    output should be(2748)
+  }
+
+  it should "convert an oct string to BigInt" in {
+    val output = "567".o
+    output should be(375)
+  }
 }
