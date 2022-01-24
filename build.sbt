@@ -24,7 +24,7 @@ lazy val root = (project in file("."))
     crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.7", "3.1.0"),
     // Libraries
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "3.2.10" % "test",
+      "org.scalatest" %% "scalatest" % "3.2.11" % "test",
       "com.lihaoyi"   %% "os-lib"    % "0.8.0"  % "test"
     ),
     // Sonatype publishing repository
