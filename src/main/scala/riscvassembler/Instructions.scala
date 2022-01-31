@@ -225,30 +225,9 @@ object Instructions {
       case "SH"    => Map("inst_name" -> "SH", "funct3" -> "001", "opcode" -> "0100011", "inst_type" -> "INST_S")
       case "SW"    => Map("inst_name" -> "SW", "funct3" -> "010", "opcode" -> "0100011", "inst_type" -> "INST_S")
       // Pseudo-instructions mapping to the corresponding RISC-V instructions
-      case "NOP" =>
-        Map(
-          "pseudo_inst" -> "true",
-          "inst_name"   -> "ADDI",
-          "funct3"      -> "000",
-          "opcode"      -> "0010011",
-          "inst_type"   -> "INST_I"
-        )
-      case "BEQZ" =>
-        Map(
-          "pseudo_inst" -> "true",
-          "inst_name"   -> "BEQ",
-          "funct3"      -> "000",
-          "opcode"      -> "1100011",
-          "inst_type"   -> "INST_B"
-        )
-      case "BGEZ" =>
-        Map(
-          "pseudo_inst" -> "true",
-          "inst_name"   -> "BGE",
-          "funct3"      -> "101",
-          "opcode"      -> "1100011",
-          "inst_type"   -> "INST_B"
-        )
+      case "NOP"  => Instructions("ADDI") ++ Map("pseudo_inst" -> "true")
+      case "BEQZ" => Instructions("BEQ") ++ Map("pseudo_inst" -> "true")
+      case "BGEZ" => Instructions("BGE") ++ Map("pseudo_inst" -> "true")
     }
 }
 

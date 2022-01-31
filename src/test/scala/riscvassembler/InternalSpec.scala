@@ -89,10 +89,16 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
     output should be(((d, Map("rs1" -> 3, "rs2" -> 0, "imm" -> 16))))
   }
 
-  it should "parse U-type instruction" in {
+  it should "parse U-type instruction with hex input" in {
     val output = InstructionParser("lui x2, 0xc0000000")
     val d      = Map("inst_name" -> "LUI", "opcode" -> "0110111", "inst_type" -> "INST_U")
     output should be(((d, Map("rd" -> 2, "imm" -> 0xc0000000L))))
+  }
+
+  it should "parse U-type instruction with dec input" in {
+    val output = InstructionParser("lui x2, 32")
+    val d      = Map("inst_name" -> "LUI", "opcode" -> "0110111", "inst_type" -> "INST_U")
+    output should be(((d, Map("rd" -> 2, "imm" -> 32))))
   }
 
   it should "parse J-type instruction" in {
@@ -104,8 +110,10 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   // ------------------------------------------------------------
   behavior of "RegMap"
   it should "map registers using name" in {
-    val output = RegMap("x1")
-    output should be(1)
+    for (i <- 0 to 31) {
+      val output = RegMap("x" + i.toString)
+      output should be(i)
+    }
   }
 
   it should "map registers using ABI name" in {
