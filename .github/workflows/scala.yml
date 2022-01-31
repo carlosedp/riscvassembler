@@ -8,21 +8,32 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        jvm: [ 'adopt@1.11', 'adopt@1.8' ]
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Setup Scala
       uses: olafurpg/setup-scala@v13
       with:
-        java-version: adopt@1.11
+        java-version: ${{ matrix.jvm }}
+
     - name: Cache Scala
       uses: coursier/cache-action@v5
+
     - name: Check Formatting
       run: sbt scalafmtCheckAll
+
     - name: Run tests for all versions
       run: sbt +test
+
     - name: Run code coverage
       run: sbt clean coverage test coverageReport
+
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
 
@@ -30,21 +41,26 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Setup Scala
         uses: olafurpg/setup-scala@v13
         with:
           java-version: adopt@1.11
+
       - name: Setup GPG (for Publish)
         uses: olafurpg/setup-gpg@v3
+
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v4
         with:
           gpg_private_key: ${{ secrets.PGP_SECRET }}
           passphrase: ${{ secrets.PGP_PASSPHRASE }}
+
       - name: Publish
         run: sbt +publishSigned
         env:
