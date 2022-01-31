@@ -1,5 +1,6 @@
 import com.carlosedp.scalautils.riscvassembler.internal._
 import org.scalatest._
+import scala.{Tuple2 => &}
 
 import flatspec._
 import matchers.should._
@@ -12,7 +13,7 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     val funct3s = List("000", "000", "001", "101", "101", "100", "110", "111", "010", "011")
     val funct7s =
       List("0000000", "0100000", "0000000", "0100000", "0100000", "0000000", "0000000", "0000000", "0000000", "0000000")
-    for ((i, f3, f7) <- insts.lazyZip(funct3s).lazyZip(funct7s).toList) {
+    for (i & f3 & f7 <- insts zip funct3s zip funct7s) {
       val inst = Instructions(i)
       inst should be(
         Map(
@@ -29,7 +30,7 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
   it should "fetch I-type instructions" in {
     val insts   = List("ADDI", "XORI", "ORI", "ANDI", "SLTI", "SLTIU")
     val funct3s = List("000", "100", "110", "111", "010", "011")
-    for ((i, f3) <- insts.lazyZip(funct3s).toList) {
+    for (i & f3 <- insts zip funct3s) {
       val inst = Instructions(i)
       inst should be(
         Map(
@@ -45,7 +46,7 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
   it should "fetch I-type CSR instructions" in {
     val insts   = List("CSRRW", "CSRRS", "CSRRC", "CSRRWI", "CSRRSI", "CSRRCI")
     val funct3s = List("001", "010", "011", "101", "110", "111")
-    for ((i, f3) <- insts.lazyZip(funct3s).toList) {
+    for (i & f3 <- insts zip funct3s) {
       val inst = Instructions(i)
       inst should be(
         Map(
@@ -62,7 +63,7 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
   it should "fetch I-type Load instructions" in {
     val insts   = List("LB", "LH", "LBU", "LHU", "LW")
     val funct3s = List("000", "001", "100", "101", "010")
-    for ((i, f3) <- insts.lazyZip(funct3s).toList) {
+    for (i & f3 <- insts zip funct3s) {
       val inst = Instructions(i)
       inst should be(
         Map(
@@ -80,7 +81,7 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     val insts   = List("SLLI", "SRLI", "SRAI")
     val funct3s = List("001", "101", "101")
     val fixs    = List("0000000", "0000000", "0100000")
-    for ((i, f3, f) <- insts.lazyZip(funct3s).lazyZip(fixs).toList) {
+    for (i & f3 & f <- insts zip funct3s zip fixs) {
       val inst = Instructions(i)
       inst should be(
         Map(
@@ -125,7 +126,8 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
   it should "fetch B-type Branch instructions" in {
     val insts   = List("BEQ", "BNE", "BLT", "BGE", "BLTU", "BGEU")
     val funct3s = List("000", "001", "100", "101", "110", "111")
-    for ((i, f3) <- insts.lazyZip(funct3s).toList) {
+    for ((i, f3) <- insts zip funct3s) {
+      // for ((i, f3) <- insts.lazyZip(funct3s).toList) {
       val inst = Instructions(i)
       inst should be(
         Map(
@@ -141,7 +143,7 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
   it should "fetch S-type Store instructions" in {
     val insts   = List("SB", "SH", "SW")
     val funct3s = List("000", "001", "010")
-    for ((i, f3) <- insts.lazyZip(funct3s).toList) {
+    for ((i, f3) <- insts zip funct3s) {
       val inst = Instructions(i)
       inst should be(
         Map(
