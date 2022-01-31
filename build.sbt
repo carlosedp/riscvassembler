@@ -25,7 +25,7 @@ lazy val root = (project in file("."))
     // Libraries
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.2.11" % "test",
-      "com.lihaoyi"   %% "os-lib"    % "0.8.0"  % "test"
+      "com.lihaoyi"   %% "os-lib"    % "0.8.1"  % "test"
     ),
     // Sonatype publishing repository
     sonatypeRepository        := "https://s01.oss.sonatype.org/service/local",
