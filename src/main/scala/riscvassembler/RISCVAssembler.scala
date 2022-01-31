@@ -61,7 +61,7 @@ object RISCVAssembler {
     input: String
   ): String = {
     var outputString = ""
-    val instList     = input.split("\n").toList.filter(_.nonEmpty).filter(!_.isBlank()).map(_.trim)
+    val instList     = input.split("\n").toList.filter(_.nonEmpty).filter(!_.trim().isEmpty()).map(_.trim)
 
     val ignores = Seq(".", "_", "/")
     for (instruction <- instList) {
