@@ -54,9 +54,6 @@ jobs:
         with:
           java-version: adopt@1.11
 
-      - name: Setup GPG (for Publish)
-        uses: olafurpg/setup-gpg@v3
-
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v4
