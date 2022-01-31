@@ -27,15 +27,18 @@ jobs:
 
     - name: Check Formatting
       run: sbt scalafmtCheckAll
+      if: startsWith(matrix.jvm, 'adopt@1.11')
 
     - name: Run tests for all versions
       run: sbt +test
 
     - name: Run code coverage
       run: sbt clean coverage test coverageReport
+      if: startsWith(matrix.jvm, 'adopt@1.11')
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
+      if: startsWith(matrix.jvm, 'adopt@1.11')
 
   publish-snapshot:
     needs: [build]
