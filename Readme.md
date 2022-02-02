@@ -6,6 +6,7 @@ For more information, check the [scaladoc](https://www.javadoc.io/doc/com.carlos
 
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.carlosedp/scalautils_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.carlosedp/scalautils_2.13)
+[![Sonatype Snapshots](https://img.shields.io/nexus/s/com.carlosedp/scalautils_2.13?server=https%3A%2F%2Fs01.oss.sonatype.org)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/carlosedp/)
 [![codecov](https://codecov.io/gh/carlosedp/scalautils/branch/main/graph/badge.svg?token=YNEKF3OO04)](https://codecov.io/gh/carlosedp/scalautils)
 [![Scala CI](https://github.com/carlosedp/scalautils/actions/workflows/scala.yml/badge.svg)](https://github.com/carlosedp/scalautils/actions/workflows/scala.yml)
 [![Scala Steward badge](https://img.shields.io/badge/Scala_Steward-helping-blue.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAMAAAARSr4IAAAAVFBMVEUAAACHjojlOy5NWlrKzcYRKjGFjIbp293YycuLa3pYY2LSqql4f3pCUFTgSjNodYRmcXUsPD/NTTbjRS+2jomhgnzNc223cGvZS0HaSD0XLjbaSjElhIr+AAAAAXRSTlMAQObYZgAAAHlJREFUCNdNyosOwyAIhWHAQS1Vt7a77/3fcxxdmv0xwmckutAR1nkm4ggbyEcg/wWmlGLDAA3oL50xi6fk5ffZ3E2E3QfZDCcCN2YtbEWZt+Drc6u6rlqv7Uk0LdKqqr5rk2UCRXOk0vmQKGfc94nOJyQjouF9H/wCc9gECEYfONoAAAAASUVORK5CYII=)](https://scala-steward.org)
@@ -26,8 +27,6 @@ When using SBT, add the following lines to your `build.sbt` file.
 libraryDependencies += "com.carlosedp" %% "scalautils" % "0.9.0"
 ```
 
-Replace `0.9.0` with latest version.
-
 If you plan to use the `-SNAPSHOT` versions, add the new Sonatype repository to your `build.sbt` resolvers:
 
 ```scala
@@ -36,7 +35,12 @@ resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
   "Sonatype New OSS Snapshots" at "https://s01.oss.sonatype.org/content/repositories/snapshots"
 )
+
+// and change the dependency to latest SNAPSHOT as:
+libraryDependencies += "com.carlosedp" %% "scalautils" % "0.10.0-SNAPSHOT"
 ```
+
+Use the latest versions displayed on the badges at the top of this readme for both stable and snapshot (without the leading "v").
 
 ### Mill
 
@@ -47,14 +51,19 @@ import coursier.MavenRepository
 
 // Add to your ivyDeps
 def ivyDeps = Agg(
-  ivy"com.carlosedp::scalautils:0.7.2"
+  ivy"com.carlosedp::scalautils:0.9.0"
   ...
 )
 
-// And add the snapshot resolver
+// And add the snapshot resolver if using it
 def repositoriesTask = T.task { super.repositoriesTask() ++ Seq(
   MavenRepository("https://s01.oss.sonatype.org/content/repositories/snapshots")
 ) }
+
+def ivyDeps = Agg(
+  ivy"com.carlosedp::scalautils:0.10.0-SNAPSHOT"
+  ...
+)
 ```
 
 The library has been published to Maven Central thru Sonatype:
