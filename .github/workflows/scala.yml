@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  test:
     strategy:
       matrix:
         jvm: [ 'adopt@1.11', 'adopt@1.8' ]
@@ -45,7 +45,7 @@ jobs:
       if: startsWith(matrix.jvm, 'adopt@1.11')
 
   publish-snapshot:
-    needs: [build]
+    needs: [test]
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
 
@@ -72,3 +72,11 @@ jobs:
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
+
+      - name: Generate Readme from template
+        run: ./scripts/updateReadme.sh
+
+      - name: Add and Commit file
+        uses: EndBug/add-and-commit@v8
+        with:
+          default_author: github_actions
