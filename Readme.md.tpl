@@ -24,7 +24,7 @@ When using SBT, add the following lines to your `build.sbt` file.
 
 ```scala
 // Import libraries
-libraryDependencies += "com.carlosedp" %% "scalautils" % "{{.LastRelease.Name}}"
+libraryDependencies += "com.carlosedp" %% "scalautils" % "{{.LastRelease}}"
 ```
 
 If you plan to use the `-SNAPSHOT` versions, add the new Sonatype repository to your `build.sbt` resolvers:
@@ -51,7 +51,7 @@ import coursier.MavenRepository
 
 // Add to your ivyDeps
 def ivyDeps = Agg(
-  ivy"com.carlosedp::scalautils:{{.LastRelease.Name}}"
+  ivy"com.carlosedp::scalautils:{{.LastRelease}}"
   ...
 )
 
