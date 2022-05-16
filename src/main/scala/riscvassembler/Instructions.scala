@@ -30,7 +30,7 @@ object Instructions {
       case "SRL" =>
         Map(
           "inst_name" -> "SRL",
-          "funct7"    -> "0100000",
+          "funct7"    -> "0000000",
           "funct3"    -> "101",
           "opcode"    -> "0110011",
           "inst_type" -> "INST_R"

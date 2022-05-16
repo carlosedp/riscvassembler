@@ -12,7 +12,7 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     val insts   = List("ADD", "SUB", "SLL", "SRL", "SRA", "XOR", "OR", "AND", "SLT", "SLTU")
     val funct3s = List("000", "000", "001", "101", "101", "100", "110", "111", "010", "011")
     val funct7s =
-      List("0000000", "0100000", "0000000", "0100000", "0100000", "0000000", "0000000", "0000000", "0000000", "0000000")
+      List("0000000", "0100000", "0000000", "0000000", "0100000", "0000000", "0000000", "0000000", "0000000", "0000000")
     for (i & f3 & f7 <- insts zip funct3s zip funct7s) {
       val inst = Instructions(i)
       inst should be(
