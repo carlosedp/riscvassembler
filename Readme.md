@@ -37,7 +37,7 @@ resolvers ++= Seq(
 )
 
 // and change the dependency to latest SNAPSHOT as:
-libraryDependencies += "com.carlosedp" %% "scalautils" % "0.10.0-SNAPSHOT"
+libraryDependencies += "com.carlosedp" %% "scalautils" % "0.11.0-SNAPSHOT"
 ```
 
 Confirm the latest versions displayed on the badges at the top of this readme for both stable and snapshot (without the leading "v").
@@ -61,7 +61,7 @@ def repositoriesTask = T.task { super.repositoriesTask() ++ Seq(
 ) }
 
 def ivyDeps = Agg(
-  ivy"com.carlosedp::scalautils:0.10.0-SNAPSHOT"
+  ivy"com.carlosedp::scalautils:0.11.0-SNAPSHOT"
   ...
 )
 ```
