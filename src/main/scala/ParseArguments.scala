@@ -46,7 +46,7 @@ object ParseArguments {
     paramFormat: String = "-"
   ): (Map[String, String], Array[String]) = {
     var params: Map[String, String] = Map()
-    val remainingArgs = new ListBuffer[String]()
+    val remainingArgs = new ListBuffer[String]
     var lastKey       = ""
     for (key <- args.toList) {
       key match {
@@ -54,7 +54,7 @@ object ParseArguments {
         case p if parameters.contains(p.drop(paramFormat.length)) => lastKey = p.drop(paramFormat.length)
         // Below are the extraction cases. No need to change.
         case param if lastKey.nonEmpty && param.slice(0, paramFormat.length) != paramFormat =>
-          params += (lastKey -> param); lastKey = ""
+          params += lastKey -> param; lastKey = ""
         case param if lastKey.nonEmpty && param.slice(0, paramFormat.length) == paramFormat =>
           remainingArgs += param; lastKey = ""
         case param if lastKey.isEmpty =>

@@ -68,43 +68,43 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
       "opcode"    -> "0110011",
       "inst_type" -> "INST_R"
     )
-    output should be(((d, Map("rd" -> 1, "rs1" -> 2, "rs2" -> 3))))
+    output should be((d, Map("rd" -> 1, "rs1" -> 2, "rs2" -> 3)))
   }
 
   it should "parse I-type instruction" in {
     val output = InstructionParser("addi x1, x2, 1024")
     val d      = Map("inst_name" -> "ADDI", "funct3" -> "000", "opcode" -> "0010011", "inst_type" -> "INST_I")
-    output should be(((d, Map("rd" -> 1, "rs1" -> 2, "imm" -> 1024))))
+    output should be((d, Map("rd" -> 1, "rs1" -> 2, "imm" -> 1024)))
   }
 
   it should "parse S-type instruction" in {
     val output = InstructionParser("sb x3, 1024(x2)")
     val d      = Map("inst_name" -> "SB", "funct3" -> "000", "opcode" -> "0100011", "inst_type" -> "INST_S")
-    output should be(((d, Map("rs1" -> 2, "rs2" -> 3, "imm" -> 1024))))
+    output should be((d, Map("rs1" -> 2, "rs2" -> 3, "imm" -> 1024)))
   }
 
   it should "parse B-type instruction" in {
     val output = InstructionParser("beq x3, x0, +16")
     val d      = Map("inst_name" -> "BEQ", "funct3" -> "000", "opcode" -> "1100011", "inst_type" -> "INST_B")
-    output should be(((d, Map("rs1" -> 3, "rs2" -> 0, "imm" -> 16))))
+    output should be((d, Map("rs1" -> 3, "rs2" -> 0, "imm" -> 16)))
   }
 
   it should "parse U-type instruction with hex input" in {
     val output = InstructionParser("lui x2, 0xc0000000")
     val d      = Map("inst_name" -> "LUI", "opcode" -> "0110111", "inst_type" -> "INST_U")
-    output should be(((d, Map("rd" -> 2, "imm" -> 0xc0000000L))))
+    output should be((d, Map("rd" -> 2, "imm" -> 0xc0000000L)))
   }
 
   it should "parse U-type instruction with dec input" in {
     val output = InstructionParser("lui x2, 32")
     val d      = Map("inst_name" -> "LUI", "opcode" -> "0110111", "inst_type" -> "INST_U")
-    output should be(((d, Map("rd" -> 2, "imm" -> 32))))
+    output should be((d, Map("rd" -> 2, "imm" -> 32)))
   }
 
   it should "parse J-type instruction" in {
     val output = InstructionParser("jal x0, -16")
     val d      = Map("inst_name" -> "JAL", "opcode" -> "1101111", "inst_type" -> "INST_J")
-    output should be(((d, Map("rd" -> 0, "imm" -> -16))))
+    output should be((d, Map("rd" -> 0, "imm" -> -16)))
   }
 
   // ------------------------------------------------------------
