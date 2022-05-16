@@ -1,5 +1,6 @@
 import com.carlosedp.scalautils.riscvassembler.internal._
 import org.scalatest._
+
 import scala.{Tuple2 => &}
 
 import flatspec._

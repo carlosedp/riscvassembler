@@ -40,7 +40,7 @@ object ObjectUtils {
     * @return
     *   The BigInt converted from the string.
     */
-  implicit class IntToBase(val digits: String) extends AnyVal {
+  implicit class IntToBase(private val digits: String) extends AnyVal {
     def base(b: Int) = BigInt(digits, b)
     def b            = base(2)
     def o            = base(8)
