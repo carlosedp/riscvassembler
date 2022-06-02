@@ -20,8 +20,8 @@ ThisBuild / versionScheme                                  := Some("early-semver
 lazy val root = (project in file("."))
   .settings(
     name               := "scalautils",
-    scalaVersion       := "2.13.7",
-    crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.7", "3.1.0"),
+    scalaVersion       := "2.13.8",
+    crossScalaVersions := Seq("2.11.12", "2.12.15", "2.13.8", "3.1.2"),
     // Libraries
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.2.12" % "test",
