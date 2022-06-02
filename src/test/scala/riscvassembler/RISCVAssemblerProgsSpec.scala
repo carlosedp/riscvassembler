@@ -1,4 +1,4 @@
-import com.carlosedp.scalautils.riscvassembler._
+import com.carlosedp.scalautils.riscvassembler.RISCVAssembler
 
 import org.scalatest._
 import flatspec._
