@@ -1,8 +1,6 @@
 package com.carlosedp.scalautils.riscvassembler
 
 import scala.io.Source
-
-import internal.{FillInstruction, InstructionParser, GenHex}
 import util.control.Breaks._
 
 object RISCVAssembler {

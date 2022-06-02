@@ -1,8 +1,8 @@
-package com.carlosedp.scalautils.riscvassembler.internal
+package com.carlosedp.scalautils.riscvassembler
 
 import com.carlosedp.scalautils.ObjectUtils._
 
-object InstructionParser {
+protected object InstructionParser {
 
   /** Parse an assembly instruction and return the opcode and opdata
     *
@@ -100,7 +100,7 @@ object InstructionParser {
   }
 }
 
-object FillInstruction {
+protected object FillInstruction {
 
   /** Fills the instruction arguments based on instruction type
     *
@@ -162,7 +162,7 @@ object FillInstruction {
     }
 }
 
-object GenHex {
+protected object GenHex {
 
   /** Generate the hex string of the instruction from binary
     *
@@ -180,7 +180,7 @@ object GenHex {
   }
 }
 
-object RegMap {
+protected object RegMap {
 
   /** Maps the register name or ABI name to the register number
     *

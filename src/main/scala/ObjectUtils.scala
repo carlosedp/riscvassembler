@@ -1,14 +1,9 @@
 package com.carlosedp.scalautils
 
 object ObjectUtils {
-
-  /** String padding functions
-    *
-    * @param s
-    */
   implicit class StringWithPad(s: String) {
 
-    /** Left-pads a string to a certain length with a certain character.
+    /** Left-pads a string to a specified length with a specified character.
       * @param length
       *   The length to pad to.
       * @param padChar
@@ -41,9 +36,37 @@ object ObjectUtils {
     *   The BigInt converted from the string.
     */
   implicit class IntToBase(private val digits: String) extends AnyVal {
+
+    /** Convert a string in a specified base to a BigInt
+      * @param b
+      *   The base of the string.
+      * @return
+      *   The BigInt converted from the string.
+      */
     def base(b: Int) = BigInt(digits, b)
-    def b            = base(2)
-    def o            = base(8)
-    def x            = base(16)
+
+    /** Convert a string to a base 2 (binary) BigInt
+      * @param b
+      *   The base of the string.
+      * @return
+      *   The BigInt converted from the string.
+      */
+    def b = base(2)
+
+    /** Convert a string to a base 8 (octal) BigInt
+      * @param b
+      *   The base of the string.
+      * @return
+      *   The BigInt converted from the string.
+      */
+    def o = base(8)
+
+    /** Convert a string to a base 16 (hex) BigInt
+      * @param b
+      *   The base of the string.
+      * @return
+      *   The BigInt converted from the string.
+      */
+    def x = base(16)
   }
 }

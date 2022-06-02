@@ -1,6 +1,6 @@
 import com.carlosedp.scalautils.ParseArguments
-import org.scalatest._
 
+import org.scalatest._
 import flatspec._
 import matchers.should._
 

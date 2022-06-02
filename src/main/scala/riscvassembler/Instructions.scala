@@ -1,6 +1,6 @@
-package com.carlosedp.scalautils.riscvassembler.internal
+package com.carlosedp.scalautils.riscvassembler
 
-object Instructions {
+protected object Instructions {
   def apply(instruction: String): Map[String, String] =
     instruction.toUpperCase match {
       case "ADD" =>
@@ -231,7 +231,7 @@ object Instructions {
     }
 }
 
-object PseudoInstructions {
+protected object PseudoInstructions {
   def apply(instructionData: Array[String]): Array[String] =
     instructionData(0).toUpperCase match {
       // Map received params to the corresponding RISC-V instruction

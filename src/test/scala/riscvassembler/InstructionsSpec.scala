@@ -1,8 +1,8 @@
-import com.carlosedp.scalautils.riscvassembler.internal._
-import org.scalatest._
+package com.carlosedp.scalautils.riscvassembler
 
 import scala.{Tuple2 => &}
 
+import org.scalatest._
 import flatspec._
 import matchers.should._
 

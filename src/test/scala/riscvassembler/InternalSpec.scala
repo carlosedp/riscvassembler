@@ -1,6 +1,6 @@
-import com.carlosedp.scalautils.riscvassembler.internal._
-import org.scalatest._
+package com.carlosedp.scalautils.riscvassembler
 
+import org.scalatest._
 import flatspec._
 import matchers.should._
 
@@ -57,6 +57,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   }
 
   // ------------------------------------------------------------
+
   behavior of "InstructionParser"
 
   it should "parse R-type instruction" in {
@@ -108,6 +109,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   }
 
   // ------------------------------------------------------------
+
   behavior of "RegMap"
   it should "map registers using name" in {
     for (i <- 0 to 31) {
