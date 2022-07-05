@@ -1,8 +1,7 @@
 package com.carlosedp.scalautils.riscvassembler
 
-import org.scalatest._
-import flatspec._
-import matchers.should._
+import org.scalatest.flatspec._
+import org.scalatest.matchers.should._
 
 class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   behavior of "InstructionFiller"

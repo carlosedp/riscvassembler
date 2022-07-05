@@ -1,6 +1,7 @@
 package com.carlosedp.scalautils.riscvassembler
 
 import scala.io.Source
+
 import util.control.Breaks._
 
 object RISCVAssembler {

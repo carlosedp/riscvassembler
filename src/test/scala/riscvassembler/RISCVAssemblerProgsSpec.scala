@@ -1,8 +1,7 @@
 import com.carlosedp.scalautils.riscvassembler.RISCVAssembler
-
-import org.scalatest._
-import flatspec._
-import matchers.should._
+import org.scalatest.flatspec._
+import org.scalatest.matchers.should._
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
 
 class RISCVAssemblerProgsSpec extends AnyFlatSpec with BeforeAndAfterEach with BeforeAndAfter with Matchers {
   val tmpdir = "tmpasm"

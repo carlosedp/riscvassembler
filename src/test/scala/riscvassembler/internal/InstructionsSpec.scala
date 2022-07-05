@@ -1,10 +1,9 @@
 package com.carlosedp.scalautils.riscvassembler
 
-import scala.{Tuple2 => &}
+import org.scalatest.flatspec._
+import org.scalatest.matchers.should._
 
-import org.scalatest._
-import flatspec._
-import matchers.should._
+import scala.{Tuple2 => &}
 
 class InstructionsSpec extends AnyFlatSpec with Matchers {
   behavior of "Instructions"
