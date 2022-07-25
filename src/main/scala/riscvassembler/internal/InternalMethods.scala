@@ -83,14 +83,7 @@ protected object InstructionParser {
           )
         )
       }
-      case "INST_U" => {
-        val imm =
-          if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
-          else instructionParts(2).toLong
-        (inst, Map("rd" -> RegMap(instructionParts(1)), "imm" -> imm))
-      }
-
-      case "INST_J" => {
+      case "INST_U" | "INST_J" => {
         val imm =
           if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
           else instructionParts(2).toLong
