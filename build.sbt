@@ -21,7 +21,7 @@ lazy val root = (project in file("."))
   .settings(
     name               := "scalautils",
     scalaVersion       := "2.13.8",
-    crossScalaVersions := Seq("2.11.12", "2.12.15", "2.13.8", "3.1.2"),
+    crossScalaVersions := Seq("2.11.12", "2.12.15", "2.13.8", "3.1.3"),
     // Libraries
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.2.12" % "test",
