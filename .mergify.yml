@@ -3,8 +3,9 @@ pull_request_rules:
     conditions:
       - base=main
       - label="Please Merge"
-      - status-success=test (adopt@1.11)
-      - status-success=test (adopt@1.8)
+      - status-success=test (8)
+      - status-success=test (11)
+      - status-success=test (17)
       - "#review-requested=0"
     actions:
       merge:
