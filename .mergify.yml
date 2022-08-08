@@ -10,3 +10,16 @@ pull_request_rules:
     actions:
       merge:
         method: squash
+
+  - name: Automatic merge Dependabot PRs on CI success
+    conditions:
+      - base=main
+      - author=dependabot[bot]
+      - label="dependencies"
+      - status-success=test (8)
+      - status-success=test (11)
+      - status-success=test (17)
+      - "#review-requested=0"
+    actions:
+      merge:
+        method: squash
