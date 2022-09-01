@@ -35,7 +35,7 @@ object ObjectUtils {
     * @return
     *   The BigInt converted from the string.
     */
-  implicit class IntToBase(private val digits: String) extends AnyVal {
+  implicit class IntToBase(digits: String) {
 
     /** Convert a string in a specified base to a BigInt
       * @param b
