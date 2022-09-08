@@ -20,28 +20,33 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - name: Setup Java
       uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
         java-version: ${{ matrix.jvm }}
-        cache: 'sbt'
+
+    - name: Cache packages
+      uses: coursier/cache-action@v6
+      id: coursier-cache
 
     - name: Check Formatting
-      run: sbt scalafmtCheckAll
-      if: startsWith(matrix.jvm, '11')
+      run: ./mill mill.scalalib.scalafmt.ScalafmtModule/checkFormatAll __.sources
+      if: startsWith(matrix.jvm, '17')
 
     - name: Run tests for all versions
-      run: sbt +test
+      run: ./mill -k __.test
 
     - name: Run code coverage
-      run: sbt clean coverage test coverageReport
-      if: startsWith(matrix.jvm, '11')
+      run: ./mill riscvassembler.cover.test + riscvassembler.cover.scoverage.xmlReport
+      if: startsWith(matrix.jvm, '17')
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
-      if: startsWith(matrix.jvm, '11')
+      if: startsWith(matrix.jvm, '17')
 
   publish-snapshot:
     needs: [test]
@@ -51,13 +56,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin' # See 'Supported distributions' for available options
-          java-version: '11'
-          cache: 'sbt'
+          java-version: '17'
 
       - name: Cache packages
         uses: coursier/cache-action@v6
@@ -71,10 +77,55 @@ jobs:
           passphrase: ${{ secrets.PGP_PASSPHRASE }}
 
       - name: Publish
-        run: sbt +publishSigned
+        run: ./mill -i io.kipp.mill.ci.release.ReleaseModule/publishAll
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
 
+
+  publish-release:
+    needs: [test]
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: '17'
+
+      - name: Cache packages
+        uses: coursier/cache-action@v6
+        id: coursier-cache
+
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v5
+        with:
+          gpg_private_key: ${{ secrets.PGP_SECRET }}
+          passphrase: ${{ secrets.PGP_PASSPHRASE }}
+
+      - name: Publish
+        run: ./mill -i io.kipp.mill.ci.release.ReleaseModule/publishAll
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+
+      - name: Create Release for Tag
+        id: release_tag
+        uses: Akryum/release-tag@conventional
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          preset: angular # Use conventional-changelog preset

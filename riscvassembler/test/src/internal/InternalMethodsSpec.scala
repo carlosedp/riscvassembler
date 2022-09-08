@@ -1,4 +1,4 @@
-package com.carlosedp.scalautils.riscvassembler
+package com.carlosedp.riscvassembler
 
 import org.scalatest.flatspec._
 import org.scalatest.matchers.should._
@@ -77,14 +77,45 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
     output should be((d, Map("rd" -> 1, "rs1" -> 2, "imm" -> 1024)))
   }
 
+  it should "parse I-type instruction with imm in hex" in {
+    val output = InstructionParser("addi x1, x2, 0x400")
+    val d      = Map("inst_name" -> "ADDI", "funct3" -> "000", "opcode" -> "0010011", "inst_type" -> "INST_I")
+    output should be((d, Map("rd" -> 1, "rs1" -> 2, "imm" -> 1024)))
+  }
+
+  it should "parse I-type instruction with offset in hex" in {
+    val output = InstructionParser("lb x1, 0x400(x2)")
+    val d =
+      Map(
+        "opcode"     -> "0000011",
+        "funct3"     -> "000",
+        "inst_type"  -> "INST_I",
+        "has_offset" -> "true",
+        "inst_name"  -> "LB"
+      )
+    output should be((d, Map("rd" -> 1, "rs1" -> 2, "imm" -> 1024)))
+  }
+
   it should "parse S-type instruction" in {
     val output = InstructionParser("sb x3, 1024(x2)")
     val d      = Map("inst_name" -> "SB", "funct3" -> "000", "opcode" -> "0100011", "inst_type" -> "INST_S")
     output should be((d, Map("rs1" -> 2, "rs2" -> 3, "imm" -> 1024)))
   }
 
+  it should "parse S-type instruction with offset in hex" in {
+    val output = InstructionParser("sb x3, 0x400(x2)")
+    val d      = Map("inst_name" -> "SB", "funct3" -> "000", "opcode" -> "0100011", "inst_type" -> "INST_S")
+    output should be((d, Map("rs1" -> 2, "rs2" -> 3, "imm" -> 1024)))
+  }
+
   it should "parse B-type instruction" in {
     val output = InstructionParser("beq x3, x0, +16")
+    val d      = Map("inst_name" -> "BEQ", "funct3" -> "000", "opcode" -> "1100011", "inst_type" -> "INST_B")
+    output should be((d, Map("rs1" -> 3, "rs2" -> 0, "imm" -> 16)))
+  }
+
+  it should "parse B-type instruction with offset in hex" in {
+    val output = InstructionParser("beq x3, x0, 0x10")
     val d      = Map("inst_name" -> "BEQ", "funct3" -> "000", "opcode" -> "1100011", "inst_type" -> "INST_B")
     output should be((d, Map("rs1" -> 3, "rs2" -> 0, "imm" -> 16)))
   }

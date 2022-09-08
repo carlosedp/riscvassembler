@@ -1,4 +1,4 @@
-package com.carlosedp.scalautils
+package com.carlosedp.riscvassembler
 
 object ObjectUtils {
   implicit class StringWithPad(s: String) {

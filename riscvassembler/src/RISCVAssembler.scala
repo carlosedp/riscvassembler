@@ -1,10 +1,21 @@
-package com.carlosedp.scalautils.riscvassembler
+package com.carlosedp.riscvassembler
 
 import scala.io.Source
 
 import util.control.Breaks._
 
 object RISCVAssembler {
+
+  /** Generate the binary output for the input instruction
+    * @param input
+    *   the input instruction (eg. "add x1, x2, x3")
+    * @return
+    *   the binary output in string format
+    */
+  def binOutput(input: String, width: Int = 32): String = {
+    val (op, opdata) = InstructionParser(input)
+    FillInstruction(op("inst_type"), opdata, op).takeRight(width)
+  }
 
   /** Generate an hex string output fom the assembly source file
     *
@@ -22,17 +33,6 @@ object RISCVAssembler {
   def fromFile(filename: String): String = {
     val f = Source.fromFile(filename).getLines().mkString("\n")
     fromString(f)
-  }
-
-  /** Generate the binary output for the input instruction
-    * @param input
-    *   the input instruction (eg. add x1, x2, x3)
-    * @return
-    *   the binary output in string format
-    */
-  def binOutput(input: String, width: Int = 32): String = {
-    val (op, opdata) = InstructionParser(input)
-    FillInstruction(op("inst_type"), opdata, op).takeRight(width)
   }
 
   /** Generate an hex string output fom the assembly string

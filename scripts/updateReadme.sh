@@ -2,7 +2,7 @@
 
 TEMPLATE=Readme.md.tpl
 GROUPID=com.carlosedp
-ARTIFACT=scalautils_2.13
+ARTIFACT=riscvassembler_2.13
 
 REPO=$(echo ${GROUPID} | sed "s/\./\//g")/${ARTIFACT}
 

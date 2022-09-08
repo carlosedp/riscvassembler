@@ -1,6 +1,6 @@
-package com.carlosedp.scalautils.riscvassembler
+package com.carlosedp.riscvassembler
 
-import com.carlosedp.scalautils.ObjectUtils._
+import ObjectUtils._
 
 protected object InstructionParser {
 

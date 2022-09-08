@@ -1,4 +1,4 @@
-package com.carlosedp.scalautils.riscvassembler
+package com.carlosedp.riscvassembler
 
 import org.scalatest.flatspec._
 import org.scalatest.matchers.should._

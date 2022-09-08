@@ -1,4 +1,4 @@
-package com.carlosedp.scalautils.riscvassembler
+package com.carlosedp.riscvassembler
 
 protected object Instructions {
   def apply(instruction: String): Map[String, String] =

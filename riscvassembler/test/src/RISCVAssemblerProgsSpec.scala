@@ -1,4 +1,5 @@
-import com.carlosedp.scalautils.riscvassembler.RISCVAssembler
+package com.carlosedp.riscvassembler
+
 import org.scalatest.flatspec._
 import org.scalatest.matchers.should._
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
