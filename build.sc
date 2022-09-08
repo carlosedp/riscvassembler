@@ -119,3 +119,6 @@ def deps(ev: eval.Evaluator) = T.command {
 def coverage(ev: eval.Evaluator) = T.command {
   runTasks(ev, Seq("cover.test", "cover.scoverage.htmlReport"))
 }
+def pub(ev: eval.Evaluator) = T.command {
+  runTasks(ev, Seq("io.kipp.mill.ci.release.ReleaseModule/publishAll"))
+}
