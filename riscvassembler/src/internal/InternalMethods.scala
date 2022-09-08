@@ -13,15 +13,15 @@ protected object InstructionParser {
     */
   def apply(
     input: String
-  ): (Map[String, String], Map[String, Long]) = {
+  ): (Instruction, Map[String, Long]) = {
     var instructionParts = input.trim.split("[\\s,\\(\\)]+").filter(_.nonEmpty)
     val inst             = Instructions(instructionParts(0).toUpperCase)
     // Check here if it's a pseudo instruction
-    if (inst.contains("pseudo_inst")) {
+    if (inst.pseudo) {
       instructionParts = PseudoInstructions(instructionParts)
     }
-    inst("inst_type") match {
-      case "INST_R" =>
+    inst.instType match {
+      case InstructionTypes.R =>
         (
           inst,
           Map(
@@ -30,8 +30,8 @@ protected object InstructionParser {
             "rs2" -> RegMap(instructionParts(3))
           )
         )
-      case "INST_I" => {
-        if (inst.contains("has_offset")) {
+      case InstructionTypes.I => {
+        if (inst.hasOffset) {
           val imm =
             if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
             else instructionParts(2).toLong
@@ -57,7 +57,7 @@ protected object InstructionParser {
           )
         }
       }
-      case "INST_S" => {
+      case InstructionTypes.S => {
         val imm =
           if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
           else instructionParts(2).toLong
@@ -70,7 +70,7 @@ protected object InstructionParser {
           )
         )
       }
-      case "INST_B" => {
+      case InstructionTypes.B => {
         val imm =
           if (instructionParts(3).startsWith("0x")) BigInt(instructionParts(3).substring(2), 16).toLong
           else instructionParts(3).toLong
@@ -83,7 +83,7 @@ protected object InstructionParser {
           )
         )
       }
-      case "INST_U" | "INST_J" => {
+      case InstructionTypes.U | InstructionTypes.J => {
         val imm =
           if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
           else instructionParts(2).toLong
@@ -106,51 +106,49 @@ protected object FillInstruction {
     * @return
     *   the filled instruction binary
     */
-  def apply(instType: String, data: Map[String, Long], op: Map[String, String]): String =
+  def apply(instType: InstructionTypes.InstType, data: Map[String, Long], op: Instruction): String =
     instType match {
-      case "INST_R" => {
+      case InstructionTypes.R => {
         val rd  = data("rd").toBinaryString.padZero(5)
         val rs1 = data("rs1").toBinaryString.padZero(5)
         val rs2 = data("rs2").toBinaryString.padZero(5)
-        op("funct7") + rs2 + rs1 + op("funct3") + rd + op("opcode")
+        op.funct7 + rs2 + rs1 + op.funct3 + rd + op.opcode
       }
 
-      case "INST_I" => {
+      case InstructionTypes.I => {
         val rd  = data("rd").toBinaryString.padZero(5)
         val rs1 = data("rs1").toBinaryString.padZero(5)
         val imm = data("imm").to32Bit.toBinaryString.padZero(12)
-        imm + rs1 + op("funct3") + rd + op("opcode")
+        imm + rs1 + op.funct3 + rd + op.opcode
       }
 
-      case "INST_S" => {
+      case InstructionTypes.S => {
         val rs1 = data("rs1").toBinaryString.padZero(5)
         val rs2 = data("rs2").toBinaryString.padZero(5)
         val imm = data("imm").to32Bit.toBinaryString.padZero(12).reverse // reverse to have binary in little endian
-        imm.slice(5, 12).reverse + rs2 + rs1 + op("funct3") + imm.slice(0, 5).reverse + op("opcode")
+        imm.slice(5, 12).reverse + rs2 + rs1 + op.funct3 + imm.slice(0, 5).reverse + op.opcode
       }
 
-      case "INST_B" => {
+      case InstructionTypes.B => {
         val rs1 = data("rs1").toBinaryString.padZero(5)
         val rs2 = data("rs2").toBinaryString.padZero(5)
         val imm = data("imm").to32Bit.toBinaryString.padZero(13).reverse // reverse to have binary in little endian
-        imm.slice(12, 13).reverse + imm.slice(5, 11).reverse + rs2 + rs1 + op("funct3") +
-          imm.slice(1, 5).reverse + imm.slice(11, 12).reverse + op("opcode")
+        imm.slice(12, 13).reverse + imm.slice(5, 11).reverse + rs2 + rs1 + op.funct3 +
+          imm.slice(1, 5).reverse + imm.slice(11, 12).reverse + op.opcode
       }
 
-      case "INST_U" => {
+      case InstructionTypes.U => {
         val rd  = data("rd").toBinaryString.padZero(5)
         val imm = data("imm").to32Bit.toBinaryString.padZero(32).take(20)
-        imm + rd + op("opcode")
+        imm + rd + op.opcode
       }
 
-      case "INST_J" => {
+      case InstructionTypes.J => {
         val rd  = data("rd").toBinaryString.padZero(5)
         val imm = data("imm").to32Bit.toBinaryString.padZero(21).reverse // reverse to have binary in little endian
         imm.slice(20, 21).reverse + imm.slice(1, 11).reverse + imm.slice(11, 12).reverse + imm
           .slice(12, 20)
-          .reverse + rd + op(
-          "opcode"
-        )
+          .reverse + rd + op.opcode
       }
     }
 }

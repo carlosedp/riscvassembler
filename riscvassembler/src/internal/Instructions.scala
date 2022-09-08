@@ -1,233 +1,382 @@
 package com.carlosedp.riscvassembler
 
+object InstructionTypes extends Enumeration {
+  type InstType = Value
+  val I, R, B, S, U, J = Value
+}
+
+case class Instruction(
+  name:      String,
+  instType:  InstructionTypes.InstType,
+  funct3:    String = "",
+  funct7:    String = "",
+  opcode:    String,
+  hasOffset: Boolean = false,
+  isCsr:     Boolean = false,
+  fixed:     String = "",
+  pseudo:    Boolean = false
+)
+
 protected object Instructions {
-  def apply(instruction: String): Map[String, String] =
+  def apply(instruction: String): Instruction =
     instruction.toUpperCase match {
       case "ADD" =>
-        Map(
-          "inst_name" -> "ADD",
-          "funct7"    -> "0000000",
-          "funct3"    -> "000",
-          "opcode"    -> "0110011",
-          "inst_type" -> "INST_R"
+        Instruction(
+          name = "ADD",
+          funct7 = "0000000",
+          funct3 = "000",
+          opcode = "0110011",
+          instType = InstructionTypes.R
         )
       case "SUB" =>
-        Map(
-          "inst_name" -> "SUB",
-          "funct7"    -> "0100000",
-          "funct3"    -> "000",
-          "opcode"    -> "0110011",
-          "inst_type" -> "INST_R"
+        Instruction(
+          name = "SUB",
+          funct7 = "0100000",
+          funct3 = "000",
+          opcode = "0110011",
+          instType = InstructionTypes.R
         )
       case "SLL" =>
-        Map(
-          "inst_name" -> "SLL",
-          "funct7"    -> "0000000",
-          "funct3"    -> "001",
-          "opcode"    -> "0110011",
-          "inst_type" -> "INST_R"
+        Instruction(
+          name = "SLL",
+          funct7 = "0000000",
+          funct3 = "001",
+          opcode = "0110011",
+          instType = InstructionTypes.R
         )
       case "SRL" =>
-        Map(
-          "inst_name" -> "SRL",
-          "funct7"    -> "0000000",
-          "funct3"    -> "101",
-          "opcode"    -> "0110011",
-          "inst_type" -> "INST_R"
+        Instruction(
+          name = "SRL",
+          funct7 = "0000000",
+          funct3 = "101",
+          opcode = "0110011",
+          instType = InstructionTypes.R
         )
       case "SRA" =>
-        Map(
-          "inst_name" -> "SRA",
-          "funct7"    -> "0100000",
-          "funct3"    -> "101",
-          "opcode"    -> "0110011",
-          "inst_type" -> "INST_R"
+        Instruction(
+          name = "SRA",
+          funct7 = "0100000",
+          funct3 = "101",
+          opcode = "0110011",
+          instType = InstructionTypes.R
         )
       case "XOR" =>
-        Map(
-          "inst_name" -> "XOR",
-          "funct7"    -> "0000000",
-          "funct3"    -> "100",
-          "opcode"    -> "0110011",
-          "inst_type" -> "INST_R"
+        Instruction(
+          name = "XOR",
+          funct7 = "0000000",
+          funct3 = "100",
+          opcode = "0110011",
+          instType = InstructionTypes.R
         )
       case "OR" =>
-        Map(
-          "inst_name" -> "OR",
-          "funct7"    -> "0000000",
-          "funct3"    -> "110",
-          "opcode"    -> "0110011",
-          "inst_type" -> "INST_R"
+        Instruction(
+          name = "OR",
+          funct7 = "0000000",
+          funct3 = "110",
+          opcode = "0110011",
+          instType = InstructionTypes.R
         )
       case "AND" =>
-        Map(
-          "inst_name" -> "AND",
-          "funct7"    -> "0000000",
-          "funct3"    -> "111",
-          "opcode"    -> "0110011",
-          "inst_type" -> "INST_R"
+        Instruction(
+          name = "AND",
+          funct7 = "0000000",
+          funct3 = "111",
+          opcode = "0110011",
+          instType = InstructionTypes.R
         )
       case "SLT" =>
-        Map(
-          "inst_name" -> "SLT",
-          "funct7"    -> "0000000",
-          "funct3"    -> "010",
-          "opcode"    -> "0110011",
-          "inst_type" -> "INST_R"
+        Instruction(
+          name = "SLT",
+          funct7 = "0000000",
+          funct3 = "010",
+          opcode = "0110011",
+          instType = InstructionTypes.R
         )
       case "SLTU" =>
-        Map(
-          "inst_name" -> "SLTU",
-          "funct7"    -> "0000000",
-          "funct3"    -> "011",
-          "opcode"    -> "0110011",
-          "inst_type" -> "INST_R"
+        Instruction(
+          name = "SLTU",
+          funct7 = "0000000",
+          funct3 = "011",
+          opcode = "0110011",
+          instType = InstructionTypes.R
         )
-      case "ADDI"  => Map("inst_name" -> "ADDI", "funct3" -> "000", "opcode" -> "0010011", "inst_type" -> "INST_I")
-      case "XORI"  => Map("inst_name" -> "XORI", "funct3" -> "100", "opcode" -> "0010011", "inst_type" -> "INST_I")
-      case "ORI"   => Map("inst_name" -> "ORI", "funct3" -> "110", "opcode" -> "0010011", "inst_type" -> "INST_I")
-      case "ANDI"  => Map("inst_name" -> "ANDI", "funct3" -> "111", "opcode" -> "0010011", "inst_type" -> "INST_I")
-      case "SLTI"  => Map("inst_name" -> "SLTI", "funct3" -> "010", "opcode" -> "0010011", "inst_type" -> "INST_I")
-      case "SLTIU" => Map("inst_name" -> "SLTIU", "funct3" -> "011", "opcode" -> "0010011", "inst_type" -> "INST_I")
+      case "ADDI" =>
+        Instruction(
+          name = "ADDI",
+          funct3 = "000",
+          opcode = "0010011",
+          instType = InstructionTypes.I
+        )
+      case "XORI" =>
+        Instruction(
+          name = "XORI",
+          funct3 = "100",
+          opcode = "0010011",
+          instType = InstructionTypes.I
+        )
+      case "ORI" =>
+        Instruction(
+          name = "ORI",
+          funct3 = "110",
+          opcode = "0010011",
+          instType = InstructionTypes.I
+        )
+
+      case "ANDI" =>
+        Instruction(
+          name = "ANDI",
+          funct3 = "111",
+          opcode = "0010011",
+          instType = InstructionTypes.I
+        )
+      case "SLTI" =>
+        Instruction(
+          name = "SLTI",
+          funct3 = "010",
+          opcode = "0010011",
+          instType = InstructionTypes.I
+        )
+      case "SLTIU" =>
+        Instruction(
+          name = "SLTIU",
+          funct3 = "011",
+          opcode = "0010011",
+          instType = InstructionTypes.I
+        )
       case "CSRRW" =>
-        Map(
-          "inst_name" -> "CSRRW",
-          "is_csr"    -> "true",
-          "funct3"    -> "001",
-          "opcode"    -> "1110011",
-          "inst_type" -> "INST_I"
+        Instruction(
+          name = "CSRRW",
+          funct3 = "001",
+          opcode = "1110011",
+          isCsr = true,
+          instType = InstructionTypes.I
         )
       case "CSRRS" =>
-        Map(
-          "inst_name" -> "CSRRS",
-          "is_csr"    -> "true",
-          "funct3"    -> "010",
-          "opcode"    -> "1110011",
-          "inst_type" -> "INST_I"
+        Instruction(
+          name = "CSRRS",
+          funct3 = "010",
+          opcode = "1110011",
+          isCsr = true,
+          instType = InstructionTypes.I
         )
       case "CSRRC" =>
-        Map(
-          "inst_name" -> "CSRRC",
-          "is_csr"    -> "true",
-          "funct3"    -> "011",
-          "opcode"    -> "1110011",
-          "inst_type" -> "INST_I"
+        Instruction(
+          name = "CSRRC",
+          funct3 = "011",
+          opcode = "1110011",
+          isCsr = true,
+          instType = InstructionTypes.I
         )
       case "CSRRWI" =>
-        Map(
-          "inst_name" -> "CSRRWI",
-          "is_csr"    -> "true",
-          "funct3"    -> "101",
-          "opcode"    -> "1110011",
-          "inst_type" -> "INST_I"
+        Instruction(
+          name = "CSRRWI",
+          funct3 = "101",
+          opcode = "1110011",
+          isCsr = true,
+          instType = InstructionTypes.I
         )
+
       case "CSRRSI" =>
-        Map(
-          "inst_name" -> "CSRRSI",
-          "is_csr"    -> "true",
-          "funct3"    -> "110",
-          "opcode"    -> "1110011",
-          "inst_type" -> "INST_I"
+        Instruction(
+          name = "CSRRSI",
+          funct3 = "110",
+          opcode = "1110011",
+          isCsr = true,
+          instType = InstructionTypes.I
         )
+
       case "CSRRCI" =>
-        Map(
-          "inst_name" -> "CSRRCI",
-          "is_csr"    -> "true",
-          "funct3"    -> "111",
-          "opcode"    -> "1110011",
-          "inst_type" -> "INST_I"
+        Instruction(
+          name = "CSRRCI",
+          funct3 = "111",
+          opcode = "1110011",
+          isCsr = true,
+          instType = InstructionTypes.I
         )
+
       case "LB" =>
-        Map(
-          "inst_name"  -> "LB",
-          "has_offset" -> "true",
-          "funct3"     -> "000",
-          "opcode"     -> "0000011",
-          "inst_type"  -> "INST_I"
+        Instruction(
+          name = "LB",
+          funct3 = "000",
+          opcode = "0000011",
+          hasOffset = true,
+          instType = InstructionTypes.I
         )
       case "LH" =>
-        Map(
-          "inst_name"  -> "LH",
-          "has_offset" -> "true",
-          "funct3"     -> "001",
-          "opcode"     -> "0000011",
-          "inst_type"  -> "INST_I"
+        Instruction(
+          name = "LH",
+          funct3 = "001",
+          opcode = "0000011",
+          hasOffset = true,
+          instType = InstructionTypes.I
         )
       case "LBU" =>
-        Map(
-          "inst_name"  -> "LBU",
-          "has_offset" -> "true",
-          "funct3"     -> "100",
-          "opcode"     -> "0000011",
-          "inst_type"  -> "INST_I"
+        Instruction(
+          name = "LBU",
+          funct3 = "100",
+          opcode = "0000011",
+          hasOffset = true,
+          instType = InstructionTypes.I
         )
       case "LHU" =>
-        Map(
-          "inst_name"  -> "LHU",
-          "has_offset" -> "true",
-          "funct3"     -> "101",
-          "opcode"     -> "0000011",
-          "inst_type"  -> "INST_I"
+        Instruction(
+          name = "LHU",
+          funct3 = "101",
+          opcode = "0000011",
+          hasOffset = true,
+          instType = InstructionTypes.I
         )
       case "LW" =>
-        Map(
-          "inst_name"  -> "LW",
-          "has_offset" -> "true",
-          "funct3"     -> "010",
-          "opcode"     -> "0000011",
-          "inst_type"  -> "INST_I"
+        Instruction(
+          name = "LW",
+          funct3 = "010",
+          opcode = "0000011",
+          hasOffset = true,
+          instType = InstructionTypes.I
         )
       case "JALR" =>
-        Map(
-          "inst_name" -> "JALR",
-          "funct3"    -> "000",
-          "opcode"    -> "1100111",
-          "inst_type" -> "INST_I"
+        Instruction(
+          name = "JALR",
+          funct3 = "000",
+          opcode = "1100111",
+          instType = InstructionTypes.I
         )
+
       case "SLLI" =>
-        Map(
-          "inst_name" -> "SLLI",
-          "fix"       -> "0000000",
-          "funct3"    -> "001",
-          "opcode"    -> "0010011",
-          "inst_type" -> "INST_I"
+        Instruction(
+          name = "SLLI",
+          funct3 = "001",
+          opcode = "0010011",
+          fixed = "0000000",
+          instType = InstructionTypes.I
         )
       case "SRLI" =>
-        Map(
-          "inst_name" -> "SRLI",
-          "fix"       -> "0000000",
-          "funct3"    -> "101",
-          "opcode"    -> "0010011",
-          "inst_type" -> "INST_I"
+        Instruction(
+          name = "SRLI",
+          funct3 = "101",
+          opcode = "0010011",
+          fixed = "0000000",
+          instType = InstructionTypes.I
         )
       case "SRAI" =>
-        Map(
-          "inst_name" -> "SRAI",
-          "fix"       -> "0100000",
-          "funct3"    -> "101",
-          "opcode"    -> "0010011",
-          "inst_type" -> "INST_I"
+        Instruction(
+          name = "SRAI",
+          funct3 = "101",
+          opcode = "0010011",
+          fixed = "0100000",
+          instType = InstructionTypes.I
         )
       // BitPat("b0000????????00000000000000001111")  -> List(INST_I,   FENCE
       // BitPat("b00000000000000000000001000001111")  -> List(INST_I,  FENCEI
       // BitPat("b00000000000000000000000001110011")  -> List(INST_I,   ECALL
       // BitPat("b00000000000100000000000001110011")  -> List(INST_I,  EBREAK
-      case "LUI"   => Map("inst_name" -> "LUI", "opcode" -> "0110111", "inst_type" -> "INST_U")
-      case "AUIPC" => Map("inst_name" -> "AUIPC", "opcode" -> "0010111", "inst_type" -> "INST_U")
-      case "BEQ"   => Map("inst_name" -> "BEQ", "funct3" -> "000", "opcode" -> "1100011", "inst_type" -> "INST_B")
-      case "BNE"   => Map("inst_name" -> "BNE", "funct3" -> "001", "opcode" -> "1100011", "inst_type" -> "INST_B")
-      case "BLT"   => Map("inst_name" -> "BLT", "funct3" -> "100", "opcode" -> "1100011", "inst_type" -> "INST_B")
-      case "BGE"   => Map("inst_name" -> "BGE", "funct3" -> "101", "opcode" -> "1100011", "inst_type" -> "INST_B")
-      case "BLTU"  => Map("inst_name" -> "BLTU", "funct3" -> "110", "opcode" -> "1100011", "inst_type" -> "INST_B")
-      case "BGEU"  => Map("inst_name" -> "BGEU", "funct3" -> "111", "opcode" -> "1100011", "inst_type" -> "INST_B")
-      case "JAL"   => Map("inst_name" -> "JAL", "opcode" -> "1101111", "inst_type" -> "INST_J")
-      case "SB"    => Map("inst_name" -> "SB", "funct3" -> "000", "opcode" -> "0100011", "inst_type" -> "INST_S")
-      case "SH"    => Map("inst_name" -> "SH", "funct3" -> "001", "opcode" -> "0100011", "inst_type" -> "INST_S")
-      case "SW"    => Map("inst_name" -> "SW", "funct3" -> "010", "opcode" -> "0100011", "inst_type" -> "INST_S")
+      case "LUI" =>
+        Instruction(
+          name = "LUI",
+          opcode = "0110111",
+          instType = InstructionTypes.U
+        )
+      case "AUIPC" =>
+        Instruction(
+          name = "AUIPC",
+          funct3 = "001",
+          opcode = "0010111",
+          instType = InstructionTypes.U
+        )
+      case "BEQ" =>
+        Instruction(
+          name = "BEQ",
+          funct3 = "000",
+          opcode = "1100011",
+          instType = InstructionTypes.B
+        )
+      case "BNE" =>
+        Instruction(
+          name = "BNE",
+          funct3 = "001",
+          opcode = "1100011",
+          instType = InstructionTypes.B
+        )
+      case "BLT" =>
+        Instruction(
+          name = "BLT",
+          funct3 = "100",
+          opcode = "1100011",
+          instType = InstructionTypes.B
+        )
+      case "BGE" =>
+        Instruction(
+          name = "BGE",
+          funct3 = "101",
+          opcode = "1100011",
+          instType = InstructionTypes.B
+        )
+      case "BLTU" =>
+        Instruction(
+          name = "BLTU",
+          funct3 = "110",
+          opcode = "1100011",
+          instType = InstructionTypes.B
+        )
+      case "BGEU" =>
+        Instruction(
+          name = "BGEU",
+          funct3 = "111",
+          opcode = "1100011",
+          instType = InstructionTypes.B
+        )
+      case "JAL" =>
+        Instruction(
+          name = "JAL",
+          opcode = "1101111",
+          instType = InstructionTypes.J
+        )
+      case "SB" =>
+        Instruction(
+          name = "SB",
+          funct3 = "000",
+          opcode = "0100011",
+          instType = InstructionTypes.S
+        )
+      case "SH" =>
+        Instruction(
+          name = "SH",
+          funct3 = "001",
+          opcode = "0100011",
+          instType = InstructionTypes.S
+        )
+      case "SW" =>
+        Instruction(
+          name = "SW",
+          funct3 = "010",
+          opcode = "0100011",
+          instType = InstructionTypes.S
+        )
       // Pseudo-instructions mapping to the corresponding RISC-V instructions
-      case "NOP"  => Instructions("ADDI") ++ Map("pseudo_inst" -> "true")
-      case "BEQZ" => Instructions("BEQ") ++ Map("pseudo_inst" -> "true")
-      case "BGEZ" => Instructions("BGE") ++ Map("pseudo_inst" -> "true")
+      case "NOP" =>
+        Instruction(
+          name = "ADDI",
+          funct3 = "000",
+          opcode = "0010011",
+          instType = InstructionTypes.I,
+          pseudo = true
+        )
+      case "BEQZ" =>
+        Instruction(
+          name = "BEQ",
+          funct3 = "000",
+          opcode = "1100011",
+          instType = InstructionTypes.B,
+          pseudo = true
+        )
+      case "BGEZ" =>
+        Instruction(
+          name = "BGE",
+          funct3 = "101",
+          opcode = "1100011",
+          instType = InstructionTypes.B,
+          pseudo = true
+        )
     }
 }
 

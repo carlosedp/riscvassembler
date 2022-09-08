@@ -15,15 +15,11 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
       List("0000000", "0100000", "0000000", "0000000", "0100000", "0000000", "0000000", "0000000", "0000000", "0000000")
     for (i & f3 & f7 <- insts zip funct3s zip funct7s) {
       val inst = Instructions(i)
-      inst should be(
-        Map(
-          "inst_name" -> i,
-          "funct7"    -> f7,
-          "funct3"    -> f3,
-          "opcode"    -> "0110011",
-          "inst_type" -> "INST_R"
-        )
-      )
+      inst.name should be(i)
+      inst.funct7 should be(f7)
+      inst.funct3 should be(f3)
+      inst.opcode should be("0110011")
+      inst.instType should be(InstructionTypes.R)
     }
   }
 
@@ -32,14 +28,10 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     val funct3s = List("000", "100", "110", "111", "010", "011")
     for (i & f3 <- insts zip funct3s) {
       val inst = Instructions(i)
-      inst should be(
-        Map(
-          "inst_name" -> i,
-          "funct3"    -> f3,
-          "opcode"    -> "0010011",
-          "inst_type" -> "INST_I"
-        )
-      )
+      inst.name should be(i)
+      inst.funct3 should be(f3)
+      inst.opcode should be("0010011")
+      inst.instType should be(InstructionTypes.I)
     }
   }
 
@@ -48,15 +40,11 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     val funct3s = List("001", "010", "011", "101", "110", "111")
     for (i & f3 <- insts zip funct3s) {
       val inst = Instructions(i)
-      inst should be(
-        Map(
-          "inst_name" -> i,
-          "funct3"    -> f3,
-          "is_csr"    -> "true",
-          "opcode"    -> "1110011",
-          "inst_type" -> "INST_I"
-        )
-      )
+      inst.name should be(i)
+      inst.funct3 should be(f3)
+      inst.opcode should be("1110011")
+      inst.isCsr should be(true)
+      inst.instType should be(InstructionTypes.I)
     }
   }
 
@@ -65,15 +53,10 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     val funct3s = List("000", "001", "100", "101", "010")
     for (i & f3 <- insts zip funct3s) {
       val inst = Instructions(i)
-      inst should be(
-        Map(
-          "inst_name"  -> i,
-          "funct3"     -> f3,
-          "has_offset" -> "true",
-          "opcode"     -> "0000011",
-          "inst_type"  -> "INST_I"
-        )
-      )
+      inst.name should be(i)
+      inst.funct3 should be(f3)
+      inst.opcode should be("0000011")
+      inst.instType should be(InstructionTypes.I)
     }
   }
 
@@ -83,44 +66,41 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     val fixs    = List("0000000", "0000000", "0100000")
     for (i & f3 & f <- insts zip funct3s zip fixs) {
       val inst = Instructions(i)
-      inst should be(
-        Map(
-          "inst_name" -> i,
-          "funct3"    -> f3,
-          "fix"       -> f,
-          "opcode"    -> "0010011",
-          "inst_type" -> "INST_I"
-        )
-      )
+      inst.name should be(i)
+      inst.funct3 should be(f3)
+      inst.fixed should be(f)
+      inst.opcode should be("0010011")
+      inst.instType should be(InstructionTypes.I)
     }
   }
 
   it should "fetch JALR instruction" in {
-    val i = Instructions("JALR")
-    i should be(
-      Map("inst_name" -> "JALR", "opcode" -> "1100111", "inst_type" -> "INST_I", "funct3" -> "000")
-    )
+    val inst = Instructions("JALR")
+    inst.name should be("JALR")
+    inst.funct3 should be("000")
+    inst.opcode should be("1100111")
+    inst.instType should be(InstructionTypes.I)
   }
 
   it should "fetch JAL instruction" in {
-    val i = Instructions("JAL")
-    i should be(
-      Map("inst_name" -> "JAL", "opcode" -> "1101111", "inst_type" -> "INST_J")
-    )
+    val inst = Instructions("JAL")
+    inst.name should be("JAL")
+    inst.opcode should be("1101111")
+    inst.instType should be(InstructionTypes.J)
   }
 
   it should "fetch LUI instruction" in {
-    val i = Instructions("LUI")
-    i should be(
-      Map("inst_name" -> "LUI", "opcode" -> "0110111", "inst_type" -> "INST_U")
-    )
+    val inst = Instructions("LUI")
+    inst.name should be("LUI")
+    inst.opcode should be("0110111")
+    inst.instType should be(InstructionTypes.U)
   }
 
   it should "fetch AUIPC instruction" in {
-    val i = Instructions("AUIPC")
-    i should be(
-      Map("inst_name" -> "AUIPC", "opcode" -> "0010111", "inst_type" -> "INST_U")
-    )
+    val inst = Instructions("AUIPC")
+    inst.name should be("AUIPC")
+    inst.opcode should be("0010111")
+    inst.instType should be(InstructionTypes.U)
   }
 
   it should "fetch B-type Branch instructions" in {
@@ -129,14 +109,10 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     for ((i, f3) <- insts zip funct3s) {
       // for ((i, f3) <- insts.lazyZip(funct3s).toList) {
       val inst = Instructions(i)
-      inst should be(
-        Map(
-          "inst_name" -> i,
-          "funct3"    -> f3,
-          "opcode"    -> "1100011",
-          "inst_type" -> "INST_B"
-        )
-      )
+      inst.name should be(i)
+      inst.funct3 should be(f3)
+      inst.opcode should be("1100011")
+      inst.instType should be(InstructionTypes.B)
     }
   }
 
@@ -145,14 +121,10 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     val funct3s = List("000", "001", "010")
     for ((i, f3) <- insts zip funct3s) {
       val inst = Instructions(i)
-      inst should be(
-        Map(
-          "inst_name" -> i,
-          "funct3"    -> f3,
-          "opcode"    -> "0100011",
-          "inst_type" -> "INST_S"
-        )
-      )
+      inst.name should be(i)
+      inst.funct3 should be(f3)
+      inst.opcode should be("0100011")
+      inst.instType should be(InstructionTypes.S)
     }
   }
 
@@ -163,9 +135,8 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     val insts  = List("ADDI", "BEQ", "BGE")
     for ((pi, i) <- pinsts zip insts) {
       val inst = Instructions(pi)
-
-      inst("inst_name") should be(i)
-      inst("pseudo_inst") should be("true")
+      inst.name should be(i)
+      inst.pseudo should be(true)
     }
   }
 
