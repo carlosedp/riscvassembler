@@ -24,7 +24,7 @@ When using SBT, add the following lines to your `build.sbt` file.
 
 ```scala
 // Import libraries
-libraryDependencies += "com.carlosedp" %% "riscvassembler" % ""
+libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.0"
 ```
 
 ### Mill
@@ -34,7 +34,7 @@ If you use `mill` build tool, I recommend adding the following way to your `buil
 ```scala
 // Add to your ivyDeps
 def ivyDeps = Agg(
-  ivy"com.carlosedp::riscvassembler:"
+  ivy"com.carlosedp::riscvassembler:1.0"
   ...
 )
 ```
@@ -98,15 +98,14 @@ Snapshot versions are released on every commit to main branch and might be broke
 Add the new Sonatype repository to your `build.sbt` resolvers and change the library import name:
 
 ```scala
-// and change the dependency to latest SNAPSHOT as:
-libraryDependencies += "com.carlosedp" %% "riscvassembler" % "0.10-SNAPSHOT"
-
-
 resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
   Resolver.sonatypeRepo("releases"),
   "Sonatype New OSS Snapshots" at "https://s01.oss.sonatype.org/content/repositories/snapshots"
 )
+
+// and change the dependency to latest SNAPSHOT as:
+libraryDependencies += "com.carlosedp" %% "riscvassembler" % "0.10-SNAPSHOT"
 ```
 
 Confirm the latest versions displayed on the badges at the top of this readme for both stable and snapshot (without the leading "v").

@@ -3,6 +3,7 @@ name: Scala CI
 on:
   push:
     branches: [ main ]
+    tags: ["*"]
   pull_request:
     branches: [ main ]
 
@@ -62,7 +63,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin' # See 'Supported distributions' for available options
+          distribution: 'temurin'
           java-version: '17'
 
       - name: Cache packages
@@ -84,12 +85,10 @@ jobs:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
 
-
   publish-release:
     needs: [test]
     runs-on: ubuntu-latest
     if: contains(github.ref, 'refs/tags/')
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -99,7 +98,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin' # See 'Supported distributions' for available options
+          distribution: 'temurin'
           java-version: '17'
 
       - name: Cache packages

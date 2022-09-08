@@ -82,11 +82,12 @@ trait RiscvAssemblerPublish extends CrossScalaModule with CiReleaseModule {
   def artifactName = "riscvassembler"
   def publishVersion: T[String] = T {
     val state = VcsVersion.vcsState()
-    val ver   = state.lastTag.get.split('.').take(2).mkString(".").replace("v", "")
-    val suffix =
-      if (state.commitsSinceLastTag == 0) ""
-      else "-SNAPSHOT"
-    ver + suffix
+    val ver   = state.lastTag.get
+    if (state.commitsSinceLastTag == 0) {
+      ver.replace("v", "")
+    } else {
+      ver.split('.').take(2).mkString(".").replace("v", "") + "-SNAPSHOT"
+    }
   }
   def pomSettings = PomSettings(
     description = "RiscvAssembler is a RISC-V assembler library to be used on Scala and Chisel HDL projects.",
