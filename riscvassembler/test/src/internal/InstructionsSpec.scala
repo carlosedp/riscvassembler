@@ -135,7 +135,7 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     val insts  = List("ADDI", "BEQ", "BGE")
     for ((pi, i) <- pinsts zip insts) {
       val inst = Instructions(pi)
-      inst.name should be(i)
+      inst.realName should be(i)
       inst.pseudo should be(true)
     }
   }
