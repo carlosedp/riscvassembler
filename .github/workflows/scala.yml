@@ -41,7 +41,7 @@ jobs:
       run: ./mill -k __.test
 
     - name: Run code coverage
-      run: ./mill riscvassembler.cover.test + riscvassembler.cover.scoverage.xmlReport
+      run: ./mill cover.test + cover.scoverage.xmlReport
       if: startsWith(matrix.jvm, '17')
 
     - name: Upload coverage to Codecov
