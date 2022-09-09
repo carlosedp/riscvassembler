@@ -4,7 +4,7 @@ import org.scalatest.flatspec._
 import org.scalatest.matchers.should._
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
 
-class RISCVAssemblerProgsSpec extends AnyFlatSpec with BeforeAndAfterEach with BeforeAndAfter with Matchers {
+class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with BeforeAndAfter with Matchers {
   val tmpdir = "tmpasm"
   var memoryfile: os.Path = _
 
@@ -45,6 +45,18 @@ class RISCVAssemblerProgsSpec extends AnyFlatSpec with BeforeAndAfterEach with B
     output should be(correct)
   }
 
+  it should "generate hex output for single I-type instruction" in {
+    val input =
+      """addi x0, x0, 0
+        """.stripMargin
+    val output = RISCVAssembler.fromString(input)
+
+    val correct =
+      """00000013""".stripMargin
+
+    output should be(correct)
+  }
+
   it should "generate hex output for multiple I-type instructions" in {
     val input =
       """addi x0, x0, 0
@@ -57,7 +69,7 @@ class RISCVAssemblerProgsSpec extends AnyFlatSpec with BeforeAndAfterEach with B
       """00000013
         |00108093
         |00210113
-        |""".stripMargin
+        |""".stripMargin.trim
 
     output should be(correct)
   }
@@ -75,7 +87,7 @@ class RISCVAssemblerProgsSpec extends AnyFlatSpec with BeforeAndAfterEach with B
       """00000013
         |00108093
         |00210113
-        |""".stripMargin
+        |""".stripMargin.trim
 
     output should be(correct)
   }
@@ -97,7 +109,7 @@ class RISCVAssemblerProgsSpec extends AnyFlatSpec with BeforeAndAfterEach with B
         |c1810193
         |83018213
         |3e820293
-        |""".stripMargin.toUpperCase
+        |""".stripMargin.toUpperCase.trim
 
     output should be(correct)
   }
@@ -114,7 +126,7 @@ class RISCVAssemblerProgsSpec extends AnyFlatSpec with BeforeAndAfterEach with B
       """00000013
         |00000013
         |00000263
-        |""".stripMargin
+        |""".stripMargin.trim
 
     output should be(correct)
   }
@@ -144,7 +156,7 @@ class RISCVAssemblerProgsSpec extends AnyFlatSpec with BeforeAndAfterEach with B
         |40310023
         |0500a203
         |001000ef
-        |""".stripMargin.toUpperCase
+        |""".stripMargin.toUpperCase.trim
 
     output should be(correct)
   }
@@ -171,21 +183,76 @@ class RISCVAssemblerProgsSpec extends AnyFlatSpec with BeforeAndAfterEach with B
         |c1810193
         |83018213
         |3e820293
-        |""".stripMargin.toUpperCase
+        |""".stripMargin.toUpperCase.trim
 
     output should be(correct)
   }
 
   it should "generate hex output from file source with labels" in {
     val prog = """
-    main:   lui x1, 0x30003000
-            addi x2, x0, 1
-    wait:   lw x3, 0(x1)
-            bne x2, x3, -4
-    cont:   sw x0, 0(x1)
-    wait2:  lw x3, 0(x1)
-            bne x2, x3, -4
-    cont2:  addi x3, x0, 2
+              main:   addi x1, x0, 1000
+              wait:   lw x3, 0(x1)
+                      jal x0, -4
+    """.stripMargin
+    os.write(memoryfile, prog)
+    val output = RISCVAssembler.fromFile(memoryfile.toString)
+
+    val correct =
+      """|3e800093
+         |0000a183
+         |ffdff06f
+         |""".stripMargin.toUpperCase.trim
+
+    output should be(correct)
+  }
+
+  it should "generate hex output from file source using labels inline" in {
+    val prog = """
+              main:   addi x1, x0, 1000
+              wait:   lw x3, 0(x1)
+                      jal x0, wait
+    """.stripMargin
+    os.write(memoryfile, prog)
+    val output = RISCVAssembler.fromFile(memoryfile.toString)
+
+    val correct =
+      """|3e800093
+         |0000a183
+         |ffdff06f
+         |""".stripMargin.toUpperCase.trim
+
+    output should be(correct)
+  }
+
+  it should "generate hex output from file source using labels on previous line" in {
+    val prog = """
+              main:   addi x1, x0, 1000
+              wait:
+                      lw x3, 0(x1)
+                      jal x0, wait
+    """.stripMargin
+    os.write(memoryfile, prog)
+    val output = RISCVAssembler.fromFile(memoryfile.toString)
+
+    val correct =
+      """|3e800093
+         |0000a183
+         |ffdff06f
+         |""".stripMargin.toUpperCase.trim
+
+    output should be(correct)
+  }
+
+  it should "generate hex output from file source using labels in same line" in {
+    val prog = """
+                 |main:   lui x1, 0x30003000
+                 |        addi x2, x0, 1
+                 |wait:   lw x3, 0(x1)
+                 |        bne x2, x3, wait
+                 |cont:   sw x0, 0(x1)
+                 |wait2:  lw x3, 0(x1)
+                 |        bne x2, x3, wait2
+                 |cont2:  addi x3, x0, 2
     """.stripMargin
     os.write(memoryfile, prog)
     val output = RISCVAssembler.fromFile(memoryfile.toString)
@@ -199,7 +266,7 @@ class RISCVAssemblerProgsSpec extends AnyFlatSpec with BeforeAndAfterEach with B
         |0000a183
         |fe311ee3
         |00200193
-        |""".stripMargin.toUpperCase
+        |""".stripMargin.toUpperCase.trim
 
     output should be(correct)
   }

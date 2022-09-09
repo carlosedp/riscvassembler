@@ -45,8 +45,6 @@ The library provides methods to generate hexadecimal machine code (memory files 
 
 The library can be seen in use in [ChiselV](https://github.com/carlosedp/chiselv), my RV32I core written in Chisel. The core tests use the library to generate [test data](https://github.com/carlosedp/chiselv/blob/e014da49ace5d5dd917eac3e3bf8ca6bbeadc244/chiselv/test/src/CPUSingleCycleInstructionSpec.scala#L71).
 
-Currently the lib does not support labels and jumping to defined labels as it doesn't calculate the addresses.
-
 The program can be a single line or multi-line statements(supports inline or line comments) and can be generated from a simple string, multi-line string or loaded from a file.
 
 ### Examples

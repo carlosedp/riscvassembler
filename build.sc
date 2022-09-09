@@ -20,7 +20,7 @@ import de.tobiasroeser.mill.vcs.version.VcsVersion
 import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.0`
 import io.github.davidgregory084.TpolecatModule
 
-val scalaVersions       = Seq("2.12.16", "2.13.8", "3.2.0")
+val scalaVersions       = Seq("2.12.16", "2.13.8", "3.1.3")
 val scalaNativeVersions = scalaVersions.map((_, "0.4.7"))
 
 object versions {

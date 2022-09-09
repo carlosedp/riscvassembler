@@ -1,5 +1,7 @@
 package com.carlosedp.riscvassembler
 
+import scala.util.Try
+
 import ObjectUtils._
 
 protected object InstructionParser {
@@ -8,12 +10,21 @@ protected object InstructionParser {
     *
     * @param input
     *   the assembly instruction string
+    * @param labelIndex
+    *   the index containing the label addresses
     * @return
     *   the opcode and opdata
     */
   def apply(
-    input: String
+    input:      String,
+    addr:       String = "0",
+    labelIndex: Map[String, String] = Map[String, String]()
   ): (Instruction, Map[String, Long]) = {
+    // The regex splits the input into groups (dependind on type):
+    // (0) - Instruction name
+    // (1) - Instruction rd
+    // (2) - Instruction rs1/imm
+    // (3) - Instruction rs2/rs
     var instructionParts = input.trim.split("[\\s,\\(\\)]+").filter(_.nonEmpty)
     val inst             = Instructions(instructionParts(0).toUpperCase)
     // Check here if it's a pseudo instruction
@@ -71,9 +82,11 @@ protected object InstructionParser {
         )
       }
       case InstructionTypes.B => {
-        val imm =
-          if (instructionParts(3).startsWith("0x")) BigInt(instructionParts(3).substring(2), 16).toLong
-          else instructionParts(3).toLong
+        val imm = instructionParts(3) match {
+          case i if i.startsWith("0x")      => BigInt(i.substring(2), 16).toLong
+          case i if Try(i.toLong).isFailure => (BigInt(labelIndex(i), 16) - BigInt(addr, 16)).toLong
+          case i                            => i.toLong
+        }
         (
           inst,
           Map(
@@ -84,9 +97,13 @@ protected object InstructionParser {
         )
       }
       case InstructionTypes.U | InstructionTypes.J => {
-        val imm =
-          if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
-          else instructionParts(2).toLong
+        val imm = instructionParts(2) match {
+          case i if i.startsWith("0x")      => BigInt(i.substring(2), 16).toLong
+          case i if Try(i.toLong).isFailure => (BigInt(labelIndex(i), 16) - BigInt(addr, 16)).toLong
+          case i                            => i.toLong
+        }
+        // println(s"Addr: $addr")
+        // println(s"IMM: $imm")
         (inst, Map("rd" -> RegMap(instructionParts(1)), "imm" -> imm))
       }
     }
@@ -97,17 +114,15 @@ protected object FillInstruction {
 
   /** Fills the instruction arguments based on instruction type
     *
-    * @param instType
-    *   the instruction type
-    * @param data
-    *   the received instruction arguments
     * @param op
     *   the instruction opcode and type
+    * @param data
+    *   the received instruction arguments
     * @return
     *   the filled instruction binary
     */
-  def apply(instType: InstructionTypes.InstType, data: Map[String, Long], op: Instruction): String =
-    instType match {
+  def apply(op: Instruction, data: Map[String, Long]): String =
+    op.instType match {
       case InstructionTypes.R => {
         val rd  = data("rd").toBinaryString.padZero(5)
         val rs1 = data("rs1").toBinaryString.padZero(5)

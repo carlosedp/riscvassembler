@@ -15,7 +15,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
       instType = InstructionTypes.R
     )
     val opdata = Map("rd" -> 1.toLong, "rs1" -> 2.toLong, "rs2" -> 3.toLong)
-    val output = FillInstruction(i.instType, opdata, i)
+    val output = FillInstruction(i, opdata)
     output should be("00000000001100010000000010110011")
   }
 
@@ -27,7 +27,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
       instType = InstructionTypes.I
     )
     val opdata = Map("rd" -> 1.toLong, "rs1" -> 2.toLong, "imm" -> 4095.toLong)
-    val output = FillInstruction(i.instType, opdata, i)
+    val output = FillInstruction(i, opdata)
     output should be("11111111111100010000000010010011")
   }
 
@@ -39,7 +39,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
       instType = InstructionTypes.B
     )
     val opdata = Map("rs1" -> 1L, "rs2" -> 2L, "imm" -> 4094L)
-    val output = FillInstruction(i.instType, opdata, i)
+    val output = FillInstruction(i, opdata)
     output should be("01111110001000001000111111100011")
   }
 
@@ -51,7 +51,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
       instType = InstructionTypes.S
     )
     val opdata = Map("rs1" -> 2L, "rs2" -> 3L, "imm" -> 1024L)
-    val output = FillInstruction(i.instType, opdata, i)
+    val output = FillInstruction(i, opdata)
     output should be("01000000001100010000000000100011")
   }
 
@@ -62,7 +62,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
       instType = InstructionTypes.U
     )
     val opdata = Map("rd" -> 2L, "imm" -> 0xc0000000L)
-    val output = FillInstruction(i.instType, opdata, i)
+    val output = FillInstruction(i, opdata)
     output should be("11000000000000000000000100110111")
   }
 
@@ -73,7 +73,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
       instType = InstructionTypes.J
     )
     val opdata = Map("rd" -> 1L, "imm" -> 2048L)
-    val output = FillInstruction(i.instType, opdata, i)
+    val output = FillInstruction(i, opdata)
     output should be("00000000000100000000000011101111")
   }
 
