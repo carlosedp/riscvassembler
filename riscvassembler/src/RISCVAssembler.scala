@@ -1,7 +1,7 @@
 package com.carlosedp.riscvassembler
 
-import scala.io.Source
 import scala.collection.mutable.ArrayBuffer
+import scala.io.Source
 
 object RISCVAssembler {
 
@@ -18,10 +18,8 @@ object RISCVAssembler {
     * @return
     *   the output hex string
     */
-  def fromFile(filename: String): String = {
-    val f = Source.fromFile(filename).getLines().mkString("\n")
-    fromString(f)
-  }
+  def fromFile(filename: String): String =
+    fromString(Source.fromFile(filename).getLines().mkString("\n"))
 
   /** Generate an hex string output fom the assembly string
     *
@@ -51,6 +49,16 @@ object RISCVAssembler {
       .mkString("\n")
   }
 
+  /** Parses input string lines to generate the list of instructions, addresses and label addresses
+    *
+    * @param input
+    *   input multiline assembly string
+    * @return
+    *   a tuple containing:
+    *   - `ArrayBuffer[String]` with the assembly instruction
+    *   - `ArrayBuffer[String]` with the assembly instruction address
+    *   - `Map[String, String]` with the assembly label addresses
+    */
   def parseLines(input: String): (ArrayBuffer[String], ArrayBuffer[String], Map[String, String]) = {
     val instList = input.split("\n").toList.filter(_.nonEmpty).filter(!_.trim().isEmpty()).map(_.trim)
     val ignores  = Seq(".", "/")

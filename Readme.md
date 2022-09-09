@@ -24,7 +24,7 @@ When using SBT, add the following lines to your `build.sbt` file.
 
 ```scala
 // Import libraries
-libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.0"
+libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.1.0"
 ```
 
 ### Mill
@@ -34,7 +34,7 @@ If you use `mill` build tool, I recommend adding the following way to your `buil
 ```scala
 // Add to your ivyDeps
 def ivyDeps = Agg(
-  ivy"com.carlosedp::riscvassembler:1.0"
+  ivy"com.carlosedp::riscvassembler:1.1.0"
   ...
 )
 ```
@@ -44,6 +44,8 @@ def ivyDeps = Agg(
 The library provides methods to generate hexadecimal machine code (memory files to be consumed by `readmemh` statements) from assembly input. Works similarly to `gcc + ld + objcopy + hexdump` as used on this [`Makefile`](https://github.com/carlosedp/chiselv/gcc/test/Makefile) or <https://riscvasm.lucasteske.dev> web app.
 
 The library can be seen in use in [ChiselV](https://github.com/carlosedp/chiselv), my RV32I core written in Chisel. The core tests use the library to generate [test data](https://github.com/carlosedp/chiselv/blob/e014da49ace5d5dd917eac3e3bf8ca6bbeadc244/chiselv/test/src/CPUSingleCycleInstructionSpec.scala#L71).
+
+Currently the lib does not support labels and jumping to defined labels as it doesn't calculate the addresses.
 
 The program can be a single line or multi-line statements(supports inline or line comments) and can be generated from a simple string, multi-line string or loaded from a file.
 
@@ -103,7 +105,7 @@ resolvers ++= Seq(
 )
 
 // and change the dependency to latest SNAPSHOT as:
-libraryDependencies += "com.carlosedp" %% "riscvassembler" % "0.10-SNAPSHOT"
+libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.0-SNAPSHOT"
 ```
 
 Confirm the latest versions displayed on the badges at the top of this readme for both stable and snapshot (without the leading "v").
@@ -124,7 +126,7 @@ def repositoriesTask = T.task { super.repositoriesTask() ++ Seq(
 ) }
 
 def ivyDeps = Agg(
-  ivy"com.carlosedp::riscvassembler:0.10-SNAPSHOT"
+  ivy"com.carlosedp::riscvassembler:1.0-SNAPSHOT"
   ...
 )
 ```

@@ -10,10 +10,12 @@ protected object InstructionParser {
     *
     * @param input
     *   the assembly instruction string
+    * @param addr
+    *   the assembly instruction address
     * @param labelIndex
     *   the index containing the label addresses
     * @return
-    *   the opcode and opdata
+    *   a tuple containing the Instruction and opdata
     */
   def apply(
     input:      String,
@@ -26,7 +28,7 @@ protected object InstructionParser {
     // (2) - Instruction rs1/imm
     // (3) - Instruction rs2/rs
     var instructionParts = input.trim.split("[\\s,\\(\\)]+").filter(_.nonEmpty)
-    val inst             = Instructions(instructionParts(0).toUpperCase)
+    val inst             = Instructions(instructionParts(0))
     // Check here if it's a pseudo instruction
     if (inst.pseudo) {
       instructionParts = PseudoInstructions(instructionParts)
@@ -102,8 +104,6 @@ protected object InstructionParser {
           case i if Try(i.toLong).isFailure => (BigInt(labelIndex(i), 16) - BigInt(addr, 16)).toLong
           case i                            => i.toLong
         }
-        // println(s"Addr: $addr")
-        // println(s"IMM: $imm")
         (inst, Map("rd" -> RegMap(instructionParts(1)), "imm" -> imm))
       }
     }
