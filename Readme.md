@@ -24,7 +24,7 @@ When using SBT, add the following lines to your `build.sbt` file.
 
 ```scala
 // Import libraries
-libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.1.0"
+libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.1.0"  //ReleaseVerSBT
 ```
 
 ### Mill
@@ -34,20 +34,29 @@ If you use `mill` build tool, I recommend adding the following way to your `buil
 ```scala
 // Add to your ivyDeps
 def ivyDeps = Agg(
-  ivy"com.carlosedp::riscvassembler:1.1.0"
+  ivy"com.carlosedp::riscvassembler:1.1.0"  //ReleaseVerMill
   ...
 )
 ```
 
-## Sample Code
+## Library Description and Sample Code
 
-The library provides methods to generate hexadecimal machine code (memory files to be consumed by `readmemh` statements) from assembly input. Works similarly to `gcc + ld + objcopy + hexdump` as used on this [`Makefile`](https://github.com/carlosedp/chiselv/gcc/test/Makefile) or <https://riscvasm.lucasteske.dev> web app.
+The library is pure Scala and provides methods to generate hexadecimal machine code (like memory files to be consumed by `readmemh` statements) from assembly input. It does not depend on Chisel or other libs and intent to work similarly to a simpler `gcc + ld + objcopy + hexdump` flow as used on this [`Makefile`](https://github.com/carlosedp/chiselv/gcc/test/Makefile) or <https://riscvasm.lucasteske.dev> web app.
 
 The library can be seen in use in [ChiselV](https://github.com/carlosedp/chiselv), my RV32I core written in Chisel. The core tests use the library to generate [test data](https://github.com/carlosedp/chiselv/blob/e014da49ace5d5dd917eac3e3bf8ca6bbeadc244/chiselv/test/src/CPUSingleCycleInstructionSpec.scala#L71).
 
-Currently the lib does not support labels and jumping to defined labels as it doesn't calculate the addresses.
+What the library <u>can and can not do</u>:
 
-The program can be a single line or multi-line statements(supports inline or line comments) and can be generated from a simple string, multi-line string or loaded from a file.
+- The library <u>can</u> generate hex(machine code) for most RV32 instructions;
+- It <u>can</u> accept either offsets or [labels](https://github.com/riscv-non-isa/riscv-asm-manual/blob/master/riscv-asm.md#labels) (in the same or previous line) for jump/branch instructions;
+- It <u>can</u> implement [some](./riscvassembler/src/internal/Instructions.scala#73) pseudo-instructions (more to come soon);
+- It <u>can</u> generate one machine code for each input asm instruction;
+- It <u>can not</u> decompose one pseudo-instruction to multiple instructions. Eg. `li x1, 0x80000000` to `addiw	ra,zero,1` + `ra,ra,0x1f` as gcc;
+- It <u>can not</u> validate your input asm code. Imm values might get truncated if not proper used;
+- It <u>can not</u> support [assembler relocation functions](https://github.com/riscv-non-isa/riscv-asm-manual/blob/master/riscv-asm.md#assembler-relocation-functions);
+- The library ignores all [asm directives](https://github.com/riscv-non-isa/riscv-asm-manual/blob/master/riscv-asm.md#pseudo-ops).
+
+The program can be a single line or multi-line statements(supports inline or full-line comments) and can be generated from a simple string, multi-line string or loaded from a file.
 
 ### Examples
 
@@ -105,7 +114,7 @@ resolvers ++= Seq(
 )
 
 // and change the dependency to latest SNAPSHOT as:
-libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.0-SNAPSHOT"
+libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.1-SNAPSHOT"  //SnapshotVerSBT
 ```
 
 Confirm the latest versions displayed on the badges at the top of this readme for both stable and snapshot (without the leading "v").
@@ -126,12 +135,12 @@ def repositoriesTask = T.task { super.repositoriesTask() ++ Seq(
 ) }
 
 def ivyDeps = Agg(
-  ivy"com.carlosedp::riscvassembler:1.0-SNAPSHOT"
+  ivy"com.carlosedp::riscvassembler:1.1-SNAPSHOT"  //SnapshotVerMill
   ...
 )
 ```
 
 The library has been published to Maven Central thru Sonatype:
 
-* <https://search.maven.org/artifact/com.carlosedp/riscvassembler>
-* <https://mvnrepository.com/artifact/com.carlosedp/riscvassembler>
+- <https://search.maven.org/artifact/com.carlosedp/riscvassembler>
+- <https://mvnrepository.com/artifact/com.carlosedp/riscvassembler>
