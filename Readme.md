@@ -45,15 +45,15 @@ The library is pure Scala and provides methods to generate hexadecimal machine c
 
 The library can be seen in use in [ChiselV](https://github.com/carlosedp/chiselv), my RV32I core written in Chisel. The core tests use the library to generate [test data](https://github.com/carlosedp/chiselv/blob/e014da49ace5d5dd917eac3e3bf8ca6bbeadc244/chiselv/test/src/CPUSingleCycleInstructionSpec.scala#L71).
 
-What the library <u>can and can not do</u>:
+What the library **can and can not do**:
 
-- The library <u>can</u> generate hex(machine code) for most RV32 instructions;
-- It <u>can</u> accept either offsets or [labels](https://github.com/riscv-non-isa/riscv-asm-manual/blob/master/riscv-asm.md#labels) (in the same or previous line) for jump/branch instructions;
-- It <u>can</u> implement [some](./riscvassembler/src/internal/Instructions.scala#73) pseudo-instructions (more to come soon);
-- It <u>can</u> generate one machine code for each input asm instruction;
-- It <u>can not</u> decompose one pseudo-instruction to multiple instructions. Eg. `li x1, 0x80000000` to `addiw	ra,zero,1` + `ra,ra,0x1f` as gcc;
-- It <u>can not</u> validate your input asm code. Imm values might get truncated if not proper used;
-- It <u>can not</u> support [assembler relocation functions](https://github.com/riscv-non-isa/riscv-asm-manual/blob/master/riscv-asm.md#assembler-relocation-functions);
+- The library **can** generate hex(machine code) for most RV32 instructions;
+- It **can** accept either offsets or [labels](https://github.com/riscv-non-isa/riscv-asm-manual/blob/master/riscv-asm.md#labels) (in the same or previous line) for jump/branch instructions;
+- It **can** implement [some](./riscvassembler/src/internal/Instructions.scala#73) pseudo-instructions (more to come soon);
+- It **can** generate one machine code for each input asm instruction;
+- It **can not** decompose one pseudo-instruction to multiple instructions. Eg. `li x1, 0x80000000` to `addiw	ra,zero,1` + `ra,ra,0x1f` as gcc;
+- It **can not** validate your input asm code. Imm values might get truncated if not proper used;
+- It **can not** support [assembler relocation functions](https://github.com/riscv-non-isa/riscv-asm-manual/blob/master/riscv-asm.md#assembler-relocation-functions);
 - The library ignores all [asm directives](https://github.com/riscv-non-isa/riscv-asm-manual/blob/master/riscv-asm.md#pseudo-ops).
 
 The program can be a single line or multi-line statements(supports inline or full-line comments) and can be generated from a simple string, multi-line string or loaded from a file.
