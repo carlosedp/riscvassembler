@@ -82,11 +82,10 @@ trait RiscvAssemblerPublish extends CrossScalaModule with CiReleaseModule {
   def artifactName = "riscvassembler"
   def publishVersion: T[String] = T {
     val state = VcsVersion.vcsState()
-    val ver   = state.lastTag.get
     if (state.commitsSinceLastTag == 0) {
-      ver.replace("v", "")
+      state.lastTag.get.replace("v", "")
     } else {
-      val v = ver.split('.')
+      val v = state.lastTag.get.split('.')
       s"${v(0)}.${(v(1).toInt) + 1}".replace("v", "") + "-SNAPSHOT"
     }
   }
