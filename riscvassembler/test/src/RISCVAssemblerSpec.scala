@@ -47,12 +47,16 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
 
   it should "generate hex output for single I-type instruction" in {
     val input =
-      """addi x0, x0, 0
+      """
+        addi x0, x0, 0
         """.stripMargin
-    val output = RISCVAssembler.fromString(input)
+    val output = RISCVAssembler.fromString(input).trim
 
     val correct =
-      """00000013""".stripMargin
+      """
+        |00000013
+        |
+      """.stripMargin.trim
 
     output should be(correct)
   }
@@ -63,14 +67,14 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
          addi x1, x1, 1
          addi x2, x2, 2
         """.stripMargin
-    val output = RISCVAssembler.fromString(input)
+    val output = RISCVAssembler.fromString(input).trim
 
     val correct =
       """
         |00000013
         |00108093
         |00210113
-        |""".stripMargin.trim
+        """.stripMargin.trim
 
     output should be(correct)
   }
@@ -82,15 +86,16 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
         addi x1, x1, 1
         addi x2, x2, 2
         """.stripMargin
-    val output = RISCVAssembler.fromString(input)
+    val output = RISCVAssembler.fromString(input).trim
 
     val correct =
       """
         |00000013
         |00108093
         |00210113
-        |""".stripMargin.trim
-
+        """.stripMargin.trim
+    println(output)
+    println(correct)
     output should be(correct)
   }
 
@@ -103,7 +108,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
       addi x4 , x3,  -2000  /* x4  = 0    0x000 */
       addi x5 , x4,   1000  /* x5  = 1000 0x3E8 */
         """.stripMargin
-    val output = RISCVAssembler.fromString(input)
+    val output = RISCVAssembler.fromString(input).trim
 
     val correct =
       """
@@ -124,13 +129,13 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
         nop
         beqz x0, +4
         """.stripMargin
-    val output = RISCVAssembler.fromString(input)
+    val output = RISCVAssembler.fromString(input).trim
     val correct =
       """
         |00000013
         |00000013
         |00000263
-        |""".stripMargin.trim
+        |""".stripMargin.toUpperCase.trim
 
     output should be(correct)
   }
@@ -148,7 +153,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
     jal x1, +2048
     """.stripMargin
     os.write(memoryfile, prog)
-    val output = RISCVAssembler.fromFile(memoryfile.toString)
+    val output = RISCVAssembler.fromFile(memoryfile.toString).trim
 
     val correct =
       """
@@ -180,7 +185,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
       addi x5 , x4,   1000  /* x5  = 1000 0x3E8 */
     """.stripMargin
     os.write(memoryfile, prog)
-    val output = RISCVAssembler.fromFile(memoryfile.toString)
+    val output = RISCVAssembler.fromFile(memoryfile.toString).trim
 
     val correct =
       """
@@ -201,7 +206,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
                       jal x0, -4
     """.stripMargin
     os.write(memoryfile, prog)
-    val output = RISCVAssembler.fromFile(memoryfile.toString)
+    val output = RISCVAssembler.fromFile(memoryfile.toString).trim
 
     val correct =
       """
@@ -220,7 +225,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
                       jal x0, wait
     """.stripMargin
     os.write(memoryfile, prog)
-    val output = RISCVAssembler.fromFile(memoryfile.toString)
+    val output = RISCVAssembler.fromFile(memoryfile.toString).trim
 
     val correct =
       """
@@ -240,7 +245,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
                       jal x0, wait
     """.stripMargin
     os.write(memoryfile, prog)
-    val output = RISCVAssembler.fromFile(memoryfile.toString)
+    val output = RISCVAssembler.fromFile(memoryfile.toString).trim
 
     val correct =
       """
@@ -264,7 +269,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
                  cont2:  addi x3, x0, 2
     """.stripMargin
     os.write(memoryfile, prog)
-    val output = RISCVAssembler.fromFile(memoryfile.toString)
+    val output = RISCVAssembler.fromFile(memoryfile.toString).trim
 
     val correct =
       """
@@ -291,7 +296,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
                  tgt2: addi x1, x2, 10
     """.stripMargin
     os.write(memoryfile, prog)
-    val output = RISCVAssembler.fromFile(memoryfile.toString)
+    val output = RISCVAssembler.fromFile(memoryfile.toString).trim
 
     val correct =
       """
