@@ -7,7 +7,6 @@ For more information, check the [scaladoc](https://www.javadoc.io/doc/com.carlos
 
 [![Scala version support](https://index.scala-lang.org/carlosedp/riscvassembler/riscvassembler/latest-by-scala-version.svg?color=blue)](https://index.scala-lang.org/carlosedp/riscvassembler/riscvassembler)
 [![Scaladoc](https://www.javadoc.io/badge/com.carlosedp/riscvassembler_2.13.svg?color=blue&label=Scaladoc)](https://javadoc.io/doc/com.carlosedp/riscvassembler_2.13/latest)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.carlosedp/riscvassembler_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.carlosedp/riscvassembler_2.13)
 [![Sonatype Snapshots](https://img.shields.io/nexus/s/com.carlosedp/riscvassembler_2.13?server=https%3A%2F%2Fs01.oss.sonatype.org)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/carlosedp/)
 <br>
 [![Scala CI](https://github.com/carlosedp/riscvassembler/actions/workflows/scala.yml/badge.svg)](https://github.com/carlosedp/riscvassembler/actions/workflows/scala.yml)
