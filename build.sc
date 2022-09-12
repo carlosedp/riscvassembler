@@ -86,7 +86,8 @@ trait RiscvAssemblerPublish extends CrossScalaModule with CiReleaseModule {
     if (state.commitsSinceLastTag == 0) {
       ver.replace("v", "")
     } else {
-      ver.split('.').take(2).mkString(".").replace("v", "") + "-SNAPSHOT"
+      val v = ver.split('.')
+      s"${v(0)}.${(v(1).toInt) + 1}".replace("v", "") + "-SNAPSHOT"
     }
   }
   def pomSettings = PomSettings(
