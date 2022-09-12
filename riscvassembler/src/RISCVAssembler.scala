@@ -46,7 +46,7 @@ object RISCVAssembler {
     val (instructions, addresses, labels) = parseLines(input)
     (instructions zip addresses).map { case (i: String, a: String) => binOutput(i, a, labels) }
       .map(GenHex(_))
-      .mkString("\n")
+      .mkString("\n") + "\n"
   }
 
   /** Parses input string lines to generate the list of instructions, addresses and label addresses
