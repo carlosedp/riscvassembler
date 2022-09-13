@@ -56,7 +56,7 @@ object riscvassembler extends Module {
 object cover extends RiscvAssemblerModule with ScoverageModule {
   def millSourcePath    = super.millSourcePath / "riscvassembler" / "riscvassembler"
   def crossScalaVersion = scalaVersions.find(_.contains("2.13")).get
-  def scoverageVersion  = "1.4.11"
+  def scoverageVersion  = "2.0.2"
   object test extends ScoverageTests with RiscvAssemblerTest {}
 }
 
