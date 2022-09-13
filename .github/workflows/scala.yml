@@ -105,13 +105,6 @@ jobs:
         uses: coursier/cache-action@v6
         id: coursier-cache
 
-      - name: Import GPG key
-        id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v5
-        with:
-          gpg_private_key: ${{ secrets.PGP_SECRET }}
-          passphrase: ${{ secrets.PGP_PASSPHRASE }}
-
       - name: Publish
         run: ./mill -i io.kipp.mill.ci.release.ReleaseModule/publishAll
         env:

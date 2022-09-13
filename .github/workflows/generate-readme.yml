@@ -14,8 +14,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Sleep for 10 minutes while repository metadata is updated
-        run: sleep 10m
+      - name: Sleep for 20 minutes while repository metadata is updated
+        run: sleep 20m
         shell: bash
 
       - name: Generate Readme from template

@@ -80,6 +80,22 @@ protected object Instructions {
       pseudo = true
     ),
     Instruction(
+      name = "MV",
+      realName = "ADDI",
+      funct3 = "000",
+      opcode = "0010011",
+      instType = InstructionTypes.I,
+      pseudo = true
+    ),
+    Instruction(
+      name = "BNEZ",
+      realName = "BNE",
+      funct3 = "001",
+      opcode = "1100011",
+      instType = InstructionTypes.B,
+      pseudo = true
+    ),
+    Instruction(
       name = "BEQZ",
       realName = "BEQ",
       funct3 = "000",
@@ -94,6 +110,71 @@ protected object Instructions {
       opcode = "1100011",
       instType = InstructionTypes.B,
       pseudo = true
+    ),
+    Instruction(
+      name = "BLEZ",
+      realName = "BGE",
+      funct3 = "101",
+      opcode = "1100011",
+      instType = InstructionTypes.B,
+      pseudo = true
+    ),
+    Instruction(
+      name = "BLTZ",
+      realName = "BLT",
+      funct3 = "100",
+      opcode = "1100011",
+      instType = InstructionTypes.B,
+      pseudo = true
+    ),
+    Instruction(
+      name = "BGTZ",
+      realName = "BLT",
+      funct3 = "100",
+      opcode = "1100011",
+      instType = InstructionTypes.B,
+      pseudo = true
+    ),
+    Instruction(
+      name = "BGT",
+      realName = "BLT",
+      funct3 = "100",
+      opcode = "1100011",
+      instType = InstructionTypes.B,
+      pseudo = true
+    ),
+    Instruction(
+      name = "BLE",
+      realName = "BGE",
+      funct3 = "101",
+      opcode = "1100011",
+      instType = InstructionTypes.B,
+      pseudo = true
+    ),
+    Instruction(
+      name = "BGTU",
+      realName = "BLTU",
+      funct3 = "110",
+      opcode = "1100011",
+      instType = InstructionTypes.B,
+      pseudo = true
+    ),
+    Instruction(
+      name = "BLEU",
+      realName = "BGEU",
+      funct3 = "111",
+      opcode = "1100011",
+      instType = InstructionTypes.B,
+      pseudo = true
+    ),
+    Instruction(name = "J", realName = "JAL", opcode = "1101111", instType = InstructionTypes.J, pseudo = true),
+    Instruction(
+      name = "RET",
+      realName = "JALR",
+      funct3 = "000",
+      opcode = "1100111",
+      instType = InstructionTypes.I,
+      pseudo = true
     )
   )
 }
@@ -103,7 +184,18 @@ protected object PseudoInstructions {
     instructionData(0).toUpperCase match {
       // Map received params to the corresponding RISC-V instruction
       case "NOP"  => { Array("addi", "x0", "x0", "0") }
+      case "MV"   => { Array("addi", instructionData(1), instructionData(2), "0") }
       case "BEQZ" => { Array("beq", instructionData(1), "x0", instructionData(2)) }
+      case "BNEZ" => { Array("bne", instructionData(1), "x0", instructionData(2)) }
+      case "BLEZ" => { Array("bge", "x0", instructionData(1), instructionData(2)) }
       case "BGEZ" => { Array("bge", instructionData(1), "x0", instructionData(2)) }
+      case "BLTZ" => { Array("blt", instructionData(1), "x0", instructionData(2)) }
+      case "BGTZ" => { Array("blt", "x0", instructionData(1), instructionData(2)) }
+      case "BGT"  => { Array("blt", instructionData(2), instructionData(1), instructionData(3)) }
+      case "BLE"  => { Array("bge", instructionData(2), instructionData(1), instructionData(3)) }
+      case "BGTU" => { Array("bltu", instructionData(2), instructionData(1), instructionData(3)) }
+      case "BLEU" => { Array("bgeu", instructionData(2), instructionData(1), instructionData(3)) }
+      case "J"    => { Array("jal", "x0", instructionData(1)) }
+      case "RET"  => { Array("jalr", "x0", "x1", "0") }
     }
 }
