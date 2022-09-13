@@ -94,8 +94,6 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
         |00108093
         |00210113
         """.stripMargin.trim
-    println(output)
-    println(correct)
     output should be(correct)
   }
 
