@@ -23,3 +23,12 @@ pull_request_rules:
     actions:
       merge:
         method: squash
+
+  - name: Label lib PRs
+    conditions:
+      - base=main
+      - author=scala-steward
+    actions:
+      label:
+        add:
+          - dependencies
