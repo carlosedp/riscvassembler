@@ -97,6 +97,33 @@ val output = RISCVAssembler.fromString(input)
 
 Which can be used as the input to tests in a RISC-V Core.
 
+## Command line tool
+
+The library also contains a command line tool that generates the machine code from strings or input files.
+
+```sh
+❯ rvasmcli --help
+RISC-V Assembler for Scala
+main
+This tool parses input strings or files in RISC-V assembly language generating hexadecimal machine
+code.
+  -a --assembly <str>  Assembly instruction string in quotes(can be multiple instructions separated
+                       by `\n`
+  -f --file-in <str>   Assembly file input
+  -o --file-out <str>  If defined, output will be redirected to this file (overwrite if exists)
+
+❯ rvasmcli -a "addi x1, x2, 32\njal x0, 128"
+RISC-V Assembler for Scala
+Generated Output:
+
+02010093
+0800006F
+```
+
+To generate the binary yourself, use `./mill bin` and the native executable will be generated and it's name printed on screen.
+
+Native binaries for major OS/Arch combinations will be published soon.
+
 ### Using Snapshot versions
 
 Snapshot versions are released on every commit to main branch and might be broken (check CI). If you want to use it, configure as follows.
