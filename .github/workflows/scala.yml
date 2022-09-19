@@ -62,7 +62,7 @@ jobs:
       id: coursier-cache
 
     - name: Run code coverage
-      run: ./mill cover.test + cover.scoverage.xmlReport
+      run: ./mill coverage
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
