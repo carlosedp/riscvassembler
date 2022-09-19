@@ -57,6 +57,9 @@ object rvasmcli extends RiscvAssemblerModule with ScalaNativeModule {
   def ivyDeps = super.ivyDeps() ++ Agg(
     ivy"com.lihaoyi::mainargs::${versions.mainargs}"
   )
+  def nativeLink = T {
+    os.Path(scalaNativeWorker().nativeLink(nativeConfig(), (T.dest / this.toString).toIO))
+  }
   def crossScalaVersion  = "2.13.8"
   def scalaNativeVersion = "0.4.7"
   def mainClass          = Some("com.carlosedp.rvasmcli.Main")
