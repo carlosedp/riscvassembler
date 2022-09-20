@@ -15,7 +15,7 @@ case class Instruction(
   hasOffset: Boolean = false,
   isCsr:     Boolean = false,
   fixed:     String = "",
-  pseudo:    Boolean = false
+  pseudo:    Boolean = false,
 )
 
 protected object Instructions {
@@ -77,7 +77,7 @@ protected object Instructions {
       funct3 = "000",
       opcode = "0010011",
       instType = InstructionTypes.I,
-      pseudo = true
+      pseudo = true,
     ),
     Instruction(
       name = "MV",
@@ -85,7 +85,7 @@ protected object Instructions {
       funct3 = "000",
       opcode = "0010011",
       instType = InstructionTypes.I,
-      pseudo = true
+      pseudo = true,
     ),
     Instruction(
       name = "BNEZ",
@@ -93,7 +93,7 @@ protected object Instructions {
       funct3 = "001",
       opcode = "1100011",
       instType = InstructionTypes.B,
-      pseudo = true
+      pseudo = true,
     ),
     Instruction(
       name = "BEQZ",
@@ -101,7 +101,7 @@ protected object Instructions {
       funct3 = "000",
       opcode = "1100011",
       instType = InstructionTypes.B,
-      pseudo = true
+      pseudo = true,
     ),
     Instruction(
       name = "BGEZ",
@@ -109,7 +109,7 @@ protected object Instructions {
       funct3 = "101",
       opcode = "1100011",
       instType = InstructionTypes.B,
-      pseudo = true
+      pseudo = true,
     ),
     Instruction(
       name = "BLEZ",
@@ -117,7 +117,7 @@ protected object Instructions {
       funct3 = "101",
       opcode = "1100011",
       instType = InstructionTypes.B,
-      pseudo = true
+      pseudo = true,
     ),
     Instruction(
       name = "BLTZ",
@@ -125,7 +125,7 @@ protected object Instructions {
       funct3 = "100",
       opcode = "1100011",
       instType = InstructionTypes.B,
-      pseudo = true
+      pseudo = true,
     ),
     Instruction(
       name = "BGTZ",
@@ -133,7 +133,7 @@ protected object Instructions {
       funct3 = "100",
       opcode = "1100011",
       instType = InstructionTypes.B,
-      pseudo = true
+      pseudo = true,
     ),
     Instruction(
       name = "BGT",
@@ -141,7 +141,7 @@ protected object Instructions {
       funct3 = "100",
       opcode = "1100011",
       instType = InstructionTypes.B,
-      pseudo = true
+      pseudo = true,
     ),
     Instruction(
       name = "BLE",
@@ -149,7 +149,7 @@ protected object Instructions {
       funct3 = "101",
       opcode = "1100011",
       instType = InstructionTypes.B,
-      pseudo = true
+      pseudo = true,
     ),
     Instruction(
       name = "BGTU",
@@ -157,7 +157,7 @@ protected object Instructions {
       funct3 = "110",
       opcode = "1100011",
       instType = InstructionTypes.B,
-      pseudo = true
+      pseudo = true,
     ),
     Instruction(
       name = "BLEU",
@@ -165,7 +165,7 @@ protected object Instructions {
       funct3 = "111",
       opcode = "1100011",
       instType = InstructionTypes.B,
-      pseudo = true
+      pseudo = true,
     ),
     Instruction(name = "J", realName = "JAL", opcode = "1101111", instType = InstructionTypes.J, pseudo = true),
     Instruction(
@@ -174,8 +174,8 @@ protected object Instructions {
       funct3 = "000",
       opcode = "1100111",
       instType = InstructionTypes.I,
-      pseudo = true
-    )
+      pseudo = true,
+    ),
   )
 }
 

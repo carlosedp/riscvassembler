@@ -143,85 +143,85 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
   it should "map NOP Pseudo Instruction" in {
     val i = PseudoInstructions(Array("nop"))
     i should be(
-      Array("addi", "x0", "x0", "0")
+      Array("addi", "x0", "x0", "0"),
     )
   }
   it should "map MV Pseudo Instruction" in {
     val i = PseudoInstructions(Array("mv", "x1", "x2"))
     i should be(
-      Array("addi", "x1", "x2", "0")
+      Array("addi", "x1", "x2", "0"),
     )
   }
   it should "map BEQZ Pseudo Instruction" in {
     val i = PseudoInstructions(Array("beqz", "x1", "4"))
     i should be(
-      Array("beq", "x1", "x0", "4")
+      Array("beq", "x1", "x0", "4"),
     )
   }
   it should "map BNEZ Pseudo Instruction" in {
     val i = PseudoInstructions(Array("bnez", "x1", "4"))
     i should be(
-      Array("bne", "x1", "x0", "4")
+      Array("bne", "x1", "x0", "4"),
     )
   }
   it should "map BLEZ Pseudo Instruction" in {
     val i = PseudoInstructions(Array("blez", "x1", "4"))
     i should be(
-      Array("bge", "x0", "x1", "4")
+      Array("bge", "x0", "x1", "4"),
     )
   }
   it should "map BGEZ Pseudo Instruction" in {
     val i = PseudoInstructions(Array("bgez", "x1", "4"))
     i should be(
-      Array("bge", "x1", "x0", "4")
+      Array("bge", "x1", "x0", "4"),
     )
   }
   it should "map BLTZ Pseudo Instruction" in {
     val i = PseudoInstructions(Array("bltz", "x1", "4"))
     i should be(
-      Array("blt", "x1", "x0", "4")
+      Array("blt", "x1", "x0", "4"),
     )
   }
   it should "map BGTZ Pseudo Instruction" in {
     val i = PseudoInstructions(Array("bgtz", "x1", "4"))
     i should be(
-      Array("blt", "x0", "x1", "4")
+      Array("blt", "x0", "x1", "4"),
     )
   }
   it should "map BGT Pseudo Instruction" in {
     val i = PseudoInstructions(Array("bgt", "x1", "x2", "4"))
     i should be(
-      Array("blt", "x2", "x1", "4")
+      Array("blt", "x2", "x1", "4"),
     )
   }
   it should "map BLE Pseudo Instruction" in {
     val i = PseudoInstructions(Array("ble", "x1", "x2", "4"))
     i should be(
-      Array("bge", "x2", "x1", "4")
+      Array("bge", "x2", "x1", "4"),
     )
   }
   it should "map BGTU Pseudo Instruction" in {
     val i = PseudoInstructions(Array("bgtu", "x1", "x2", "4"))
     i should be(
-      Array("bltu", "x2", "x1", "4")
+      Array("bltu", "x2", "x1", "4"),
     )
   }
   it should "map BLEU Pseudo Instruction" in {
     val i = PseudoInstructions(Array("bleu", "x1", "x2", "4"))
     i should be(
-      Array("bgeu", "x2", "x1", "4")
+      Array("bgeu", "x2", "x1", "4"),
     )
   }
   it should "map J Pseudo Instruction" in {
     val i = PseudoInstructions(Array("j", "4"))
     i should be(
-      Array("jal", "x0", "4")
+      Array("jal", "x0", "4"),
     )
   }
   it should "map RET Pseudo Instruction" in {
     val i = PseudoInstructions(Array("ret"))
     i should be(
-      Array("jalr", "x0", "x1", "0")
+      Array("jalr", "x0", "x1", "0"),
     )
   }
 }

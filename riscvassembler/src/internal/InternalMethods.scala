@@ -20,7 +20,7 @@ protected object InstructionParser {
   def apply(
     input:      String,
     addr:       String = "0",
-    labelIndex: Map[String, String] = Map[String, String]()
+    labelIndex: Map[String, String] = Map[String, String](),
   ): (Instruction, Map[String, Long]) = {
     // The regex splits the input into groups (dependind on type):
     // (0) - Instruction name
@@ -40,8 +40,8 @@ protected object InstructionParser {
           Map(
             "rd"  -> RegMap(instructionParts(1)),
             "rs1" -> RegMap(instructionParts(2)),
-            "rs2" -> RegMap(instructionParts(3))
-          )
+            "rs2" -> RegMap(instructionParts(3)),
+          ),
         )
       case InstructionTypes.I => {
         if (inst.hasOffset) {
@@ -53,8 +53,8 @@ protected object InstructionParser {
             Map(
               "rd"  -> RegMap(instructionParts(1)),
               "rs1" -> RegMap(instructionParts(3)),
-              "imm" -> imm
-            )
+              "imm" -> imm,
+            ),
           )
         } else {
           val imm =
@@ -65,8 +65,8 @@ protected object InstructionParser {
             Map(
               "rd"  -> RegMap(instructionParts(1)),
               "rs1" -> RegMap(instructionParts(2)),
-              "imm" -> imm
-            )
+              "imm" -> imm,
+            ),
           )
         }
       }
@@ -79,8 +79,8 @@ protected object InstructionParser {
           Map(
             "rs2" -> RegMap(instructionParts(1)),
             "rs1" -> RegMap(instructionParts(3)),
-            "imm" -> imm
-          )
+            "imm" -> imm,
+          ),
         )
       }
       case InstructionTypes.B => {
@@ -94,8 +94,8 @@ protected object InstructionParser {
           Map(
             "rs1" -> RegMap(instructionParts(1)),
             "rs2" -> RegMap(instructionParts(2)),
-            "imm" -> imm
-          )
+            "imm" -> imm,
+          ),
         )
       }
       case InstructionTypes.U | InstructionTypes.J => {
@@ -178,7 +178,7 @@ protected object GenHex {
     *   the hex string of the instruction
     */
   def apply(
-    input: String
+    input: String,
   ): String = {
     // Make this 64bit in the future
     val x = BigInt(input, 2).toLong
@@ -196,7 +196,7 @@ protected object RegMap {
     *   the register number
     */
   def apply(
-    input: String
+    input: String,
   ): Long =
     input match {
       case "x0" | "zero"      => 0

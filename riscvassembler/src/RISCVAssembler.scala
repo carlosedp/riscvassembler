@@ -117,7 +117,7 @@ object RISCVAssembler {
     instruction: String,
     address:     String = "0",
     labelIndex:  Map[String, String] = Map[String, String](),
-    width:       Int = 32
+    width:       Int = 32,
   ): String = {
     val (op, opdata) = InstructionParser(instruction, address, labelIndex)
     FillInstruction(op, opdata).takeRight(width)
