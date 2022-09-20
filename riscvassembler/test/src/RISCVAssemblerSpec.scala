@@ -2,28 +2,16 @@ package com.carlosedp.riscvassembler
 
 import org.scalatest.flatspec._
 import org.scalatest.matchers.should._
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 
-class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with BeforeAndAfter with Matchers {
-  val tmpdir = "tmpasm"
+class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with BeforeAndAfterAll with Matchers {
+  val tmpdir = os.pwd / "tmphex"
   var memoryfile: os.Path = _
 
-  // Create a temporary directory before executing tests and delete it after
-  before {
-    os.makeDir(os.pwd / tmpdir)
-
-  }
-  after {
-    try {
-      os.remove(os.pwd / tmpdir)
-    } catch {
-      case _: Exception => // not empty, ignore
-    }
-  }
-
-  // Create a random temporary file for the asm source and delete it after use
+  override def beforeAll(): Unit = os.makeDir.all(tmpdir)
+  override def afterAll():  Unit = { val _ = scala.util.Try(os.remove(tmpdir)) }
   override def beforeEach(): Unit =
-    memoryfile = os.pwd / tmpdir / (scala.util.Random.alphanumeric.filter(_.isLetter).take(15).mkString + ".s")
+    memoryfile = tmpdir / (scala.util.Random.alphanumeric.filter(_.isLetter).take(15).mkString + ".s")
   override def afterEach(): Unit =
     os.remove.all(memoryfile)
 

@@ -75,7 +75,6 @@ object rvasmcli extends RiscvAssemblerModule with ScalaNativeModule {
 
 // Create a project on pinned Scala version for coverage, fmt and fix
 object lint extends ScoverageReport with ScalafixModule with ScalafmtModule {
-  def millSourcePath   = super.millSourcePath / os.up
   def scalaVersion     = scalaVersions.find(_.contains("2.13")).get
   def scoverageVersion = versions.scoverage
   def scalafixIvyDeps  = Agg(ivy"com.github.liancheng::organize-imports:${versions.organizeimports}")
@@ -84,13 +83,13 @@ object lint extends ScoverageReport with ScalafixModule with ScalafmtModule {
   }
 
   object riscvassembler extends RiscvAssemblerModule with ScoverageModule {
-    def millSourcePath    = super.millSourcePath / "riscvassembler"
+    def millSourcePath    = super.millSourcePath / os.up / "riscvassembler"
     def scoverageVersion  = versions.scoverage
     def crossScalaVersion = scalaVersions.find(_.contains("2.13")).get
     object test extends ScoverageTests with RiscvAssemblerTest {}
   }
   object rvasmcli extends RiscvAssemblerModule with ScoverageModule {
-    def millSourcePath    = super.millSourcePath / "rvasmcli"
+    def millSourcePath    = super.millSourcePath / os.up / "rvasmcli"
     def scoverageVersion  = versions.scoverage
     def crossScalaVersion = scalaVersions.find(_.contains("2.13")).get
     def sources = T.sources(

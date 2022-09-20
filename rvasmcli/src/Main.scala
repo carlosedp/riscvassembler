@@ -51,7 +51,6 @@ object Main {
     }
 
   def main(args: Array[String]): Unit = {
-    val res = ParserForMethods(this).runOrExit(args.toIndexedSeq)
-    println(res)
+    val _ = ParserForMethods(this).runOrExit(args.toIndexedSeq)
   }
 }
