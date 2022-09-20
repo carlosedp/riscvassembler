@@ -162,7 +162,7 @@ def deps(implicit ev: eval.Evaluator) = T.command {
   mill.scalalib.Dependency.showUpdates(ev)
 }
 def coverage(implicit ev: eval.Evaluator) = T.command {
-  runTasks(Seq("lint.__.test", "lint.htmlReportAll", "lint.xmlReportAll"))
+  runTasks(Seq("lint.__.test", "lint.htmlReportAll", "lint.xmlReportAll", "lint.consoleReportAll"))
 }
 def pub(implicit ev: eval.Evaluator) = T.command {
   runTasks(Seq("io.kipp.mill.ci.release.ReleaseModule/publishAll"))
