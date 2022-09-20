@@ -54,23 +54,25 @@ object riscvassembler extends Module {
   }
 }
 
-object rvasmcli extends RiscvAssemblerModule with ScalaNativeModule {
+object rvasmcli extends ScalaModule with ScalaNativeModule {
   def sources = T.sources(
-    super.millSourcePath / "riscvassembler" / "src",
-    super.millSourcePath / "rvasmcli" / "src",
+    super.millSourcePath / os.up / "riscvassembler" / "src",
+    super.millSourcePath / os.up / "rvasmcli" / "src",
   )
   def ivyDeps = super.ivyDeps() ++ Agg(
+    ivy"com.lihaoyi::os-lib::${versions.oslib}",
     ivy"com.lihaoyi::mainargs::${versions.mainargs}",
   )
   def nativeLink = T { // Set the output binaty file name
     os.Path(scalaNativeWorker().nativeLink(nativeConfig(), (T.dest / this.toString).toIO))
   }
   // def nativeBinaryName   = this.toString
-  def crossScalaVersion  = scalaVersions.find(_.contains("2.13")).get
+  def scalaVersion       = scalaVersions.find(_.contains("2.13")).get
   def scalaNativeVersion = scalaNativeVersions(0)._2
   def mainClass          = Some("com.carlosedp.rvasmcli.Main")
   def logLevel           = NativeLogLevel.Info
   def releaseMode        = ReleaseMode.Debug
+  object test extends Tests with RiscvAssemblerTest {}
 }
 
 // Create a project on pinned Scala version for coverage, fmt and fix
@@ -111,7 +113,6 @@ trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule {
 
 trait RiscvAssemblerTest extends ScalaModule with TestModule.ScalaTest {
   def ivyDeps = super.ivyDeps() ++ Agg(
-    // ivy"com.lihaoyi::os-lib::${versions.oslib}",
     ivy"org.scalatest::scalatest::${versions.scalatest}",
   )
 }

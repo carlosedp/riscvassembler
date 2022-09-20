@@ -4,7 +4,6 @@ import com.carlosedp.riscvassembler._
 import mainargs.{main, arg, ParserForMethods}
 
 object Main {
-  println("RISC-V Assembler for Scala")
   @main(
     name = "main",
     doc = "This tool parses input strings or files in RISC-V assembly language generating hexadecimal machine code.",
@@ -24,33 +23,38 @@ object Main {
       doc = "If defined, output will be redirected to this file (overwrite if exists)",
     )
     fileOut: String = "",
-  ) =
+  ): String = {
+    var output = ""
+    var hex    = ""
     if (!assembly.isEmpty()) {
-      var output = ""
       assembly.split("\\\\n").foreach { l =>
-        output += RISCVAssembler.fromString(l.trim)
+        hex = RISCVAssembler.fromString(l.trim)
       }
       if (fileOut.isEmpty()) {
-        println("Generated Output: \n")
-        println(output)
+        output += "Generated Output: \n"
+        output += hex
       } else {
-        os.write.over(os.pwd / fileOut, output)
-        println(s"Generated $fileOut")
+        os.write.over(os.pwd / fileOut, hex)
+        output = s"Generated $fileOut"
       }
     } else if (!fileIn.isEmpty()) {
-      val output = RISCVAssembler.fromFile(fileIn)
+      hex = RISCVAssembler.fromFile(fileIn)
       if (fileOut.isEmpty()) {
-        println("Generated Output: \n")
-        println(output)
+        output += "Generated Output: \n"
+        output += hex
       } else {
-        os.write.over(os.pwd / fileOut, output)
-        println(s"Generated $fileOut")
+        os.write.over(os.pwd / fileOut, hex)
+        output = s"Generated $fileOut"
       }
     } else {
-      println("Run tool with --help for options")
+      output = "Run tool with --help for options"
     }
+    output
+  }
 
   def main(args: Array[String]): Unit = {
-    val _ = ParserForMethods(this).runOrExit(args.toIndexedSeq)
+    println("RISC-V Assembler for Scala")
+    val out = ParserForMethods(this).runOrExit(args.toIndexedSeq)
+    println(out)
   }
 }
