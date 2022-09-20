@@ -7,13 +7,13 @@ object Main {
   println("RISC-V Assembler for Scala")
   @main(
     name = "main",
-    doc = "This tool parses input strings or files in RISC-V assembly language generating hexadecimal machine code."
+    doc = "This tool parses input strings or files in RISC-V assembly language generating hexadecimal machine code.",
   )
   def run(
     @arg(
       name = "assembly",
       short = 'a',
-      doc = "Assembly instruction string in quotes(can be multiple instructions separated by `\\n`"
+      doc = "Assembly instruction string in quotes(can be multiple instructions separated by `\\n`",
     )
     assembly: String = "",
     @arg(name = "file-in", short = 'f', doc = "Assembly file input")
@@ -21,9 +21,9 @@ object Main {
     @arg(
       name = "file-out",
       short = 'o',
-      doc = "If defined, output will be redirected to this file (overwrite if exists)"
+      doc = "If defined, output will be redirected to this file (overwrite if exists)",
     )
-    fileOut: String = ""
+    fileOut: String = "",
   ) =
     if (!assembly.isEmpty()) {
       var output = ""
@@ -51,6 +51,7 @@ object Main {
     }
 
   def main(args: Array[String]): Unit = {
-    val _ = ParserForMethods(this).runOrExit(args.toIndexedSeq)
+    val res = ParserForMethods(this).runOrExit(args.toIndexedSeq)
+    println(res)
   }
 }
