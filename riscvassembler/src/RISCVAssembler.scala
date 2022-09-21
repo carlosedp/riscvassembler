@@ -2,6 +2,7 @@ package com.carlosedp.riscvassembler
 
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
+import scala.util.{Try, Success, Failure}
 
 object RISCVAssembler {
 
@@ -44,7 +45,12 @@ object RISCVAssembler {
     */
   def fromString(input: String): String = {
     val (instructions, addresses, labels) = parseLines(input)
-    (instructions zip addresses).map { case (i: String, a: String) => binOutput(i, a, labels) }
+    (instructions zip addresses).map { case (i: String, a: String) =>
+      binOutput(i, a, labels) match {
+        case Success(bin) => bin
+        case Failure(_)   => "00000000000000000000000000000000"
+      }
+    }
       .map(GenHex(_))
       .mkString("\n") + "\n"
   }
@@ -118,8 +124,9 @@ object RISCVAssembler {
     address:     String = "0",
     labelIndex:  Map[String, String] = Map[String, String](),
     width:       Int = 32,
-  ): String = {
-    val (op, opdata) = InstructionParser(instruction, address, labelIndex)
-    FillInstruction(op, opdata).takeRight(width)
-  }
+  ): Try[String] =
+    Try {
+      val (op, opdata) = InstructionParser(instruction, address, labelIndex)
+      FillInstruction(op, opdata).takeRight(width)
+    }
 }

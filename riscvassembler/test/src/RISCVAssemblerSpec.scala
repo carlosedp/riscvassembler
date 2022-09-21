@@ -18,7 +18,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
 
   it should "generate binary output for I-type instructions" in {
     val input  = "addi x1, x2, 10"
-    val output = RISCVAssembler.binOutput(input)
+    val output = RISCVAssembler.binOutput(input).get
 
     val correct = "00000000101000010000000010010011"
     output should be(correct)
@@ -26,7 +26,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
 
   it should "generate binary output for I-type instructions with max IMM" in {
     val input  = "addi x1, x2, -1"
-    val output = RISCVAssembler.binOutput(input)
+    val output = RISCVAssembler.binOutput(input).get
 
     val correct = "11111111111100010000000010010011"
     output should be(correct)
@@ -80,6 +80,41 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
         |00000013
         |00108093
         |00210113
+        """.stripMargin.trim
+    output should be(correct)
+  }
+
+  it should "generate blanks for invalid instructions" in {
+    val input =
+      """
+      addi x0, x0, 0
+      addi x1, x1
+      addi x2, x2, 2
+      """.stripMargin
+    val output = RISCVAssembler.fromString(input).trim
+
+    val correct =
+      """
+        |00000013
+        |00000000
+        |00210113
+        """.stripMargin.trim
+    output should be(correct)
+  }
+
+  it should "generate blanks for bogus data" in {
+    val input =
+      """
+      blabla
+      addi x1, x1
+      wrong info
+      """.stripMargin
+    val output = RISCVAssembler.fromString(input).trim
+    val correct =
+      """
+        |00000000
+        |00000000
+        |00000000
         """.stripMargin.trim
     output should be(correct)
   }

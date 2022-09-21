@@ -80,7 +80,6 @@ object rvasmcli extends RiscvAssemblerModule with ScalaNativeModule {
   def nativeLink = T { // Set the output binaty file name
     os.Path(scalaNativeWorker().nativeLink(nativeConfig(), (T.dest / this.toString).toIO))
   }
-  // def nativeBinaryName   = this.toString
   def crossScalaVersion  = scalaVersions.find(_.startsWith("3.")).get
   def scalaNativeVersion = scalaNativeVersions(0)._2
   def mainClass          = Some("com.carlosedp.rvasmcli.Main")
@@ -183,4 +182,7 @@ def pub(implicit ev: eval.Evaluator) = T.command {
 }
 def bin(implicit ev: eval.Evaluator) = T.command {
   runTasks(Seq("show rvasmcli.nativeLink"))
+}
+def test(implicit ev: eval.Evaluator) = T.command {
+  runTasks(Seq("__.test"))
 }
