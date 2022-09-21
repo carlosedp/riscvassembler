@@ -5,15 +5,14 @@ import org.scalatest.matchers.should._
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 
 class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with BeforeAndAfterAll with Matchers {
-  val tmpdir = os.pwd / "tmphex"
-  var memoryfile: os.Path = _
+//   val tmpdir = os.pwd / "tmphex"
+//   var memoryfile: os.Path = _
 
-  override def beforeAll(): Unit = os.makeDir.all(tmpdir)
-  override def afterAll():  Unit = { val _ = scala.util.Try(os.remove(tmpdir)) }
-  override def beforeEach(): Unit =
-    memoryfile = tmpdir / (scala.util.Random.alphanumeric.filter(_.isLetter).take(15).mkString + ".s")
-  override def afterEach(): Unit =
-    os.remove.all(memoryfile)
+//   override def beforeAll(): Unit = os.makeDir.all(tmpdir)
+//   override def afterAll():  Unit = { val _ = scala.util.Try(os.remove(tmpdir)) }
+//   override def beforeEach(): Unit =
+//     memoryfile = tmpdir / (scala.util.Random.alphanumeric.filter(_.isLetter).take(15).mkString + ".s")
+//   override def afterEach(): Unit = os.remove.all(memoryfile)
 
   behavior of "RISCVAssembler"
 
@@ -126,38 +125,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
     output should be(correct)
   }
 
-  it should "generate hex output from file source" in {
-    val prog = """
-    lui x2, 0xc0000000
-    addi x1, x0, 4
-    addi x2, x0, 4
-    nop
-    add  x3, x2, x1
-    beq x1, x2, +4094
-    sb x3, 1024(x2)
-    lw x4, 80(x1)
-    jal x1, +2048
-    """.stripMargin
-    os.write(memoryfile, prog)
-    val output = RISCVAssembler.fromFile(memoryfile.toString).trim
-
-    val correct =
-      """
-        |c0000137
-        |00400093
-        |00400113
-        |00000013
-        |001101b3
-        |7e208fe3
-        |40310023
-        |0500a203
-        |001000ef
-        |""".stripMargin.toUpperCase.trim
-
-    output should be(correct)
-  }
-
-  it should "generate hex output from file source with directives" in {
+  it should "generate hex output with directives" in {
     val prog = """
     .global _boot
     .text
@@ -170,8 +138,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
       addi x4 , x3,  -2000  /* x4  = 0    0x000 */
       addi x5 , x4,   1000  /* x5  = 1000 0x3E8 */
     """.stripMargin
-    os.write(memoryfile, prog)
-    val output = RISCVAssembler.fromFile(memoryfile.toString).trim
+    val output = RISCVAssembler.fromString(prog).trim
 
     val correct =
       """
@@ -185,14 +152,13 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
     output should be(correct)
   }
 
-  it should "generate hex output from file source with labels" in {
+  it should "generate hex output with labels" in {
     val prog = """
               main:   addi x1, x0, 1000
               wait:   lw x3, 0(x1)
                       jal x0, -4
     """.stripMargin
-    os.write(memoryfile, prog)
-    val output = RISCVAssembler.fromFile(memoryfile.toString).trim
+    val output = RISCVAssembler.fromString(prog).trim
 
     val correct =
       """
@@ -204,14 +170,13 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
     output should be(correct)
   }
 
-  it should "generate hex output from file source using labels inline" in {
+  it should "generate hex output using labels inline" in {
     val prog = """
               main:   addi x1, x0, 1000
               wait:   lw x3, 0(x1)
                       jal x0, wait
     """.stripMargin
-    os.write(memoryfile, prog)
-    val output = RISCVAssembler.fromFile(memoryfile.toString).trim
+    val output = RISCVAssembler.fromString(prog).trim
 
     val correct =
       """
@@ -223,15 +188,14 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
     output should be(correct)
   }
 
-  it should "generate hex output from file source using labels on previous line" in {
+  it should "generate hex output using labels on previous line" in {
     val prog = """
               main:   addi x1, x0, 1000
               wait:
                       lw x3, 0(x1)
                       jal x0, wait
     """.stripMargin
-    os.write(memoryfile, prog)
-    val output = RISCVAssembler.fromFile(memoryfile.toString).trim
+    val output = RISCVAssembler.fromString(prog).trim
 
     val correct =
       """
@@ -243,7 +207,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
     output should be(correct)
   }
 
-  it should "generate hex output from file source using labels in same line" in {
+  it should "generate hex output using labels in same line" in {
     val prog = """
                  main:   lui x1, 0x30003000
                          addi x2, x0, 1
@@ -254,8 +218,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
                          bne x2, x3, wait2
                  cont2:  addi x3, x0, 2
     """.stripMargin
-    os.write(memoryfile, prog)
-    val output = RISCVAssembler.fromFile(memoryfile.toString).trim
+    val output = RISCVAssembler.fromString(prog).trim
 
     val correct =
       """
@@ -281,8 +244,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
                  nop
                  tgt2: addi x1, x2, 10
     """.stripMargin
-    os.write(memoryfile, prog)
-    val output = RISCVAssembler.fromFile(memoryfile.toString).trim
+    val output = RISCVAssembler.fromString(prog).trim
 
     val correct =
       """
@@ -296,5 +258,40 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
 
     output should be(correct)
   }
+
+//   it should "generate hex output from file source" in {
+//     val prog = """
+//     lui x2, 0xc0000000
+//     addi x1, x0, 4
+//     addi x2, x0, 4
+//     nop
+//     add  x3, x2, x1
+//     beq x1, x2, +4094
+//     sb x3, 1024(x2)
+//     lw x4, 80(x1)
+//     jal x1, +2048
+//     """.stripMargin
+//     import java.io.{File, FileWriter}
+//     val file       = "/tmp/hexprogram.txt"
+//     val fileWriter = new FileWriter(new File(file))
+//     fileWriter.write(prog)
+//     fileWriter.close()
+//     val output = RISCVAssembler.fromFile(file).trim
+
+//     val correct =
+//       """
+//         |c0000137
+//         |00400093
+//         |00400113
+//         |00000013
+//         |001101b3
+//         |7e208fe3
+//         |40310023
+//         |0500a203
+//         |001000ef
+//         |""".stripMargin.toUpperCase.trim
+
+//     output should be(correct)
+//   }
 
 }

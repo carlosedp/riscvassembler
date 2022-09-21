@@ -1,0 +1,10 @@
+{
+  "name": "riscvassembler",
+  "description": "A RISC-V assembler library for Scala/Chisel HDL projects",
+  "author": "Carlos Eduardo de Paula",
+  "license": "MIT",
+  "version": "0.0.1",
+  "dependencies": {
+    "jsdom": "^20.0.0"
+  }
+}

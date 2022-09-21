@@ -30,6 +30,14 @@ jobs:
         distribution: 'temurin'
         java-version: ${{ matrix.jvm }}
 
+    - name: Setup Nodejs
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Install dependencies
+      run: npm install
+
     - name: Cache packages
       uses: coursier/cache-action@v6
       id: coursier-cache

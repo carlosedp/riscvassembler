@@ -1,19 +1,19 @@
 # RISCVAssembler
 
-A RISC-V assembler library for Scala/Chisel HDL projects.
+A RISC-V assembler library for Scala/Chisel HDL projects. For details, check the [scaladoc](https://www.javadoc.io/doc/com.carlosedp/riscvassembler_2.13/latest/com/carlosedp/riscvassembler/index.html).
 
-For more information, check the [scaladoc](https://www.javadoc.io/doc/com.carlosedp/riscvassembler_2.13/latest/com/carlosedp/riscvassembler/index.html).
-
-
-[![Scala version support](https://index.scala-lang.org/carlosedp/riscvassembler/riscvassembler/latest-by-scala-version.svg?color=blue)](https://index.scala-lang.org/carlosedp/riscvassembler/riscvassembler)
-[![Scaladoc](https://www.javadoc.io/badge/com.carlosedp/riscvassembler_2.13.svg?color=blue&label=Scaladoc)](https://javadoc.io/doc/com.carlosedp/riscvassembler_2.13/latest)
+[![riscvassembler Scala version support](https://index.scala-lang.org/carlosedp/riscvassembler/riscvassembler/latest-by-scala-version.svg?platform=jvm)](https://index.scala-lang.org/carlosedp/riscvassembler/riscvassembler)
+[![riscvassembler Scala version support](https://index.scala-lang.org/carlosedp/riscvassembler/riscvassembler/latest-by-scala-version.svg?platform=native0.4)](https://index.scala-lang.org/carlosedp/riscvassembler/riscvassembler)
+[![riscvassembler Scala version support](https://index.scala-lang.org/carlosedp/riscvassembler/riscvassembler/latest-by-scala-version.svg?platform=sjs1)](https://index.scala-lang.org/carlosedp/riscvassembler/riscvassembler)
 [![Sonatype Snapshots](https://img.shields.io/nexus/s/com.carlosedp/riscvassembler_2.13?server=https%3A%2F%2Fs01.oss.sonatype.org)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/carlosedp/)
-<br>
+
+
 [![Scala CI](https://github.com/carlosedp/riscvassembler/actions/workflows/scala.yml/badge.svg)](https://github.com/carlosedp/riscvassembler/actions/workflows/scala.yml)
 [![codecov](https://codecov.io/gh/carlosedp/riscvassembler/branch/main/graph/badge.svg?token=YNEKF3OO04)](https://codecov.io/gh/carlosedp/riscvassembler)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=carlosedp_riscvassembler&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=carlosedp_riscvassembler)
 [![Scala Steward badge](https://img.shields.io/badge/Scala_Steward-helping-green.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAMAAAARSr4IAAAAVFBMVEUAAACHjojlOy5NWlrKzcYRKjGFjIbp293YycuLa3pYY2LSqql4f3pCUFTgSjNodYRmcXUsPD/NTTbjRS+2jomhgnzNc223cGvZS0HaSD0XLjbaSjElhIr+AAAAAXRSTlMAQObYZgAAAHlJREFUCNdNyosOwyAIhWHAQS1Vt7a77/3fcxxdmv0xwmckutAR1nkm4ggbyEcg/wWmlGLDAA3oL50xi6fk5ffZ3E2E3QfZDCcCN2YtbEWZt+Drc6u6rlqv7Uk0LdKqqr5rk2UCRXOk0vmQKGfc94nOJyQjouF9H/wCc9gECEYfONoAAAAASUVORK5CYII=)](https://scala-steward.org)
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://api.mergify.com/v1/badges/carlosedp/riscvassembler&style=flat)](https://mergify.com)
+[![Scaladoc](https://www.javadoc.io/badge/com.carlosedp/riscvassembler_2.13.svg?color=blue&label=Scaladoc)](https://javadoc.io/doc/com.carlosedp/riscvassembler_2.13/latest)
+
 
 ## Using in your project
 
@@ -28,7 +28,7 @@ libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.2.0"  //ReleaseV
 
 ### Mill
 
-If you use `mill` build tool, I recommend adding the following way to your `build.sc`:
+If you use `mill` build tool, add the following dep to your `build.sc`:
 
 ```scala
 // Add to your ivyDeps
@@ -120,7 +120,7 @@ Generated Output:
 0800006F
 ```
 
-To generate the binary yourself, use `./mill bin` and the native executable will be generated and it's name printed on screen.
+To generate the tool binary yourself, use `./mill bin` and the native executable will be generated and it's name printed on screen.
 
 Native binaries for major OS/Arch combinations will be published soon.
 
@@ -140,14 +140,14 @@ resolvers ++= Seq(
 )
 
 // and change the dependency to latest SNAPSHOT as:
-libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.2-SNAPSHOT"  //SnapshotVerSBT
+libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.3-SNAPSHOT"  //SnapshotVerSBT
 ```
 
 Confirm the latest versions displayed on the badges at the top of this readme for both stable and snapshot (without the leading "v").
 
 #### Mill
 
-If you use `mill` build tool, I recommend adding the following way to your `build.sc`:
+If you use `mill` build tool, add the following dep to your `build.sc`:
 
 ```scala
 import coursier.MavenRepository
@@ -161,10 +161,18 @@ def repositoriesTask = T.task { super.repositoriesTask() ++ Seq(
 ) }
 
 def ivyDeps = Agg(
-  ivy"com.carlosedp::riscvassembler:1.2-SNAPSHOT"  //SnapshotVerMill
+  ivy"com.carlosedp::riscvassembler:1.3-SNAPSHOT"  //SnapshotVerMill
   ...
 )
 ```
+
+### Development and Testing
+
+All build processes are integrated into mill `build.sc`. There are tasks for linting, code coverage, publishing and binary generation.
+
+To locally test and build the library for Scala.js, it's required to have [nodejs](nodejs.org/). After install, run `npm install` so dependencies are installed as well.
+
+To test and generate the Scala Native binaries, the [LLVM toolchain](https://scala-native.org/en/stable/user/setup.html#installing-clang-and-runtime-dependencies) is required.
 
 The library has been published to Maven Central thru Sonatype:
 
