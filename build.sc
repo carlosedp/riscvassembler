@@ -126,8 +126,10 @@ trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule {
 trait RiscvAssemblerPublish extends CrossScalaModule with CiReleaseModule {
   def artifactName = "riscvassembler"
   def publishVersion: T[String] = T {
+    val isTag = T.ctx().env.get("GITHUB_REF").exists(_.startsWith("refs/tags"))
+    println("Release is tag:", isTag)
     val state = VcsVersion.vcsState()
-    if (state.commitsSinceLastTag == 0) {
+    if (state.commitsSinceLastTag == 0 && isTag) {
       state.lastTag.get.replace("v", "")
     } else {
       val v = state.lastTag.get.split('.')
