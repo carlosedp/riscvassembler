@@ -34,7 +34,7 @@ object versions {
 
 object riscvassembler extends Module {
   object jvm extends Cross[RiscvAssemblerJVMModule](scalaVersions: _*)
-  class RiscvAssemblerJVMModule(val crossScalaVersion: String) extends RiscvAssemblerModule {
+  class RiscvAssemblerJVMModule(val crossScalaVersion: String) extends RiscvAssemblerModule with RiscvAssemblerPublish {
     def millSourcePath = super.millSourcePath / _root_.os.up
     object test extends Tests with RiscvAssemblerTest {
       def scalaVersion = crossScalaVersion
@@ -44,6 +44,7 @@ object riscvassembler extends Module {
   object native extends Cross[RiscvAssemblerNativeModule](scalaNativeVersions: _*)
   class RiscvAssemblerNativeModule(val crossScalaVersion: String, crossScalaNativeVersion: String)
     extends RiscvAssemblerModule
+    with RiscvAssemblerPublish
     with ScalaNativeModule {
     def millSourcePath     = super.millSourcePath / _root_.os.up / os.up
     def scalaNativeVersion = crossScalaNativeVersion
@@ -55,6 +56,7 @@ object riscvassembler extends Module {
   object scalajs extends Cross[RiscvAssemblerScalajsModule](scalaJsVersions: _*)
   class RiscvAssemblerScalajsModule(val crossScalaVersion: String, crossScalaJsVersion: String)
     extends RiscvAssemblerModule
+    with RiscvAssemblerPublish
     with ScalaJSModule {
     def millSourcePath = super.millSourcePath / _root_.os.up / os.up
     def scalaJSVersion = crossScalaJsVersion
@@ -114,11 +116,14 @@ object linter extends ScoverageReport with ScalafixModule with ScalafmtModule {
   }
 }
 
-trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule with CiReleaseModule {
+trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule {
   def ivyDeps = super.ivyDeps() ++ Agg(
     ivy"com.lihaoyi::os-lib::${versions.oslib}",
     ivy"com.lihaoyi::mainargs::${versions.mainargs}",
   )
+}
+
+trait RiscvAssemblerPublish extends CrossScalaModule with CiReleaseModule {
   def artifactName = "riscvassembler"
   def publishVersion: T[String] = T {
     val state = VcsVersion.vcsState()

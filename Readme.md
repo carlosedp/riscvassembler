@@ -174,6 +174,13 @@ To locally test and build the library for Scala.js, it's required to have [nodej
 
 To test and generate the Scala Native binaries, the [LLVM toolchain](https://scala-native.org/en/stable/user/setup.html#installing-clang-and-runtime-dependencies) is required.
 
+Publishing flow:
+
+1. Commit and push latest changes to `main` (generates SNAPSHOT)
+2. Git tag new version
+3. Push tag to origin (generates a new release)
+4. Check if readme was updated
+
 The library has been published to Maven Central thru Sonatype:
 
 - <https://search.maven.org/artifact/com.carlosedp/riscvassembler>
