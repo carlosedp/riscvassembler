@@ -89,7 +89,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   behavior of "InstructionParser"
 
   it should "parse R-type instruction" in {
-    val output = InstructionParser("add x1, x2, x3")
+    val output = InstructionParser("add x1, x2, x3").get
     val d = Instruction(
       name = "ADD",
       funct7 = "0000000",
@@ -101,7 +101,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "parse I-type instruction" in {
-    val output = InstructionParser("addi x1, x2, 1024")
+    val output = InstructionParser("addi x1, x2, 1024").get
     val d = Instruction(
       name = "ADDI",
       funct3 = "000",
@@ -112,7 +112,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "parse I-type instruction with imm in hex" in {
-    val output = InstructionParser("addi x1, x2, 0x400")
+    val output = InstructionParser("addi x1, x2, 0x400").get
     val d = Instruction(
       name = "ADDI",
       funct3 = "000",
@@ -123,7 +123,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "parse I-type instruction with offset in hex" in {
-    val output = InstructionParser("lb x1, 0x400(x2)")
+    val output = InstructionParser("lb x1, 0x400(x2)").get
     val d = Instruction(
       name = "LB",
       funct3 = "000",
@@ -135,7 +135,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "parse S-type instruction" in {
-    val output = InstructionParser("sb x3, 1024(x2)")
+    val output = InstructionParser("sb x3, 1024(x2)").get
     val d = Instruction(
       name = "SB",
       funct3 = "000",
@@ -146,7 +146,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "parse S-type instruction with offset in hex" in {
-    val output = InstructionParser("sb x3, 0x400(x2)")
+    val output = InstructionParser("sb x3, 0x400(x2)").get
     val d = Instruction(
       name = "SB",
       funct3 = "000",
@@ -157,7 +157,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "parse B-type instruction" in {
-    val output = InstructionParser("beq x3, x0, +16")
+    val output = InstructionParser("beq x3, x0, +16").get
     val d = Instruction(
       name = "BEQ",
       funct3 = "000",
@@ -168,7 +168,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "parse B-type instruction with offset in hex" in {
-    val output = InstructionParser("beq x3, x0, 0x10")
+    val output = InstructionParser("beq x3, x0, 0x10").get
     val d = Instruction(
       name = "BEQ",
       funct3 = "000",
@@ -179,7 +179,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "parse U-type instruction with hex input" in {
-    val output = InstructionParser("lui x2, 0xc0000000")
+    val output = InstructionParser("lui x2, 0xc0000000").get
     val d = Instruction(
       name = "LUI",
       opcode = "0110111",
@@ -189,7 +189,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "parse U-type instruction with dec input" in {
-    val output = InstructionParser("lui x2, 32")
+    val output = InstructionParser("lui x2, 32").get
     val d = Instruction(
       name = "LUI",
       opcode = "0110111",
@@ -199,7 +199,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "parse J-type instruction" in {
-    val output = InstructionParser("jal x0, -16")
+    val output = InstructionParser("jal x0, -16").get
     val d = Instruction(
       name = "JAL",
       opcode = "1101111",

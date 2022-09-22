@@ -21,91 +21,115 @@ protected object InstructionParser {
     input:      String,
     addr:       String = "0",
     labelIndex: Map[String, String] = Map[String, String](),
-  ): (Instruction, Map[String, Long]) = {
+  ): Option[(Instruction, Map[String, Long])] = {
     // The regex splits the input into groups (dependind on type):
     // (0) - Instruction name
     // (1) - Instruction rd
     // (2) - Instruction rs1/imm
     // (3) - Instruction rs2/rs
     var instructionParts = input.trim.split("[\\s,\\(\\)]+").filter(_.nonEmpty)
-    val inst             = Instructions(instructionParts(0))
+    val inst = Instructions(instructionParts(0)) match {
+      case Some(i) => i
+      case _       => return None
+    }
+
     // Check here if it's a pseudo instruction
     if (inst.pseudo) {
-      instructionParts = PseudoInstructions(instructionParts)
+      instructionParts = PseudoInstructions(instructionParts) match {
+        case Some(pi) => pi
+        case _        => return None
+      }
     }
     inst.instType match {
       case InstructionTypes.R =>
-        (
-          inst,
-          Map(
-            "rd"  -> RegMap(instructionParts(1)),
-            "rs1" -> RegMap(instructionParts(2)),
-            "rs2" -> RegMap(instructionParts(3)),
-          ),
-        )
-      case InstructionTypes.I => {
-        if (inst.hasOffset) {
-          val imm =
-            if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
-            else instructionParts(2).toLong
+        if (instructionParts.length != 4) return None
+        Some(
           (
             inst,
             Map(
               "rd"  -> RegMap(instructionParts(1)),
-              "rs1" -> RegMap(instructionParts(3)),
-              "imm" -> imm,
+              "rs1" -> RegMap(instructionParts(2)),
+              "rs2" -> RegMap(instructionParts(3)),
+            ),
+          ),
+        )
+      case InstructionTypes.I => {
+        if (instructionParts.length != 4) return None
+        if (inst.hasOffset) {
+          val imm =
+            if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
+            else instructionParts(2).toLong
+          Some(
+            (
+              inst,
+              Map(
+                "rd"  -> RegMap(instructionParts(1)),
+                "rs1" -> RegMap(instructionParts(3)),
+                "imm" -> imm,
+              ),
             ),
           )
         } else {
           val imm =
             if (instructionParts(3).startsWith("0x")) BigInt(instructionParts(3).substring(2), 16).toLong
             else instructionParts(3).toLong
-          (
-            inst,
-            Map(
-              "rd"  -> RegMap(instructionParts(1)),
-              "rs1" -> RegMap(instructionParts(2)),
-              "imm" -> imm,
+          Some(
+            (
+              inst,
+              Map(
+                "rd"  -> RegMap(instructionParts(1)),
+                "rs1" -> RegMap(instructionParts(2)),
+                "imm" -> imm,
+              ),
             ),
           )
         }
       }
       case InstructionTypes.S => {
+        if (instructionParts.length != 4) return None
         val imm =
           if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
           else instructionParts(2).toLong
-        (
-          inst,
-          Map(
-            "rs2" -> RegMap(instructionParts(1)),
-            "rs1" -> RegMap(instructionParts(3)),
-            "imm" -> imm,
+        Some(
+          (
+            inst,
+            Map(
+              "rs2" -> RegMap(instructionParts(1)),
+              "rs1" -> RegMap(instructionParts(3)),
+              "imm" -> imm,
+            ),
           ),
         )
       }
       case InstructionTypes.B => {
+        if (instructionParts.length != 4) return None
         val imm = instructionParts(3) match {
           case i if i.startsWith("0x")      => BigInt(i.substring(2), 16).toLong
           case i if Try(i.toLong).isFailure => (BigInt(labelIndex(i), 16) - BigInt(addr, 16)).toLong
           case i                            => i.toLong
         }
-        (
-          inst,
-          Map(
-            "rs1" -> RegMap(instructionParts(1)),
-            "rs2" -> RegMap(instructionParts(2)),
-            "imm" -> imm,
+        Some(
+          (
+            inst,
+            Map(
+              "rs1" -> RegMap(instructionParts(1)),
+              "rs2" -> RegMap(instructionParts(2)),
+              "imm" -> imm,
+            ),
           ),
         )
       }
       case InstructionTypes.U | InstructionTypes.J => {
+        if (instructionParts.length != 3) return None
         val imm = instructionParts(2) match {
           case i if i.startsWith("0x")      => BigInt(i.substring(2), 16).toLong
           case i if Try(i.toLong).isFailure => (BigInt(labelIndex(i), 16) - BigInt(addr, 16)).toLong
           case i                            => i.toLong
         }
-        (inst, Map("rd" -> RegMap(instructionParts(1)), "imm" -> imm))
+        Some((inst, Map("rd" -> RegMap(instructionParts(1)), "imm" -> imm)))
       }
+      case _ =>
+        None
     }
   }
 }

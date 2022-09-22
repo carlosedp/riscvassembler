@@ -18,7 +18,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
 
   it should "generate binary output for I-type instructions" in {
     val input  = "addi x1, x2, 10"
-    val output = RISCVAssembler.binOutput(input).get
+    val output = RISCVAssembler.binOutput(input)
 
     val correct = "00000000101000010000000010010011"
     output should be(correct)
@@ -26,7 +26,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
 
   it should "generate binary output for I-type instructions with max IMM" in {
     val input  = "addi x1, x2, -1"
-    val output = RISCVAssembler.binOutput(input).get
+    val output = RISCVAssembler.binOutput(input)
 
     val correct = "11111111111100010000000010010011"
     output should be(correct)

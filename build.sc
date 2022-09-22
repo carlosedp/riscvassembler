@@ -184,5 +184,5 @@ def bin(implicit ev: eval.Evaluator) = T.command {
   runTasks(Seq("show rvasmcli.nativeLink"))
 }
 def test(implicit ev: eval.Evaluator) = T.command {
-  runTasks(Seq("__.test"))
+  runTasks(Seq("riscvassembler.__.test", "rvasmcli.test"))
 }

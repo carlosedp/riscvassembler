@@ -19,8 +19,8 @@ case class Instruction(
 )
 
 protected object Instructions {
-  def apply(instruction: String): Instruction =
-    instructions.find(_.name == instruction.toUpperCase).get
+  def apply(instruction: String): Option[Instruction] =
+    instructions.find(_.name == instruction.toUpperCase)
 
   private val instructions = List(
     Instruction(name = "ADD", funct7 = "0000000", funct3 = "000", opcode = "0110011", instType = InstructionTypes.R),
@@ -180,22 +180,24 @@ protected object Instructions {
 }
 
 protected object PseudoInstructions {
-  def apply(instructionData: Array[String]): Array[String] =
+  def apply(instructionData: Array[String]): Option[Array[String]] =
     instructionData(0).toUpperCase match {
       // Map received params to the corresponding RISC-V instruction
-      case "NOP"  => { Array("addi", "x0", "x0", "0") }
-      case "MV"   => { Array("addi", instructionData(1), instructionData(2), "0") }
-      case "BEQZ" => { Array("beq", instructionData(1), "x0", instructionData(2)) }
-      case "BNEZ" => { Array("bne", instructionData(1), "x0", instructionData(2)) }
-      case "BLEZ" => { Array("bge", "x0", instructionData(1), instructionData(2)) }
-      case "BGEZ" => { Array("bge", instructionData(1), "x0", instructionData(2)) }
-      case "BLTZ" => { Array("blt", instructionData(1), "x0", instructionData(2)) }
-      case "BGTZ" => { Array("blt", "x0", instructionData(1), instructionData(2)) }
-      case "BGT"  => { Array("blt", instructionData(2), instructionData(1), instructionData(3)) }
-      case "BLE"  => { Array("bge", instructionData(2), instructionData(1), instructionData(3)) }
-      case "BGTU" => { Array("bltu", instructionData(2), instructionData(1), instructionData(3)) }
-      case "BLEU" => { Array("bgeu", instructionData(2), instructionData(1), instructionData(3)) }
-      case "J"    => { Array("jal", "x0", instructionData(1)) }
-      case "RET"  => { Array("jalr", "x0", "x1", "0") }
+      case "NOP"  => { Some(Array("addi", "x0", "x0", "0")) }
+      case "MV"   => { Some(Array("addi", instructionData(1), instructionData(2), "0")) }
+      case "BEQZ" => { Some(Array("beq", instructionData(1), "x0", instructionData(2))) }
+      case "BNEZ" => { Some(Array("bne", instructionData(1), "x0", instructionData(2))) }
+      case "BLEZ" => { Some(Array("bge", "x0", instructionData(1), instructionData(2))) }
+      case "BGEZ" => { Some(Array("bge", instructionData(1), "x0", instructionData(2))) }
+      case "BLTZ" => { Some(Array("blt", instructionData(1), "x0", instructionData(2))) }
+      case "BGTZ" => { Some(Array("blt", "x0", instructionData(1), instructionData(2))) }
+      case "BGT"  => { Some(Array("blt", instructionData(2), instructionData(1), instructionData(3))) }
+      case "BLE"  => { Some(Array("bge", instructionData(2), instructionData(1), instructionData(3))) }
+      case "BGTU" => { Some(Array("bltu", instructionData(2), instructionData(1), instructionData(3))) }
+      case "BLEU" => { Some(Array("bgeu", instructionData(2), instructionData(1), instructionData(3))) }
+      case "J"    => { Some(Array("jal", "x0", instructionData(1))) }
+      case "RET"  => { Some(Array("jalr", "x0", "x1", "0")) }
+      case _      => None
+
     }
 }
