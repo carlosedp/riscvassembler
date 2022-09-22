@@ -47,7 +47,7 @@ jobs:
       if: startsWith(matrix.jvm, '17')
 
     - name: Run tests for all versions
-      run: ./mill -k -j 4 __.test
+      run: ./mill test
 
   code-coverage:
     needs: [test]
