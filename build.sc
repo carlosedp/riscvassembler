@@ -77,9 +77,6 @@ object rvasmcli extends RiscvAssemblerModule with ScalaNativeModule {
     super.millSourcePath / "riscvassembler" / "src",
     super.millSourcePath / "rvasmcli" / "src",
   )
-  def nativeLink = T { // Set the output binaty file name
-    os.Path(scalaNativeWorker().nativeLink(nativeConfig(), (T.dest / this.toString).toIO))
-  }
   def crossScalaVersion  = scalaVersions.find(_.startsWith("3.")).get
   def scalaNativeVersion = scalaNativeVersions(0)._2
   def mainClass          = Some("com.carlosedp.rvasmcli.Main")

@@ -1,9 +1,6 @@
 name: Regenerate Readme (on new tags)
 
 on:
-  workflow_run:
-    workflows: ["Scala CI"]
-    types: [completed]
   push:
     branches: [ main ]
     tags: ["*"]

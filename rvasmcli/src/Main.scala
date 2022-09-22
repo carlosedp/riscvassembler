@@ -28,7 +28,7 @@ object Main {
     var hex    = ""
     if (!assembly.isEmpty()) {
       assembly.split("\\\\n").foreach { l =>
-        hex = RISCVAssembler.fromString(l.trim)
+        hex += RISCVAssembler.fromString(l.trim)
       }
       if (fileOut.isEmpty()) {
         output += "Generated Output: \n"
