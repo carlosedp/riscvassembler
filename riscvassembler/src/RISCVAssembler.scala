@@ -6,6 +6,14 @@ import scala.io.Source
 object RISCVAssembler {
 
   /** AppInfo contains version and build information for the library
+    *
+    * Fields:
+    *   - `appName`: artifactName
+    *   - `appVersion`: Version derived from git tag or git `tag+1-SNAPSHOT`
+    *   - `revision`: Generated revision based on tag, commit and number of commits after last tag
+    *   - `buildCommit`: Commit ID
+    *   - `commitDate`: Last commit date
+    *   - `buildDate`: Build date
     */
   val AppInfo = BuildInfo
 

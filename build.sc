@@ -146,6 +146,7 @@ trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule with Bui
 }
 
 trait RiscvAssemblerPublish extends RiscvAssemblerModule with CiReleaseModule {
+  def publishVersion = super.publishVer
   def pomSettings = PomSettings(
     description    = "RiscvAssembler is a RISC-V assembler library to be used on Scala and Chisel HDL projects.",
     organization   = "com.carlosedp",
