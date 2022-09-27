@@ -27,19 +27,19 @@ protected object InstructionParser {
     // (1) - Instruction rd
     // (2) - Instruction rs1/imm
     // (3) - Instruction rs2/rs
-    var instructionParts = input.trim.split("[\\s,\\(\\)]+").filter(_.nonEmpty)
+    val parsed = input.trim.split("[\\s,\\(\\)]+").filter(_.nonEmpty)
+
+    // Check if it's a pseudo-instruction
+    val instructionParts = PseudoInstructions(parsed) match {
+      case Some(pi) => pi
+      case _        => parsed
+    }
+
     val inst = Instructions(instructionParts(0)) match {
       case Some(i) => i
       case _       => return None
     }
 
-    // Check here if it's a pseudo instruction
-    if (inst.pseudo) {
-      instructionParts = PseudoInstructions(instructionParts) match {
-        case Some(pi) => pi
-        case _        => return None
-      }
-    }
     inst.instType match {
       case InstructionTypes.R =>
         if (instructionParts.length != 4) return None

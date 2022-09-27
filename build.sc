@@ -19,7 +19,7 @@ import de.tobiasroeser.mill.vcs.version.VcsVersion
 import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.1`
 import io.github.davidgregory084.TpolecatModule
 
-val scalaVersions       = Seq("2.12.17", "2.13.8", "3.2.0")
+val scalaVersions       = Seq("2.12.17", "2.13.9", "3.1.3")
 val scalaNativeVersions = scalaVersions.map((_, "0.4.7"))
 val scalaJsVersions     = scalaVersions.map((_, "1.11.0"))
 
@@ -29,7 +29,7 @@ object versions {
   val organizeimports = "0.6.0"
   val semanticdb      = "4.5.13"
   val mainargs        = "0.3.0"
-  val scoverage       = "2.0.3"
+  val scoverage       = "2.0.5"
 }
 
 object riscvassembler extends Module {
@@ -87,7 +87,8 @@ object rvasmcli extends RiscvAssemblerModule with ScalaNativeModule {
 
 // Create a project on pinned Scala version for coverage, fmt and fix
 object linter extends ScoverageReport with ScalafixModule with ScalafmtModule {
-  def scalaVersion     = scalaVersions.find(_.startsWith("2.13")).get
+  val scala            = "2.13"
+  def scalaVersion     = scalaVersions.find(_.startsWith(scala)).get
   def scoverageVersion = versions.scoverage
   def scalafixIvyDeps  = Agg(ivy"com.github.liancheng::organize-imports:${versions.organizeimports}")
   def scalacPluginIvyDeps = T {
@@ -97,13 +98,13 @@ object linter extends ScoverageReport with ScalafixModule with ScalafmtModule {
   object riscvassembler extends RiscvAssemblerModule with ScoverageModule {
     def millSourcePath    = super.millSourcePath / os.up / "riscvassembler"
     def scoverageVersion  = versions.scoverage
-    def crossScalaVersion = scalaVersions.find(_.startsWith("2.13")).get
+    def crossScalaVersion = scalaVersions.find(_.startsWith(scala)).get
     object test extends ScoverageTests with RiscvAssemblerTest {}
   }
   object rvasmcli extends RiscvAssemblerModule with ScoverageModule {
     def millSourcePath    = super.millSourcePath / os.up / "rvasmcli"
     def scoverageVersion  = versions.scoverage
-    def crossScalaVersion = scalaVersions.find(_.startsWith("2.13")).get
+    def crossScalaVersion = scalaVersions.find(_.startsWith(scala)).get
     def sources = T.sources(
       millSourcePath / os.up / "riscvassembler" / "src",
       millSourcePath / os.up / "rvasmcli" / "src",
@@ -161,12 +162,7 @@ def runTasks(t: Seq[String])(implicit ev: eval.Evaluator) = T.task {
   )(identity)
 }
 def lint(implicit ev: eval.Evaluator) = T.command {
-  runTasks(
-    Seq(
-      "__.fix",
-      "mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources",
-    ),
-  )
+  runTasks(Seq("__.fix", "mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources"))
 }
 def deps(implicit ev: eval.Evaluator) = T.command {
   mill.scalalib.Dependency.showUpdates(ev)
@@ -180,6 +176,10 @@ def pub(implicit ev: eval.Evaluator) = T.command {
 def bin(implicit ev: eval.Evaluator) = T.command {
   runTasks(Seq("show rvasmcli.nativeLink"))
 }
-def test(implicit ev: eval.Evaluator) = T.command {
+def testall(implicit ev: eval.Evaluator) = T.command {
   runTasks(Seq("riscvassembler.__.test", "rvasmcli.test"))
+}
+def test(implicit ev: eval.Evaluator) = T.command {
+  val scalaver = scalaVersions.find(_.startsWith("2.13")).get
+  runTasks(Seq("riscvassembler.jvm[" + scalaver + "].test", "rvasmcli.test"))
 }

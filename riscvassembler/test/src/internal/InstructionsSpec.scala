@@ -135,16 +135,6 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
 
   behavior of "Pseudo-Instructions"
 
-  it should "map pseudo to real instructions" in {
-    val pinsts = List("NOP", "BEQZ", "BGEZ")
-    val insts  = List("ADDI", "BEQ", "BGE")
-    for ((pi, i) <- pinsts zip insts) {
-      val inst = Instructions(pi).get
-      inst.realName should be(i)
-      inst.pseudo should be(true)
-    }
-  }
-
   it should "map NOP Pseudo Instruction" in {
     val i = PseudoInstructions(Array("nop")).get
     i should be(

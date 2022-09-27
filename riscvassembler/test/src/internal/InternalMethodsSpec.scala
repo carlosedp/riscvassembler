@@ -89,7 +89,7 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   behavior of "InstructionParser"
 
   it should "parse R-type instruction" in {
-    val output = InstructionParser("add x1, x2, x3").get
+    val (inst, instData) = InstructionParser("add x1, x2, x3").get
     val d = Instruction(
       name = "ADD",
       funct7 = "0000000",
@@ -97,33 +97,36 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
       opcode = "0110011",
       instType = InstructionTypes.R,
     )
-    output should be((d, Map("rd" -> 1, "rs1" -> 2, "rs2" -> 3)))
+    inst should be(d)
+    instData should be(Map("rd" -> 1, "rs1" -> 2, "rs2" -> 3))
   }
 
   it should "parse I-type instruction" in {
-    val output = InstructionParser("addi x1, x2, 1024").get
+    val (inst, instData) = InstructionParser("addi x1, x2, 1024").get
     val d = Instruction(
       name = "ADDI",
       funct3 = "000",
       opcode = "0010011",
       instType = InstructionTypes.I,
     )
-    output should be((d, Map("rd" -> 1, "rs1" -> 2, "imm" -> 1024)))
+    inst should be(d)
+    instData should be(Map("rd" -> 1, "rs1" -> 2, "imm" -> 1024))
   }
 
   it should "parse I-type instruction with imm in hex" in {
-    val output = InstructionParser("addi x1, x2, 0x400").get
+    val (inst, instData) = InstructionParser("addi x1, x2, 0x400").get
     val d = Instruction(
       name = "ADDI",
       funct3 = "000",
       opcode = "0010011",
       instType = InstructionTypes.I,
     )
-    output should be((d, Map("rd" -> 1, "rs1" -> 2, "imm" -> 1024)))
+    inst should be(d)
+    instData should be(Map("rd" -> 1, "rs1" -> 2, "imm" -> 1024))
   }
 
   it should "parse I-type instruction with offset in hex" in {
-    val output = InstructionParser("lb x1, 0x400(x2)").get
+    val (inst, instData) = InstructionParser("lb x1, 0x400(x2)").get
     val d = Instruction(
       name = "LB",
       funct3 = "000",
@@ -131,81 +134,89 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
       hasOffset = true,
       instType = InstructionTypes.I,
     )
-    output should be((d, Map("rd" -> 1, "rs1" -> 2, "imm" -> 1024)))
+    inst should be(d)
+    instData should be(Map("rd" -> 1, "rs1" -> 2, "imm" -> 1024))
   }
 
   it should "parse S-type instruction" in {
-    val output = InstructionParser("sb x3, 1024(x2)").get
+    val (inst, instData) = InstructionParser("sb x3, 1024(x2)").get
     val d = Instruction(
       name = "SB",
       funct3 = "000",
       opcode = "0100011",
       instType = InstructionTypes.S,
     )
-    output should be((d, Map("rs1" -> 2, "rs2" -> 3, "imm" -> 1024)))
+    inst should be(d)
+    instData should be(Map("rs1" -> 2, "rs2" -> 3, "imm" -> 1024))
   }
 
   it should "parse S-type instruction with offset in hex" in {
-    val output = InstructionParser("sb x3, 0x400(x2)").get
+    val (inst, instData) = InstructionParser("sb x3, 0x400(x2)").get
     val d = Instruction(
       name = "SB",
       funct3 = "000",
       opcode = "0100011",
       instType = InstructionTypes.S,
     )
-    output should be((d, Map("rs1" -> 2, "rs2" -> 3, "imm" -> 1024)))
+    inst should be(d)
+    instData should be(Map("rs1" -> 2, "rs2" -> 3, "imm" -> 1024))
   }
 
   it should "parse B-type instruction" in {
-    val output = InstructionParser("beq x3, x0, +16").get
+    val (inst, instData) = InstructionParser("beq x3, x0, +16").get
     val d = Instruction(
       name = "BEQ",
       funct3 = "000",
       opcode = "1100011",
       instType = InstructionTypes.B,
     )
-    output should be((d, Map("rs1" -> 3, "rs2" -> 0, "imm" -> 16)))
+    inst should be(d)
+    instData should be(Map("rs1" -> 3, "rs2" -> 0, "imm" -> 16))
   }
 
   it should "parse B-type instruction with offset in hex" in {
-    val output = InstructionParser("beq x3, x0, 0x10").get
+    val (inst, instData) = InstructionParser("beq x3, x0, 0x10").get
     val d = Instruction(
       name = "BEQ",
       funct3 = "000",
       opcode = "1100011",
       instType = InstructionTypes.B,
     )
-    output should be((d, Map("rs1" -> 3, "rs2" -> 0, "imm" -> 16)))
+    inst should be(d)
+    instData should be(Map("rs1" -> 3, "rs2" -> 0, "imm" -> 16))
   }
 
   it should "parse U-type instruction with hex input" in {
-    val output = InstructionParser("lui x2, 0xc0000000").get
+    val (inst, instData) = InstructionParser("lui x2, 0xc0000000").get
     val d = Instruction(
       name = "LUI",
       opcode = "0110111",
       instType = InstructionTypes.U,
     )
-    output should be((d, Map("rd" -> 2, "imm" -> 0xc0000000L)))
+    inst should be(d)
+    instData should be(Map("rd" -> 2, "imm" -> 0xc0000000L))
   }
 
   it should "parse U-type instruction with dec input" in {
-    val output = InstructionParser("lui x2, 32").get
+    val (inst, instData) = InstructionParser("lui x2, 32").get
     val d = Instruction(
       name = "LUI",
       opcode = "0110111",
       instType = InstructionTypes.U,
     )
-    output should be((d, Map("rd" -> 2, "imm" -> 32)))
+    inst should be(d)
+    instData should be(Map("rd" -> 2, "imm" -> 32))
   }
 
   it should "parse J-type instruction" in {
-    val output = InstructionParser("jal x0, -16").get
+    val (inst, instData) = InstructionParser("jal x0, -16").get
     val d = Instruction(
       name = "JAL",
       opcode = "1101111",
       instType = InstructionTypes.J,
     )
-    output should be((d, Map("rd" -> 0, "imm" -> -16)))
+    inst should be(d)
+    instData should be(Map("rd" -> 0, "imm" -> -16))
   }
 
   // ------------------------------------------------------------
