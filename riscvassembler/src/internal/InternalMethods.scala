@@ -224,7 +224,7 @@ protected object RegMap {
   def apply(
     input: String,
   ): Long =
-    input match {
+    input.toLowerCase match {
       case "x0" | "zero"      => 0
       case "x1" | "ra"        => 1
       case "x2" | "sp"        => 2

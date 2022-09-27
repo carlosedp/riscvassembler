@@ -72,7 +72,7 @@ object RISCVAssembler {
     *   - `Map[String, String]` with the assembly label addresses
     */
   def parseLines(input: String): (ArrayBuffer[String], ArrayBuffer[String], Map[String, String]) = {
-    val instList = input.split("\n").toList.filter(_.nonEmpty).filter(!_.trim().isEmpty()).map(_.trim)
+    val instList = input.split("\n").toList.filter(_.nonEmpty).map(_.toLowerCase()).filter(!_.trim().isEmpty()).map(_.trim)
     val ignores  = Seq(".", "/")
 
     // Filter lines which begin with characters from `ignores`
