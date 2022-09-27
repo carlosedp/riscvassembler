@@ -1,10 +1,9 @@
-import mill.define.Sources
 import mill._
 import mill.scalalib._
 import mill.scalalib.publish._
 import mill.scalalib.api.Util.isScala3
 import mill.scalanativelib._, mill.scalanativelib.api._
-import mill.scalajslib._, mill.scalajslib.api._
+import mill.scalajslib._,     mill.scalajslib.api._
 import scalafmt._
 
 // Plugins

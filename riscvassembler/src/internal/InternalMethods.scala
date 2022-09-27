@@ -19,7 +19,7 @@ protected object InstructionParser {
     */
   def apply(
     input:      String,
-    addr:       String = "0",
+    addr:       String              = "0",
     labelIndex: Map[String, String] = Map[String, String](),
   ): Option[(Instruction, Map[String, Long])] = {
     // The regex splits the input into groups (dependind on type):
@@ -32,7 +32,7 @@ protected object InstructionParser {
     // Check if it's a pseudo-instruction
     val instructionParts = PseudoInstructions(parsed) match {
       case Some(pi) => pi
-      case _        => parsed
+      case None     => parsed
     }
 
     val inst = Instructions(instructionParts(0)) match {
@@ -84,6 +84,8 @@ protected object InstructionParser {
             ),
           )
         }
+        // if (inst.isCsr) {} else {}
+        // if (inst.isFence) {}
       }
       case InstructionTypes.S => {
         if (instructionParts.length != 4) return None

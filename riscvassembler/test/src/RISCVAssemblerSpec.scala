@@ -84,6 +84,38 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
     output should be(correct)
   }
 
+  // it should "generate hex output for fence instructions" in {
+  //   val input =
+  //     """
+  //       fence
+  //       fence.i
+  //       """.stripMargin
+  //   val output = RISCVAssembler.fromString(input).trim
+
+  //   val correct =
+  //     """
+  //       |0ff0000f
+  //       |0000100f
+  //       """.stripMargin.trim
+  //   output should be(correct)
+  // }
+
+  // it should "generate hex output for ecall/ebreak instructions" in {
+  //   val input =
+  //     """
+  //       ecall
+  //       ebreak
+  //       """.stripMargin
+  //   val output = RISCVAssembler.fromString(input).trim
+
+  //   val correct =
+  //     """
+  //       |00000073
+  //       |00100073
+  //       """.stripMargin.trim
+  //   output should be(correct)
+  // }
+
   it should "generate blanks for invalid instructions" in {
     val input =
       """

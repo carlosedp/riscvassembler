@@ -141,10 +141,48 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
       Array("addi", "x0", "x0", "0"),
     )
   }
+
   it should "map MV Pseudo Instruction" in {
     val i = PseudoInstructions(Array("mv", "x1", "x2")).get
     i should be(
       Array("addi", "x1", "x2", "0"),
+    )
+  }
+
+  it should "map NOT Pseudo Instruction" in {
+    val i = PseudoInstructions(Array("not", "x1", "x2")).get
+    i should be(
+      Array("xori", "x1", "x2", "-1"),
+    )
+  }
+  it should "map NEG Pseudo Instruction" in {
+    val i = PseudoInstructions(Array("neg", "x1", "x2")).get
+    i should be(
+      Array("sub", "x1", "x0", "x2"),
+    )
+  }
+  it should "map SEQZ Pseudo Instruction" in {
+    val i = PseudoInstructions(Array("seqz", "x1", "x2")).get
+    i should be(
+      Array("sltiu", "x1", "x2", "1"),
+    )
+  }
+  it should "map SNEZ Pseudo Instruction" in {
+    val i = PseudoInstructions(Array("snez", "x1", "x2")).get
+    i should be(
+      Array("sltu", "x1", "x0", "x2"),
+    )
+  }
+  it should "map SLTZ Pseudo Instruction" in {
+    val i = PseudoInstructions(Array("sltz", "x1", "x2")).get
+    i should be(
+      Array("slt", "x1", "x2", "x0"),
+    )
+  }
+  it should "map SGTZ Pseudo Instruction" in {
+    val i = PseudoInstructions(Array("sgtz", "x1", "x2")).get
+    i should be(
+      Array("slt", "x1", "x0", "x2"),
     )
   }
   it should "map BEQZ Pseudo Instruction" in {
@@ -211,6 +249,12 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     val i = PseudoInstructions(Array("j", "4")).get
     i should be(
       Array("jal", "x0", "4"),
+    )
+  }
+  it should "map JR Pseudo Instruction" in {
+    val i = PseudoInstructions(Array("jr", "x2")).get
+    i should be(
+      Array("jalr", "x0", "x2", "0"),
     )
   }
   it should "map RET Pseudo Instruction" in {

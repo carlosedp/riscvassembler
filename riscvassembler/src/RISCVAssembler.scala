@@ -104,9 +104,9 @@ object RISCVAssembler {
     */
   def binOutput(
     instruction: String,
-    address:     String = "0",
+    address:     String              = "0",
     labelIndex:  Map[String, String] = Map[String, String](),
-    width:       Int = 32,
+    width:       Int                 = 32,
   ): String = {
     val cleanInst = "\\/\\*.*\\*\\/".r.replaceAllIn(instruction, "")
     val (op, opdata) = InstructionParser(cleanInst, address, labelIndex) match {
