@@ -5,6 +5,10 @@ import scala.io.Source
 
 object RISCVAssembler {
 
+  /** AppInfo contains version and build information for the library
+    */
+  val AppInfo = BuildInfo
+
   /** Generate an hex string output fom the assembly source file
     *
     * Usage:

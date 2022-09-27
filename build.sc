@@ -3,8 +3,9 @@ import mill.scalalib._
 import mill.scalalib.publish._
 import mill.scalalib.api.Util.isScala3
 import mill.scalanativelib._, mill.scalanativelib.api._
-import mill.scalajslib._,     mill.scalajslib.api._
+import mill.scalajslib._, mill.scalajslib.api._
 import scalafmt._
+import java.util.Date
 
 // Plugins
 import $ivy.`com.lihaoyi::mill-contrib-scoverage:`
@@ -17,6 +18,8 @@ import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.2.0`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
 import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.1`
 import io.github.davidgregory084.TpolecatModule
+import $ivy.`com.lihaoyi::mill-contrib-buildinfo:`
+import mill.contrib.buildinfo.BuildInfo
 
 val scalaVersions       = Seq("2.12.17", "2.13.9", "3.1.3")
 val scalaNativeVersions = scalaVersions.map((_, "0.4.7"))
@@ -112,18 +115,28 @@ object linter extends ScoverageReport with ScalafixModule with ScalafmtModule {
   }
 }
 
-trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule {
+trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule with BuildInfo {
   def ivyDeps = super.ivyDeps() ++ Agg(
     ivy"com.lihaoyi::os-lib::${versions.oslib}",
     ivy"com.lihaoyi::mainargs::${versions.mainargs}",
   )
+  def buildInfoMembers: T[Map[String, String]] = T {
+    Map(
+      "appVersion"  -> VcsVersion.vcsState().lastTag.get,
+      "revision"    -> VcsVersion.vcsState().format(),
+      "buildCommit" -> VcsVersion.vcsState().currentRevision,
+      "commitDate"  -> os.proc("git", "log", "-1", "--date=format:\"%a %b %d %T %z %Y\"", "--format=\"%ad\"").call().out.trim,
+      "buildDate"   -> new Date().toString,
+    )
+  }
+  def buildInfoObjectName  = "BuildInfo"
+  def buildInfoPackageName = Some("com.carlosedp.riscvassembler")
 }
 
 trait RiscvAssemblerPublish extends CrossScalaModule with CiReleaseModule {
   def artifactName = "riscvassembler"
   def publishVersion: T[String] = T {
     val isTag = T.ctx().env.get("GITHUB_REF").exists(_.startsWith("refs/tags"))
-    println("Release is tag:", isTag)
     val state = VcsVersion.vcsState()
     if (state.commitsSinceLastTag == 0 && isTag) {
       state.lastTag.get.replace("v", "")
@@ -132,11 +145,12 @@ trait RiscvAssemblerPublish extends CrossScalaModule with CiReleaseModule {
       s"${v(0)}.${(v(1).toInt) + 1}".replace("v", "") + "-SNAPSHOT"
     }
   }
+
   def pomSettings = PomSettings(
-    description = "RiscvAssembler is a RISC-V assembler library to be used on Scala and Chisel HDL projects.",
-    organization = "com.carlosedp",
-    url = "https://github.com/carlosedp/riscvassembler",
-    licenses = Seq(License.MIT),
+    description    = "RiscvAssembler is a RISC-V assembler library to be used on Scala and Chisel HDL projects.",
+    organization   = "com.carlosedp",
+    url            = "https://github.com/carlosedp/riscvassembler",
+    licenses       = Seq(License.MIT),
     versionControl = VersionControl.github("carlosedp", "RiscvAssembler"),
     developers = Seq(
       Developer("carlosedp", "Carlos Eduardo de Paula", "https://github.com/carlosedp"),

@@ -1,7 +1,7 @@
 package com.carlosedp.rvasmcli
 
-import com.carlosedp.riscvassembler._
 import mainargs.{main, arg, ParserForMethods}
+import com.carlosedp.riscvassembler._
 
 object Main {
   @main(
@@ -47,7 +47,14 @@ object Main {
         output = s"Generated $fileOut"
       }
     } else {
-      output = "Run tool with --help for options"
+      output = s"""
+                  |RISCVAssembler version ${RISCVAssembler.AppInfo.appVersion}
+                  |Revision ${RISCVAssembler.AppInfo.revision}
+                  |Commit: ${RISCVAssembler.AppInfo.buildCommit}
+                  |Commit Date: ${RISCVAssembler.AppInfo.commitDate}
+                  |Build Date: ${RISCVAssembler.AppInfo.buildDate}
+                  |Run tool with --help for options
+                  |""".stripMargin
     }
     output
   }
