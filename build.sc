@@ -120,9 +120,21 @@ trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule with Bui
     ivy"com.lihaoyi::os-lib::${versions.oslib}",
     ivy"com.lihaoyi::mainargs::${versions.mainargs}",
   )
+  def artifactName = "riscvassembler"
+  def publishVer: T[String] = T {
+    val isTag = T.ctx().env.get("GITHUB_REF").exists(_.startsWith("refs/tags"))
+    val state = VcsVersion.vcsState()
+    if (state.commitsSinceLastTag == 0 && isTag) {
+      state.lastTag.get.replace("v", "")
+    } else {
+      val v = state.lastTag.get.split('.')
+      s"${v(0)}.${(v(1).toInt) + 1}".replace("v", "") + "-SNAPSHOT"
+    }
+  }
   def buildInfoMembers: T[Map[String, String]] = T {
     Map(
-      "appVersion"  -> VcsVersion.vcsState().lastTag.get,
+      "appName"     -> artifactName.toString,
+      "appVersion"  -> publishVer(),
       "revision"    -> VcsVersion.vcsState().format(),
       "buildCommit" -> VcsVersion.vcsState().currentRevision,
       "commitDate"  -> os.proc("git", "log", "-1", "--date=format:\"%a %b %d %T %z %Y\"", "--format=\"%ad\"").call().out.trim,
@@ -133,19 +145,7 @@ trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule with Bui
   def buildInfoPackageName = Some("com.carlosedp.riscvassembler")
 }
 
-trait RiscvAssemblerPublish extends CrossScalaModule with CiReleaseModule {
-  def artifactName = "riscvassembler"
-  def publishVersion: T[String] = T {
-    val isTag = T.ctx().env.get("GITHUB_REF").exists(_.startsWith("refs/tags"))
-    val state = VcsVersion.vcsState()
-    if (state.commitsSinceLastTag == 0 && isTag) {
-      state.lastTag.get.replace("v", "")
-    } else {
-      val v = state.lastTag.get.split('.')
-      s"${v(0)}.${(v(1).toInt) + 1}".replace("v", "") + "-SNAPSHOT"
-    }
-  }
-
+trait RiscvAssemblerPublish extends RiscvAssemblerModule with CiReleaseModule {
   def pomSettings = PomSettings(
     description    = "RiscvAssembler is a RISC-V assembler library to be used on Scala and Chisel HDL projects.",
     organization   = "com.carlosedp",
@@ -185,6 +185,9 @@ def coverage(implicit ev: eval.Evaluator) = T.command {
 }
 def pub(implicit ev: eval.Evaluator) = T.command {
   runTasks(Seq("io.kipp.mill.ci.release.ReleaseModule/publishAll"))
+}
+def publocal(implicit ev: eval.Evaluator) = T.command {
+  runTasks(Seq("riscvassembler.__.publishLocal"))
 }
 def bin(implicit ev: eval.Evaluator) = T.command {
   runTasks(Seq("show rvasmcli.nativeLink"))
