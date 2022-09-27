@@ -23,7 +23,7 @@ When using SBT, add the following lines to your `build.sbt` file.
 
 ```scala
 // Import libraries
-libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.4.0"  //ReleaseVerSBT
+libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.5.0"  //ReleaseVerSBT
 ```
 
 ### Mill
@@ -33,7 +33,7 @@ If you use `mill` build tool, add the following dep to your `build.sc`:
 ```scala
 // Add to your ivyDeps
 def ivyDeps = Agg(
-  ivy"com.carlosedp::riscvassembler:1.4.0"  //ReleaseVerMill
+  ivy"com.carlosedp::riscvassembler:1.5.0"  //ReleaseVerMill
   ...
 )
 ```
@@ -140,7 +140,7 @@ resolvers ++= Seq(
 )
 
 // and change the dependency to latest SNAPSHOT as:
-libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.5-SNAPSHOT"  //SnapshotVerSBT
+libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.6-SNAPSHOT"  //SnapshotVerSBT
 ```
 
 Confirm the latest versions displayed on the badges at the top of this readme for both stable and snapshot (without the leading "v").
@@ -161,7 +161,7 @@ def repositoriesTask = T.task { super.repositoriesTask() ++ Seq(
 ) }
 
 def ivyDeps = Agg(
-  ivy"com.carlosedp::riscvassembler:1.5-SNAPSHOT"  //SnapshotVerMill
+  ivy"com.carlosedp::riscvassembler:1.6-SNAPSHOT"  //SnapshotVerMill
   ...
 )
 ```
