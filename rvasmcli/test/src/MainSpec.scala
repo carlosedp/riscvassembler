@@ -5,7 +5,7 @@ import org.scalatest.matchers.should._
 
 class MainSpec extends AnyFlatSpec with Matchers {
 
-  behavior of "rcasmcli"
+  behavior of "rvasmcli"
 
   it should "help message if no parameters are passed" in {
     val res = Main.run()

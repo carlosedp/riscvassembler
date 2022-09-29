@@ -72,7 +72,7 @@ object RISCVAssembler {
     *   - `Map[String, String]` with the assembly label addresses
     */
   def parseLines(input: String): (ArrayBuffer[String], ArrayBuffer[String], Map[String, String]) = {
-    val instList = input.split("\n").toList.filter(_.nonEmpty).map(_.toLowerCase()).filter(!_.trim().isEmpty()).map(_.trim)
+    val instList = input.split("\n").toList.filter(_.nonEmpty).filter(!_.trim().isEmpty()).map(_.trim)
     val ignores  = Seq(".", "/")
 
     // Filter lines which begin with characters from `ignores`
@@ -120,7 +120,7 @@ object RISCVAssembler {
     labelIndex:  Map[String, String] = Map[String, String](),
     width:       Int                 = 32,
   ): String = {
-    val cleanInst = "\\/\\*.*\\*\\/".r.replaceAllIn(instruction, "")
+    val cleanInst = "\\/\\*.*\\*\\/".r.replaceAllIn(instruction, "").toLowerCase.trim
     val (op, opdata) = InstructionParser(cleanInst, address, labelIndex) match {
       case Some(data) => data
       case _          => return "00000000000000000000000000000000"

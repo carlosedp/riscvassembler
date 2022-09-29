@@ -14,14 +14,17 @@ import $ivy.`com.goyeau::mill-scalafix::0.2.10`
 import com.goyeau.mill.scalafix.ScalafixModule
 import $ivy.`io.chris-kipp::mill-ci-release::0.1.1`
 import io.kipp.mill.ci.release.CiReleaseModule
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.2.0`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.0`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
 import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.1`
 import io.github.davidgregory084.TpolecatModule
 import $ivy.`com.lihaoyi::mill-contrib-buildinfo:`
 import mill.contrib.buildinfo.BuildInfo
 
-val scalaVersions       = Seq("2.12.17", "2.13.9", "3.2.0")
+val scala212            = "2.12.17"
+val scala213            = "2.13.9"
+val scala3              = "3.2.0"
+val scalaVersions       = Seq(scala212, scala213, scala3)
 val scalaNativeVersions = scalaVersions.map((_, "0.4.7"))
 val scalaJsVersions     = scalaVersions.map((_, "1.11.0"))
 
@@ -40,7 +43,7 @@ object riscvassembler extends Module {
     extends RiscvAssemblerModule
     with RiscvAssemblerPublish
     with ScoverageModule {
-    def millSourcePath   = super.millSourcePath / _root_.os.up
+    def millSourcePath   = super.millSourcePath / os.up
     def scoverageVersion = versions.scoverage
     object test extends ScoverageTests with RiscvAssemblerTest {
       def scalaVersion = crossScalaVersion
@@ -52,7 +55,7 @@ object riscvassembler extends Module {
     extends RiscvAssemblerModule
     with RiscvAssemblerPublish
     with ScalaNativeModule {
-    def millSourcePath     = super.millSourcePath / _root_.os.up / os.up
+    def millSourcePath     = super.millSourcePath / os.up / os.up
     def scalaNativeVersion = crossScalaNativeVersion
     object test extends Tests with RiscvAssemblerTest {
       def nativeLinkStubs = true
@@ -64,39 +67,36 @@ object riscvassembler extends Module {
     extends RiscvAssemblerModule
     with RiscvAssemblerPublish
     with ScalaJSModule {
-    def millSourcePath = super.millSourcePath / _root_.os.up / os.up
+    def millSourcePath = super.millSourcePath / os.up / os.up
     def scalaJSVersion = crossScalaJsVersion
     def ivyDeps        = Agg(ivy"org.scala-js::scalajs-dom::2.2.0")
 
     def scalaJSUseMainModuleInitializer = true
-    // def moduleKind       = T(ModuleKind.ESModule)
-    def moduleKind = T(ModuleKind.CommonJSModule)
+    def moduleKind                      = T(ModuleKind.CommonJSModule)
     object test extends Tests with RiscvAssemblerTest {
       def jsEnvConfig = T(JsEnvConfig.JsDom())
     }
   }
 }
 
-// object rvasmcli extends RiscvAssemblerModule with ScalaNativeModule with ScoverageModule {
-object rvasmcli extends RiscvAssemblerModule with ScalaNativeModule {
-  def millSourcePath = super.millSourcePath / this.toString()
-  def sources = T.sources(
-    super.millSourcePath / "riscvassembler" / "src",
-    super.millSourcePath / "rvasmcli" / "src",
+object rvasmcli extends ScalaNativeModule {
+  def ivyDeps = super.ivyDeps() ++ Agg(
+    ivy"com.lihaoyi::os-lib::${versions.oslib}",
+    ivy"com.lihaoyi::mainargs::${versions.mainargs}",
   )
-  def crossScalaVersion  = scalaVersions.find(_.startsWith("3.")).get
-  def scalaNativeVersion = scalaNativeVersions(0)._2
+  def scalaVersion       = scala3
+  def scalaNativeVersion = scalaNativeVersions.head._2
+  def moduleDeps         = Seq(riscvassembler.native(scala3, scalaNativeVersions.head._2))
   def scoverageVersion   = versions.scoverage
   def mainClass          = Some("com.carlosedp.rvasmcli.Main")
   def logLevel           = NativeLogLevel.Info
   def releaseMode        = ReleaseMode.Debug
-  // object test extends ScoverageTests with RiscvAssemblerTest {}
   object test extends Tests with RiscvAssemblerTest {}
 }
 
 // Aggregate reports for all projects
 object scoverage extends ScoverageReport {
-  override def scalaVersion     = scalaVersions.find(_.startsWith("3")).get
+  override def scalaVersion     = scala3
   override def scoverageVersion = versions.scoverage
 }
 
@@ -166,19 +166,17 @@ def runTasks(t: Seq[String])(implicit ev: eval.Evaluator) = T.task {
   )(identity)
 }
 def lint(implicit ev: eval.Evaluator) = T.command {
-  val scalaver = scalaVersions.find(_.startsWith("3.")).get
   runTasks(
-    Seq(s"riscvassembler.jvm[$scalaver].fix", "rvasmcli.fix", "mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources"),
+    Seq(s"riscvassembler.jvm[$scala3].fix", "rvasmcli.fix", "mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources"),
   )
 }
 def deps(implicit ev: eval.Evaluator) = T.command {
   mill.scalalib.Dependency.showUpdates(ev)
 }
 def coverage(implicit ev: eval.Evaluator) = T.command {
-  val scalaver = scalaVersions.find(_.startsWith("3.")).get
   runTasks(
     Seq(
-      s"riscvassembler.jvm[$scalaver].test",
+      s"riscvassembler.jvm[$scala3].test",
       "rvasmcli.test",
       "scoverage.htmlReportAll",
       "scoverage.xmlReportAll",
@@ -199,6 +197,5 @@ def testall(implicit ev: eval.Evaluator) = T.command {
   runTasks(Seq("riscvassembler.__.test", "rvasmcli.test"))
 }
 def test(implicit ev: eval.Evaluator) = T.command {
-  val scalaver = scalaVersions.find(_.startsWith("3.")).get
-  runTasks(Seq("riscvassembler.jvm[" + scalaver + "].test", "rvasmcli.test"))
+  runTasks(Seq("riscvassembler.jvm[" + scala3 + "].test", "rvasmcli.test"))
 }

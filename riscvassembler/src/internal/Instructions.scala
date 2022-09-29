@@ -17,7 +17,6 @@ case class Instruction(
   hasImm:    Boolean = false,
   isFence:   Boolean = false,
   fixed:     String  = "",
-  pseudo:    Boolean = false,
 )
 
 protected object Instructions {
