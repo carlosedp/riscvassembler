@@ -36,9 +36,13 @@ object versions {
 
 object riscvassembler extends Module {
   object jvm extends Cross[RiscvAssemblerJVMModule](scalaVersions: _*)
-  class RiscvAssemblerJVMModule(val crossScalaVersion: String) extends RiscvAssemblerModule with RiscvAssemblerPublish {
-    def millSourcePath = super.millSourcePath / _root_.os.up
-    object test extends Tests with RiscvAssemblerTest {
+  class RiscvAssemblerJVMModule(val crossScalaVersion: String)
+    extends RiscvAssemblerModule
+    with RiscvAssemblerPublish
+    with ScoverageModule {
+    def millSourcePath   = super.millSourcePath / _root_.os.up
+    def scoverageVersion = versions.scoverage
+    object test extends ScoverageTests with RiscvAssemblerTest {
       def scalaVersion = crossScalaVersion
     }
   }
@@ -73,6 +77,7 @@ object riscvassembler extends Module {
   }
 }
 
+// object rvasmcli extends RiscvAssemblerModule with ScalaNativeModule with ScoverageModule {
 object rvasmcli extends RiscvAssemblerModule with ScalaNativeModule {
   def millSourcePath = super.millSourcePath / this.toString()
   def sources = T.sources(
@@ -81,45 +86,30 @@ object rvasmcli extends RiscvAssemblerModule with ScalaNativeModule {
   )
   def crossScalaVersion  = scalaVersions.find(_.startsWith("3.")).get
   def scalaNativeVersion = scalaNativeVersions(0)._2
+  def scoverageVersion   = versions.scoverage
   def mainClass          = Some("com.carlosedp.rvasmcli.Main")
   def logLevel           = NativeLogLevel.Info
   def releaseMode        = ReleaseMode.Debug
+  // object test extends ScoverageTests with RiscvAssemblerTest {}
   object test extends Tests with RiscvAssemblerTest {}
 }
 
-// Create a project on pinned Scala version for coverage, fmt and fix
-object linter extends ScoverageReport with ScalafixModule with ScalafmtModule {
-  val scala            = "3"
-  def scalaVersion     = scalaVersions.find(_.startsWith(scala)).get
-  def scoverageVersion = versions.scoverage
-  def scalafixIvyDeps  = Agg(ivy"com.github.liancheng::organize-imports:${versions.organizeimports}")
-  // def scalacPluginIvyDeps = T {
-  //   super.scalacPluginIvyDeps() ++ Agg(ivy"org.scalameta:::semanticdb-scalac:${versions.semanticdb}")
-  // }
-
-  object riscvassembler extends RiscvAssemblerModule with ScoverageModule {
-    def millSourcePath    = super.millSourcePath / os.up / "riscvassembler"
-    def scoverageVersion  = versions.scoverage
-    def crossScalaVersion = scalaVersions.find(_.startsWith(scala)).get
-    object test extends ScoverageTests with RiscvAssemblerTest {}
-  }
-  object rvasmcli extends RiscvAssemblerModule with ScoverageModule {
-    def millSourcePath    = super.millSourcePath / os.up / "rvasmcli"
-    def scoverageVersion  = versions.scoverage
-    def crossScalaVersion = scalaVersions.find(_.startsWith(scala)).get
-    def sources = T.sources(
-      millSourcePath / os.up / "riscvassembler" / "src",
-      millSourcePath / os.up / "rvasmcli" / "src",
-    )
-    object test extends ScoverageTests with RiscvAssemblerTest {}
-  }
+// Aggregate reports for all projects
+object scoverage extends ScoverageReport {
+  override def scalaVersion     = scalaVersions.find(_.startsWith("3")).get
+  override def scoverageVersion = versions.scoverage
 }
 
-trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule with BuildInfo {
+trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule with BuildInfo with ScalafixModule with ScalafmtModule {
   def ivyDeps = super.ivyDeps() ++ Agg(
     ivy"com.lihaoyi::os-lib::${versions.oslib}",
     ivy"com.lihaoyi::mainargs::${versions.mainargs}",
   )
+  def scalafixIvyDeps = Agg(ivy"com.github.liancheng::organize-imports:${versions.organizeimports}")
+  def scalacPluginIvyDeps = super.scalacPluginIvyDeps() ++ (if (!isScala3(crossScalaVersion))
+                                                              Agg(ivy"org.scalameta:::semanticdb-scalac:${versions.semanticdb}")
+                                                            else Agg.empty)
+
   def artifactName = "riscvassembler"
   def publishVer: T[String] = T {
     val isTag = T.ctx().env.get("GITHUB_REF").exists(_.startsWith("refs/tags"))
@@ -176,14 +166,25 @@ def runTasks(t: Seq[String])(implicit ev: eval.Evaluator) = T.task {
   )(identity)
 }
 def lint(implicit ev: eval.Evaluator) = T.command {
-  runTasks(Seq("__.fix", "mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources"))
+  val scalaver = scalaVersions.find(_.startsWith("3.")).get
+  runTasks(
+    Seq(s"riscvassembler.jvm[$scalaver].fix", "rvasmcli.fix", "mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources"),
+  )
 }
 def deps(implicit ev: eval.Evaluator) = T.command {
   mill.scalalib.Dependency.showUpdates(ev)
 }
 def coverage(implicit ev: eval.Evaluator) = T.command {
-  runTasks(Seq("linter.__.test", "linter.xmlReportAll", "linter.consoleReportAll"))
-  // runTasks(Seq("linter.__.test", "linter.htmlReportAll", "linter.xmlReportAll", "linter.consoleReportAll"))
+  val scalaver = scalaVersions.find(_.startsWith("3.")).get
+  runTasks(
+    Seq(
+      s"riscvassembler.jvm[$scalaver].test",
+      "rvasmcli.test",
+      "scoverage.htmlReportAll",
+      "scoverage.xmlReportAll",
+      "scoverage.consoleReportAll",
+    ),
+  )
 }
 def pub(implicit ev: eval.Evaluator) = T.command {
   runTasks(Seq("io.kipp.mill.ci.release.ReleaseModule/publishAll"))
@@ -198,6 +199,6 @@ def testall(implicit ev: eval.Evaluator) = T.command {
   runTasks(Seq("riscvassembler.__.test", "rvasmcli.test"))
 }
 def test(implicit ev: eval.Evaluator) = T.command {
-  val scalaver = scalaVersions.find(_.startsWith("2.13")).get
+  val scalaver = scalaVersions.find(_.startsWith("3.")).get
   runTasks(Seq("riscvassembler.jvm[" + scalaver + "].test", "rvasmcli.test"))
 }

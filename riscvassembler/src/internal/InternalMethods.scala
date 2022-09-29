@@ -2,7 +2,7 @@ package com.carlosedp.riscvassembler
 
 import scala.util.Try
 
-import ObjectUtils._
+import com.carlosedp.riscvassembler.ObjectUtils._
 
 protected object InstructionParser {
 

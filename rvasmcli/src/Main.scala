@@ -1,7 +1,7 @@
 package com.carlosedp.rvasmcli
 
-import mainargs.{main, arg, ParserForMethods}
 import com.carlosedp.riscvassembler._
+import mainargs.{ParserForMethods, arg, main}
 
 object Main {
   @main(
