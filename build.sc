@@ -29,12 +29,13 @@ val scalaNativeVersions = scalaVersions.map((_, "0.4.7"))
 val scalaJsVersions     = scalaVersions.map((_, "1.11.0"))
 
 object versions {
-  val scalatest       = "3.2.13"
+  val scalatest       = "3.2.14"
   val oslib           = "0.8.1"
   val organizeimports = "0.6.0"
   val semanticdb      = "4.5.13"
   val mainargs        = "0.3.0"
   val scoverage       = "2.0.5"
+  val scalajsdom      = "2.3.0"
 }
 
 object riscvassembler extends Module {
@@ -45,9 +46,7 @@ object riscvassembler extends Module {
     with ScoverageModule {
     def millSourcePath   = super.millSourcePath / os.up
     def scoverageVersion = versions.scoverage
-    object test extends ScoverageTests with RiscvAssemblerTest {
-      def scalaVersion = crossScalaVersion
-    }
+    object test extends ScoverageTests with RiscvAssemblerTest {}
   }
 
   object native extends Cross[RiscvAssemblerNativeModule](scalaNativeVersions: _*)
@@ -69,7 +68,7 @@ object riscvassembler extends Module {
     with ScalaJSModule {
     def millSourcePath = super.millSourcePath / os.up / os.up
     def scalaJSVersion = crossScalaJsVersion
-    def ivyDeps        = Agg(ivy"org.scala-js::scalajs-dom::2.2.0")
+    def ivyDeps        = Agg(ivy"org.scala-js::scalajs-dom::${versions.scalajsdom}")
 
     def scalaJSUseMainModuleInitializer = true
     def moduleKind                      = T(ModuleKind.CommonJSModule)
@@ -79,15 +78,11 @@ object riscvassembler extends Module {
   }
 }
 
-object rvasmcli extends ScalaNativeModule {
-  def ivyDeps = super.ivyDeps() ++ Agg(
-    ivy"com.lihaoyi::os-lib::${versions.oslib}",
-    ivy"com.lihaoyi::mainargs::${versions.mainargs}",
-  )
-  def scalaVersion       = scala3
+object rvasmcli extends RiscvAssemblerModule with ScalaNativeModule {
+  def millSourcePath     = super.millSourcePath / os.up / this.toString
+  def crossScalaVersion  = scala3
   def scalaNativeVersion = scalaNativeVersions.head._2
   def moduleDeps         = Seq(riscvassembler.native(scala3, scalaNativeVersions.head._2))
-  def scoverageVersion   = versions.scoverage
   def mainClass          = Some("com.carlosedp.rvasmcli.Main")
   def logLevel           = NativeLogLevel.Info
   def releaseMode        = ReleaseMode.Debug
@@ -109,7 +104,6 @@ trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule with Bui
   def scalacPluginIvyDeps = super.scalacPluginIvyDeps() ++ (if (!isScala3(crossScalaVersion))
                                                               Agg(ivy"org.scalameta:::semanticdb-scalac:${versions.semanticdb}")
                                                             else Agg.empty)
-
   def artifactName = "riscvassembler"
   def publishVer: T[String] = T {
     val isTag = T.ctx().env.get("GITHUB_REF").exists(_.startsWith("refs/tags"))
