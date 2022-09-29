@@ -21,7 +21,7 @@ import io.github.davidgregory084.TpolecatModule
 import $ivy.`com.lihaoyi::mill-contrib-buildinfo:`
 import mill.contrib.buildinfo.BuildInfo
 
-val scalaVersions       = Seq("2.12.17", "2.13.9", "3.1.3")
+val scalaVersions       = Seq("2.12.17", "2.13.9", "3.2.0")
 val scalaNativeVersions = scalaVersions.map((_, "0.4.7"))
 val scalaJsVersions     = scalaVersions.map((_, "1.11.0"))
 
@@ -89,13 +89,13 @@ object rvasmcli extends RiscvAssemblerModule with ScalaNativeModule {
 
 // Create a project on pinned Scala version for coverage, fmt and fix
 object linter extends ScoverageReport with ScalafixModule with ScalafmtModule {
-  val scala            = "2.13"
+  val scala            = "3"
   def scalaVersion     = scalaVersions.find(_.startsWith(scala)).get
   def scoverageVersion = versions.scoverage
   def scalafixIvyDeps  = Agg(ivy"com.github.liancheng::organize-imports:${versions.organizeimports}")
-  def scalacPluginIvyDeps = T {
-    super.scalacPluginIvyDeps() ++ Agg(ivy"org.scalameta:::semanticdb-scalac:${versions.semanticdb}")
-  }
+  // def scalacPluginIvyDeps = T {
+  //   super.scalacPluginIvyDeps() ++ Agg(ivy"org.scalameta:::semanticdb-scalac:${versions.semanticdb}")
+  // }
 
   object riscvassembler extends RiscvAssemblerModule with ScoverageModule {
     def millSourcePath    = super.millSourcePath / os.up / "riscvassembler"
@@ -182,7 +182,8 @@ def deps(implicit ev: eval.Evaluator) = T.command {
   mill.scalalib.Dependency.showUpdates(ev)
 }
 def coverage(implicit ev: eval.Evaluator) = T.command {
-  runTasks(Seq("linter.__.test", "linter.htmlReportAll", "linter.xmlReportAll", "linter.consoleReportAll"))
+  runTasks(Seq("linter.__.test", "linter.xmlReportAll", "linter.consoleReportAll"))
+  // runTasks(Seq("linter.__.test", "linter.htmlReportAll", "linter.xmlReportAll", "linter.consoleReportAll"))
 }
 def pub(implicit ev: eval.Evaluator) = T.command {
   runTasks(Seq("io.kipp.mill.ci.release.ReleaseModule/publishAll"))
