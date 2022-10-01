@@ -78,9 +78,12 @@ object riscvassembler extends Module {
   }
 }
 
-object rvasmcli extends RiscvAssemblerModule with ScalaNativeModule {
-  def millSourcePath     = super.millSourcePath / os.up / this.toString
+val LLVMTriples = Seq("x86_64-apple-darwin21.6.0", "arm64-apple-darwin21.6.0")
+object rvasmcli extends Cross[RVASMCLI](LLVMTriples: _*)
+class RVASMCLI(val LLVMtriple: String) extends RiscvAssemblerModule with ScalaNativeModule {
+  def millSourcePath     = super.millSourcePath / this.toString / os.up
   def crossScalaVersion  = scala3
+  def nativeTarget       = Some(LLVMtriple)
   def scalaNativeVersion = scalaNativeVersions.head._2
   def moduleDeps         = Seq(riscvassembler.native(scala3, scalaNativeVersions.head._2))
   def mainClass          = Some("com.carlosedp.rvasmcli.Main")
@@ -109,10 +112,10 @@ trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule with Bui
     val isTag = T.ctx().env.get("GITHUB_REF").exists(_.startsWith("refs/tags"))
     val state = VcsVersion.vcsState()
     if (state.commitsSinceLastTag == 0 && isTag) {
-      state.lastTag.get.replace("v", "")
+      state.stripV(state.lastTag.get)
     } else {
-      val v = state.lastTag.get.split('.')
-      s"${v(0)}.${(v(1).toInt) + 1}".replace("v", "") + "-SNAPSHOT"
+      val v = state.stripV(state.lastTag.get).split('.')
+      s"${v(0)}.${(v(1).toInt) + 1}-SNAPSHOT"
     }
   }
   def buildInfoMembers: T[Map[String, String]] = T {
@@ -146,9 +149,7 @@ trait RiscvAssemblerPublish extends RiscvAssemblerModule with CiReleaseModule {
 }
 
 trait RiscvAssemblerTest extends ScalaModule with TestModule.ScalaTest {
-  def ivyDeps = super.ivyDeps() ++ Agg(
-    ivy"org.scalatest::scalatest::${versions.scalatest}",
-  )
+  def ivyDeps = Agg(ivy"org.scalatest::scalatest::${versions.scalatest}")
 }
 
 // Toplevel commands and aliases
