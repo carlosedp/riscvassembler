@@ -78,22 +78,31 @@ object riscvassembler extends Module {
   }
 }
 
-val LLVMTriplesLinux = Seq("x86_64-linux-gnu", "arm64-linux-gnu", "powerpc64le-linux-gnu", "riscv64-linux-gnu")
-val LLVMTriplesMac   = Seq("x86_64-apple-darwin21.6.0", "arm64-apple-darwin21.6.0")
-// val LLVMTriplesWindows = Seq("x86_64-pc-windows", "x86_64-pc-win32") // Check?!
-val currentOS = os.proc("uname", "-s").call().out.trim.toLowerCase
-val LLVMTriples = currentOS match {
+def LLVMTriplesLinux = Seq("x86_64-linux-gnu", "arm64-linux-gnu", "powerpc64le-linux-gnu", "riscv64-linux-gnu")
+def LLVMTriplesMac   = Seq("x86_64-apple-darwin21.6.0", "arm64-apple-darwin21.6.0")
+def currentOS        = os.proc("uname", "-s").call().out.trim.toLowerCase
+def LLVMTriples = currentOS match {
   case "linux"  => LLVMTriplesLinux
   case "darwin" => LLVMTriplesMac
-  // case _        => LLVMTriplesWindows
+  // case _        => // On Windows? Use WSL.
 }
-object rvasmcli extends Cross[RVASMCLI](LLVMTriples: _*)
-class RVASMCLI(val LLVMtriple: String) extends RiscvAssemblerModule with ScalaNativeModule {
-  def millSourcePath     = super.millSourcePath / this.toString / os.up
-  def crossScalaVersion  = scala3
+
+object rvasmcli extends RVasmcliBase
+
+object rvasmclicross extends Cross[RVASMCLI](LLVMTriples: _*)
+class RVASMCLI(val LLVMtriple: String) extends RVasmcliBase {
+  def nativeTarget = Some(LLVMtriple)
+}
+
+trait RVasmcliBase extends ScalaNativeModule with TpolecatModule with ScalafixModule with ScalafmtModule {
+  def millSourcePath = build.millSourcePath / "rvasmcli"
+  def ivyDeps = super.ivyDeps() ++ Agg(
+    ivy"com.lihaoyi::os-lib::${versions.oslib}",
+    ivy"com.lihaoyi::mainargs::${versions.mainargs}",
+  )
+  def scalaVersion       = scala3
   def scalaNativeVersion = scalaNativeVersions.head._2
   def moduleDeps         = Seq(riscvassembler.native(scala3, scalaNativeVersions.head._2))
-  def nativeTarget       = Some(LLVMtriple)
   def mainClass          = Some("com.carlosedp.rvasmcli.Main")
   def logLevel           = NativeLogLevel.Info
   def releaseMode        = ReleaseMode.Debug
@@ -113,7 +122,6 @@ object scoverage extends ScoverageReport {
 trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule with BuildInfo with ScalafixModule with ScalafmtModule {
   def ivyDeps = super.ivyDeps() ++ Agg(
     ivy"com.lihaoyi::os-lib::${versions.oslib}",
-    ivy"com.lihaoyi::mainargs::${versions.mainargs}",
   )
   def scalafixIvyDeps = Agg(ivy"com.github.liancheng::organize-imports:${versions.organizeimports}")
   def scalacPluginIvyDeps = super.scalacPluginIvyDeps() ++ (if (!isScala3(crossScalaVersion))
@@ -144,6 +152,10 @@ trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule with Bui
   def buildInfoPackageName = Some("com.carlosedp.riscvassembler")
 }
 
+trait RiscvAssemblerTest extends ScalaModule with TestModule.ScalaTest {
+  def ivyDeps = Agg(ivy"org.scalatest::scalatest::${versions.scalatest}")
+}
+
 trait RiscvAssemblerPublish extends RiscvAssemblerModule with CiReleaseModule {
   def publishVersion = super.publishVer
   def pomSettings = PomSettings(
@@ -158,10 +170,6 @@ trait RiscvAssemblerPublish extends RiscvAssemblerModule with CiReleaseModule {
   )
   override def sonatypeUri:         String = "https://s01.oss.sonatype.org/service/local"
   override def sonatypeSnapshotUri: String = "https://s01.oss.sonatype.org/content/repositories/snapshots"
-}
-
-trait RiscvAssemblerTest extends ScalaModule with TestModule.ScalaTest {
-  def ivyDeps = Agg(ivy"org.scalatest::scalatest::${versions.scalatest}")
 }
 
 // Toplevel commands and aliases
