@@ -78,17 +78,29 @@ object riscvassembler extends Module {
   }
 }
 
-val LLVMTriples = Seq("x86_64-apple-darwin21.6.0", "arm64-apple-darwin21.6.0")
+val LLVMTriplesLinux = Seq("x86_64-linux-gnu", "arm64-linux-gnu", "powerpc64le-linux-gnu", "riscv64-linux-gnu")
+val LLVMTriplesMac   = Seq("x86_64-apple-darwin21.6.0", "arm64-apple-darwin21.6.0")
+// val LLVMTriplesWindows = Seq("x86_64-pc-windows", "x86_64-pc-win32") // Check?!
+val currentOS = os.proc("uname", "-s").call().out.trim.toLowerCase
+val LLVMTriples = currentOS match {
+  case "linux"  => LLVMTriplesLinux
+  case "darwin" => LLVMTriplesMac
+  // case _        => LLVMTriplesWindows
+}
 object rvasmcli extends Cross[RVASMCLI](LLVMTriples: _*)
 class RVASMCLI(val LLVMtriple: String) extends RiscvAssemblerModule with ScalaNativeModule {
   def millSourcePath     = super.millSourcePath / this.toString / os.up
   def crossScalaVersion  = scala3
-  def nativeTarget       = Some(LLVMtriple)
   def scalaNativeVersion = scalaNativeVersions.head._2
   def moduleDeps         = Seq(riscvassembler.native(scala3, scalaNativeVersions.head._2))
+  def nativeTarget       = Some(LLVMtriple)
   def mainClass          = Some("com.carlosedp.rvasmcli.Main")
   def logLevel           = NativeLogLevel.Info
   def releaseMode        = ReleaseMode.Debug
+  if (currentOS == "linux") {
+    def nativeLTO            = LTO.Thin
+    def nativeLinkingOptions = Seq("-static", "-fuse-ld=lld")
+  }
   object test extends Tests with RiscvAssemblerTest {}
 }
 
