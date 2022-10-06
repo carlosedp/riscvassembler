@@ -19,7 +19,7 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
       inst.funct7 should be(f7)
       inst.funct3 should be(f3)
       inst.opcode should be("0110011")
-      inst.instType should be(InstructionTypes.R)
+      inst.instType should be(InstType.R)
     }
   }
 
@@ -31,7 +31,7 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
       inst.name should be(i)
       inst.funct3 should be(f3)
       inst.opcode should be("0010011")
-      inst.instType should be(InstructionTypes.I)
+      inst.instType should be(InstType.I)
     }
   }
 
@@ -44,7 +44,7 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
       inst.funct3 should be(f3)
       inst.opcode should be("1110011")
       inst.isCsr should be(true)
-      inst.instType should be(InstructionTypes.I)
+      inst.instType should be(InstType.I)
     }
   }
 
@@ -56,7 +56,7 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
       inst.name should be(i)
       inst.funct3 should be(f3)
       inst.opcode should be("0000011")
-      inst.instType should be(InstructionTypes.I)
+      inst.instType should be(InstType.I)
     }
   }
 
@@ -70,7 +70,7 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
       inst.funct3 should be(f3)
       inst.fixed should be(f)
       inst.opcode should be("0010011")
-      inst.instType should be(InstructionTypes.I)
+      inst.instType should be(InstType.I)
     }
   }
 
@@ -79,28 +79,28 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     inst.name should be("JALR")
     inst.funct3 should be("000")
     inst.opcode should be("1100111")
-    inst.instType should be(InstructionTypes.I)
+    inst.instType should be(InstType.I)
   }
 
   it should "fetch JAL instruction" in {
     val inst = Instructions("JAL").get
     inst.name should be("JAL")
     inst.opcode should be("1101111")
-    inst.instType should be(InstructionTypes.J)
+    inst.instType should be(InstType.J)
   }
 
   it should "fetch LUI instruction" in {
     val inst = Instructions("LUI").get
     inst.name should be("LUI")
     inst.opcode should be("0110111")
-    inst.instType should be(InstructionTypes.U)
+    inst.instType should be(InstType.U)
   }
 
   it should "fetch AUIPC instruction" in {
     val inst = Instructions("AUIPC").get
     inst.name should be("AUIPC")
     inst.opcode should be("0010111")
-    inst.instType should be(InstructionTypes.U)
+    inst.instType should be(InstType.U)
   }
 
   it should "fetch B-type Branch instructions" in {
@@ -112,7 +112,7 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
       inst.name should be(i)
       inst.funct3 should be(f3)
       inst.opcode should be("1100011")
-      inst.instType should be(InstructionTypes.B)
+      inst.instType should be(InstType.B)
     }
   }
 
@@ -124,7 +124,7 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
       inst.name should be(i)
       inst.funct3 should be(f3)
       inst.opcode should be("0100011")
-      inst.instType should be(InstructionTypes.S)
+      inst.instType should be(InstType.S)
     }
   }
 

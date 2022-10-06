@@ -5,55 +5,59 @@ import scala.io.Source
 
 object RISCVAssembler {
 
-  /** AppInfo contains version and build information for the library
-    *
-    * Fields:
-    *   - `appName`: artifactName
-    *   - `appVersion`: Version derived from git tag or git `tag+1-SNAPSHOT`
-    *   - `revision`: Generated revision based on tag, commit and number of commits after last tag
-    *   - `buildCommit`: Commit ID
-    *   - `commitDate`: Last commit date
-    *   - `buildDate`: Build date
-    */
+  /**
+   * AppInfo contains version and build information for the library
+   *
+   * Fields:
+   *   - `appName`: artifactName
+   *   - `appVersion`: Version derived from git tag or git `tag+1-SNAPSHOT`
+   *   - `revision`: Generated revision based on tag, commit and number of
+   *     commits after last tag
+   *   - `buildCommit`: Commit ID
+   *   - `commitDate`: Last commit date
+   *   - `buildDate`: Build date
+   */
   val AppInfo = BuildInfo
 
-  /** Generate an hex string output fom the assembly source file
-    *
-    * Usage:
-    *
-    * {{{
-    * val outputHex = RISCVAssembler.fromFile("input.asm")
-    * }}}
-    *
-    * @param fileName
-    *   the assembly source file
-    * @return
-    *   the output hex string
-    */
+  /**
+   * Generate an hex string output fom the assembly source file
+   *
+   * Usage:
+   *
+   * {{{
+   * val outputHex = RISCVAssembler.fromFile("input.asm")
+   * }}}
+   *
+   * @param fileName
+   *   the assembly source file
+   * @return
+   *   the output hex string
+   */
   def fromFile(filename: String): String =
     fromString(Source.fromFile(filename).getLines().mkString("\n"))
 
-  /** Generate an hex string output fom the assembly string
-    *
-    * Usage:
-    *
-    * {{{
-    * val input =
-    *       """
-    *       addi x1 , x0,   1000
-    *       addi x2 , x1,   2000
-    *       addi x3 , x2,  -1000
-    *       addi x4 , x3,  -2000
-    *       addi x5 , x4,   1000
-    *       """.stripMargin
-    *     val outputHex = RISCVAssembler.fromString(input)
-    * }}}
-    *
-    * @param input
-    *   input assembly string to assemble (multiline string)
-    * @return
-    *   the assembled hex string
-    */
+  /**
+   * Generate an hex string output fom the assembly string
+   *
+   * Usage:
+   *
+   * {{{
+   * val input =
+   *       """
+   *       addi x1 , x0,   1000
+   *       addi x2 , x1,   2000
+   *       addi x3 , x2,  -1000
+   *       addi x4 , x3,  -2000
+   *       addi x5 , x4,   1000
+   *       """.stripMargin
+   *     val outputHex = RISCVAssembler.fromString(input)
+   * }}}
+   *
+   * @param input
+   *   input assembly string to assemble (multiline string)
+   * @return
+   *   the assembled hex string
+   */
   def fromString(input: String): String = {
     val (instructions, addresses, labels) = parseLines(input)
     (instructions zip addresses).map { case (i: String, a: String) => { binOutput(i, a, labels) } }
@@ -61,16 +65,18 @@ object RISCVAssembler {
       .mkString("\n") + "\n"
   }
 
-  /** Parses input string lines to generate the list of instructions, addresses and label addresses
-    *
-    * @param input
-    *   input multiline assembly string
-    * @return
-    *   a tuple containing:
-    *   - `ArrayBuffer[String]` with the assembly instruction
-    *   - `ArrayBuffer[String]` with the assembly instruction address
-    *   - `Map[String, String]` with the assembly label addresses
-    */
+  /**
+   * Parses input string lines to generate the list of instructions, addresses
+   * and label addresses
+   *
+   * @param input
+   *   input multiline assembly string
+   * @return
+   *   a tuple containing:
+   *   - `ArrayBuffer[String]` with the assembly instruction
+   *   - `ArrayBuffer[String]` with the assembly instruction address
+   *   - `Map[String, String]` with the assembly label addresses
+   */
   def parseLines(input: String): (ArrayBuffer[String], ArrayBuffer[String], Map[String, String]) = {
     val instList = input.split("\n").toList.filter(_.nonEmpty).filter(!_.trim().isEmpty()).map(_.trim)
     val ignores  = Seq(".", "/")
@@ -108,17 +114,18 @@ object RISCVAssembler {
     (instructions, instructionsAddr, labelIndex.toMap)
   }
 
-  /** Generate the binary output for the input instruction
-    * @param input
-    *   the input instruction (eg. "add x1, x2, x3")
-    * @return
-    *   the binary output in string format
-    */
+  /**
+   * Generate the binary output for the input instruction
+   * @param input
+   *   the input instruction (eg. "add x1, x2, x3")
+   * @return
+   *   the binary output in string format
+   */
   def binOutput(
     instruction: String,
-    address:     String              = "0",
+    address:     String = "0",
     labelIndex:  Map[String, String] = Map[String, String](),
-    width:       Int                 = 32,
+    width:       Int = 32,
   ): String = {
     val cleanInst = "\\/\\*.*\\*\\/".r.replaceAllIn(instruction, "").toLowerCase.trim
     val (op, opdata) = InstructionParser(cleanInst, address, labelIndex) match {

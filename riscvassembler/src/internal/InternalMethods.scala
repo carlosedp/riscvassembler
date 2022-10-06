@@ -6,20 +6,21 @@ import com.carlosedp.riscvassembler.ObjectUtils._
 
 protected object InstructionParser {
 
-  /** Parse an assembly instruction and return the opcode and opdata
-    *
-    * @param input
-    *   the assembly instruction string
-    * @param addr
-    *   the assembly instruction address
-    * @param labelIndex
-    *   the index containing the label addresses
-    * @return
-    *   a tuple containing the Instruction and opdata
-    */
+  /**
+   * Parse an assembly instruction and return the opcode and opdata
+   *
+   * @param input
+   *   the assembly instruction string
+   * @param addr
+   *   the assembly instruction address
+   * @param labelIndex
+   *   the index containing the label addresses
+   * @return
+   *   a tuple containing the Instruction and opdata
+   */
   def apply(
     input:      String,
-    addr:       String              = "0",
+    addr:       String = "0",
     labelIndex: Map[String, String] = Map[String, String](),
   ): Option[(Instruction, Map[String, Long])] = {
     // The regex splits the input into groups (dependind on type):
@@ -41,7 +42,7 @@ protected object InstructionParser {
     }
 
     inst.instType match {
-      case InstructionTypes.R =>
+      case InstType.R =>
         if (instructionParts.length != 4) return None
         Some(
           (
@@ -53,7 +54,7 @@ protected object InstructionParser {
             ),
           ),
         )
-      case InstructionTypes.I => {
+      case InstType.I => {
         if (instructionParts.length != 4) return None
         if (inst.hasOffset) {
           val imm =
@@ -87,7 +88,7 @@ protected object InstructionParser {
         // if (inst.isCsr) {} else {}
         // if (inst.isFence) {}
       }
-      case InstructionTypes.S => {
+      case InstType.S => {
         if (instructionParts.length != 4) return None
         val imm =
           if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
@@ -103,7 +104,7 @@ protected object InstructionParser {
           ),
         )
       }
-      case InstructionTypes.B => {
+      case InstType.B => {
         if (instructionParts.length != 4) return None
         val imm = instructionParts(3) match {
           case i if i.startsWith("0x")      => BigInt(i.substring(2), 16).toLong
@@ -121,7 +122,7 @@ protected object InstructionParser {
           ),
         )
       }
-      case InstructionTypes.U | InstructionTypes.J => {
+      case InstType.U | InstType.J => {
         if (instructionParts.length != 3) return None
         val imm = instructionParts(2) match {
           case i if i.startsWith("0x")      => BigInt(i.substring(2), 16).toLong
@@ -138,39 +139,40 @@ protected object InstructionParser {
 
 protected object FillInstruction {
 
-  /** Fills the instruction arguments based on instruction type
-    *
-    * @param op
-    *   the instruction opcode and type
-    * @param data
-    *   the received instruction arguments
-    * @return
-    *   the filled instruction binary
-    */
+  /**
+   * Fills the instruction arguments based on instruction type
+   *
+   * @param op
+   *   the instruction opcode and type
+   * @param data
+   *   the received instruction arguments
+   * @return
+   *   the filled instruction binary
+   */
   def apply(op: Instruction, data: Map[String, Long]): String =
     op.instType match {
-      case InstructionTypes.R => {
+      case InstType.R => {
         val rd  = data("rd").toBinaryString.padZero(5)
         val rs1 = data("rs1").toBinaryString.padZero(5)
         val rs2 = data("rs2").toBinaryString.padZero(5)
         op.funct7 + rs2 + rs1 + op.funct3 + rd + op.opcode
       }
 
-      case InstructionTypes.I => {
+      case InstType.I => {
         val rd  = data("rd").toBinaryString.padZero(5)
         val rs1 = data("rs1").toBinaryString.padZero(5)
         val imm = data("imm").to32Bit.toBinaryString.padZero(12)
         imm + rs1 + op.funct3 + rd + op.opcode
       }
 
-      case InstructionTypes.S => {
+      case InstType.S => {
         val rs1 = data("rs1").toBinaryString.padZero(5)
         val rs2 = data("rs2").toBinaryString.padZero(5)
         val imm = data("imm").to32Bit.toBinaryString.padZero(12).reverse // reverse to have binary in little endian
         imm.slice(5, 12).reverse + rs2 + rs1 + op.funct3 + imm.slice(0, 5).reverse + op.opcode
       }
 
-      case InstructionTypes.B => {
+      case InstType.B => {
         val rs1 = data("rs1").toBinaryString.padZero(5)
         val rs2 = data("rs2").toBinaryString.padZero(5)
         val imm = data("imm").to32Bit.toBinaryString.padZero(13).reverse // reverse to have binary in little endian
@@ -178,13 +180,13 @@ protected object FillInstruction {
           imm.slice(1, 5).reverse + imm.slice(11, 12).reverse + op.opcode
       }
 
-      case InstructionTypes.U => {
+      case InstType.U => {
         val rd  = data("rd").toBinaryString.padZero(5)
         val imm = data("imm").to32Bit.toBinaryString.padZero(32).take(20)
         imm + rd + op.opcode
       }
 
-      case InstructionTypes.J => {
+      case InstType.J => {
         val rd  = data("rd").toBinaryString.padZero(5)
         val imm = data("imm").to32Bit.toBinaryString.padZero(21).reverse // reverse to have binary in little endian
         imm.slice(20, 21).reverse + imm.slice(1, 11).reverse + imm.slice(11, 12).reverse + imm
@@ -196,13 +198,14 @@ protected object FillInstruction {
 
 protected object GenHex {
 
-  /** Generate the hex string of the instruction from binary
-    *
-    * @param input
-    *   the binary string of the instruction
-    * @return
-    *   the hex string of the instruction
-    */
+  /**
+   * Generate the hex string of the instruction from binary
+   *
+   * @param input
+   *   the binary string of the instruction
+   * @return
+   *   the hex string of the instruction
+   */
   def apply(
     input: String,
   ): String = {
@@ -214,13 +217,14 @@ protected object GenHex {
 
 protected object RegMap {
 
-  /** Maps the register name or ABI name to the register number
-    *
-    * @param regName
-    *   the register name
-    * @return
-    *   the register number
-    */
+  /**
+   * Maps the register name or ABI name to the register number
+   *
+   * @param regName
+   *   the register name
+   * @return
+   *   the register number
+   */
   def apply(
     input: String,
   ): Long =
