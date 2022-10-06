@@ -79,7 +79,7 @@ object riscvassembler extends Module {
 }
 
 def LLVMTriplesLinux = Seq("x86_64-linux-gnu", "arm64-linux-gnu", "powerpc64le-linux-gnu", "riscv64-linux-gnu")
-def LLVMTriplesMac   = Seq("x86_64-apple-darwin21.6.0", "arm64-apple-darwin21.6.0")
+def LLVMTriplesMac   = Seq("x86_64-apple-darwin20.3.0", "arm64-apple-darwin20.3.0")
 def currentOS        = os.proc("uname", "-s").call().out.trim.toLowerCase
 def LLVMTriples = currentOS match {
   case "linux"  => LLVMTriplesLinux
@@ -96,7 +96,7 @@ class RVASMCLI(val LLVMtriple: String) extends RVasmcliBase {
 
 trait RVasmcliBase extends ScalaNativeModule with TpolecatModule with ScalafixModule with ScalafmtModule {
   def millSourcePath = build.millSourcePath / "rvasmcli"
-  def ivyDeps = super.ivyDeps() ++ Agg(
+  def ivyDeps = Agg(
     ivy"com.lihaoyi::os-lib::${versions.oslib}",
     ivy"com.lihaoyi::mainargs::${versions.mainargs}",
   )
@@ -110,7 +110,7 @@ trait RVasmcliBase extends ScalaNativeModule with TpolecatModule with ScalafixMo
     def nativeLTO            = LTO.Thin
     def nativeLinkingOptions = Seq("-static", "-fuse-ld=lld")
   }
-  object test extends Tests with RiscvAssemblerTest {}
+  object test extends Tests with RiscvAssemblerTest
 }
 
 // Aggregate reports for all projects
@@ -119,14 +119,20 @@ object scoverage extends ScoverageReport {
   override def scoverageVersion = versions.scoverage
 }
 
-trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule with BuildInfo with ScalafixModule with ScalafmtModule {
-  def ivyDeps = super.ivyDeps() ++ Agg(
+trait RiscvAssemblerModule
+  extends CrossScalaModule
+  with TpolecatModule
+  with BuildInfo
+  with ScalafixModule
+  with ScalafmtModule {
+  def ivyDeps = Agg(
     ivy"com.lihaoyi::os-lib::${versions.oslib}",
   )
   def scalafixIvyDeps = Agg(ivy"com.github.liancheng::organize-imports:${versions.organizeimports}")
-  def scalacPluginIvyDeps = super.scalacPluginIvyDeps() ++ (if (!isScala3(crossScalaVersion))
-                                                              Agg(ivy"org.scalameta:::semanticdb-scalac:${versions.semanticdb}")
-                                                            else Agg.empty)
+  def scalacPluginIvyDeps =
+    super.scalacPluginIvyDeps() ++ (if (!isScala3(crossScalaVersion))
+                                      Agg(ivy"org.scalameta:::semanticdb-scalac:${versions.semanticdb}")
+                                    else Agg.empty)
   def artifactName = "riscvassembler"
   def publishVer: T[String] = T {
     val isTag = T.ctx().env.get("GITHUB_REF").exists(_.startsWith("refs/tags"))
@@ -144,8 +150,12 @@ trait RiscvAssemblerModule extends CrossScalaModule with TpolecatModule with Bui
       "appVersion"  -> publishVer(),
       "revision"    -> VcsVersion.vcsState().format(),
       "buildCommit" -> VcsVersion.vcsState().currentRevision,
-      "commitDate"  -> os.proc("git", "log", "-1", "--date=format:\"%a %b %d %T %z %Y\"", "--format=\"%ad\"").call().out.trim,
-      "buildDate"   -> new Date().toString,
+      "commitDate" -> os
+        .proc("git", "log", "-1", "--date=format:\"%a %b %d %T %z %Y\"", "--format=\"%ad\"")
+        .call()
+        .out
+        .trim,
+      "buildDate" -> new Date().toString,
     )
   }
   def buildInfoObjectName  = "BuildInfo"
@@ -182,7 +192,11 @@ def runTasks(t: Seq[String])(implicit ev: eval.Evaluator) = T.task {
 }
 def lint(implicit ev: eval.Evaluator) = T.command {
   runTasks(
-    Seq(s"riscvassembler.jvm[$scala3].fix", "rvasmcli.fix", "mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources"),
+    Seq(
+      s"riscvassembler.jvm[$scala3].fix",
+      "rvasmcli.fix",
+      "mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources",
+    ),
   )
 }
 def deps(implicit ev: eval.Evaluator) = T.command {
