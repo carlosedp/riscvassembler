@@ -76,6 +76,9 @@ protected object Instructions {
   )
 }
 
+/**
+ * This function transforms a pseudo instruction to it's real conterpart
+ */
 protected object PseudoInstructions {
   def apply(instructionData: Array[String]): Option[Array[String]] =
     instructionData(0).toUpperCase match {

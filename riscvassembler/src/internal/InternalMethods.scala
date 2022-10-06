@@ -206,9 +206,7 @@ protected object GenHex {
    * @return
    *   the hex string of the instruction
    */
-  def apply(
-    input: String,
-  ): String = {
+  def apply(input: String): String = {
     // Make this 64bit in the future
     val x = BigInt(input, 2).toLong
     f"0x$x%08X".toString.takeRight(8)
@@ -225,9 +223,7 @@ protected object RegMap {
    * @return
    *   the register number
    */
-  def apply(
-    input: String,
-  ): Long =
+  def apply(input: String): Long =
     input.toLowerCase match {
       case "x0" | "zero"      => 0
       case "x1" | "ra"        => 1
