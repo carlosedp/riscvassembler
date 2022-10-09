@@ -84,12 +84,15 @@ object RISCVAssembler {
     // Filter lines which begin with characters from `ignores`
     val instListFilter = instList.filterNot(l => ignores.contains(l.trim().take(1))).toIndexedSeq
 
+    // Remove inline comments
+    val instListNocomment = instListFilter.map(_.split("/")(0).trim).toIndexedSeq
+
     var idx              = 0
     val instructions     = scala.collection.mutable.ArrayBuffer.empty[String]
     val instructionsAddr = scala.collection.mutable.ArrayBuffer.empty[String]
     val labelIndex       = scala.collection.mutable.Map[String, String]()
 
-    instListFilter.foreach { data =>
+    instListNocomment.foreach { data =>
       // That's an ugly parser, but works for now :)
       // println(s"-- Processing line: $data, address: ${(idx * 4L).toHexString}")
       val hasLabel = data.indexOf(":")

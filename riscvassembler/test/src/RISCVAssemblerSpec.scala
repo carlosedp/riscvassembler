@@ -151,7 +151,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
     output should be(correct)
   }
 
-  it should "generate hex output for multiple instructions with comments" in {
+  it should "generate hex output for multiple instructions with /* */ comments" in {
     val input =
       """
       addi x1 , x0,   1000  /* x1  = 1000 0x3E8 */
@@ -169,6 +169,25 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
         |c1810193
         |83018213
         |3e820293
+        |""".stripMargin.toUpperCase.trim
+
+    output should be(correct)
+  }
+
+  it should "generate hex output for multiple instructions with // comments" in {
+    val input =
+      """
+      addi x1, x0, 1000
+      sw x3, 48(x1)      // With single line comment
+      addi x1, x0, 1000
+        """.stripMargin
+    val output = RISCVAssembler.fromString(input).trim
+
+    val correct =
+      """
+        |3e800093
+        |0230A823
+        |3e800093
         |""".stripMargin.toUpperCase.trim
 
     output should be(correct)
