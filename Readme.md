@@ -38,6 +38,8 @@ def ivyDeps = Agg(
 )
 ```
 
+If using the library for Scala.js or Scala Native projects, remember to use "::" (double colon) on Mill between the library name and version and on SBT use "%%%" (triple percent) between organization and the library name.
+
 ## Library Description and Sample Code
 
 The library is pure Scala and provides methods to generate hexadecimal machine code (like memory files to be consumed by `readmemh` statements) from assembly input. It does not depend on Chisel or other libs and intent to work similarly to a simpler `gcc + ld + objcopy + hexdump` flow as used on this [`Makefile`](https://github.com/carlosedp/chiselv/gcc/test/Makefile) or <https://riscvasm.lucasteske.dev> web app.
@@ -165,6 +167,8 @@ def ivyDeps = Agg(
   ...
 )
 ```
+
+If using the library for Scala.js or Scala Native projects, remember to use "::" (double colon) on Mill between the library name and version and on SBT use "%%%" (triple percent) between organization and the library name.
 
 ### Development and Testing
 
