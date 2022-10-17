@@ -108,12 +108,13 @@ trait RVasmcliBase
   with TpolecatModule
   with ScalafixModule
   with ScalafmtModule {
+  def scalaVersion   = scala3
   def millSourcePath = build.millSourcePath / "rvasmcli"
   def ivyDeps = Agg(
     ivy"com.lihaoyi::os-lib::${versions.oslib}",
     ivy"com.lihaoyi::mainargs::${versions.mainargs}",
   )
-  def scalaVersion = scala3
+  def scalafixIvyDeps = Agg(ivy"com.github.liancheng::organize-imports:${versions.organizeimports}")
   // Scala Native settings
   def scalaNativeVersion      = scalaNativeVersions.head._2
   def moduleDeps              = Seq(riscvassembler.native(scala3, scalaNativeVersions.head._2))
