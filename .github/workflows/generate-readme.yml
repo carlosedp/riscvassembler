@@ -13,8 +13,8 @@ jobs:
   regenerate-readme:
     runs-on: ubuntu-latest
     steps:
-      - name: Sleep for 20 minutes while repository metadata is updated
-        run: sleep 20m
+      - name: Sleep for 30 minutes while repository metadata is updated
+        run: sleep 30m
         shell: bash
 
       - name: Checkout
