@@ -20,9 +20,11 @@ import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.1`
 import io.github.davidgregory084.TpolecatModule
 import $ivy.`com.lihaoyi::mill-contrib-buildinfo:`
 import mill.contrib.buildinfo.BuildInfo
+import $ivy.`io.github.alexarchambault.mill::mill-native-image::0.1.21`
+import io.github.alexarchambault.millnativeimage.NativeImage
 
 val scala212            = "2.12.17"
-val scala213            = "2.13.9"
+val scala213            = "2.13.10"
 val scala3              = "3.2.0"
 val scalaVersions       = Seq(scala212, scala213, scala3)
 val scalaNativeVersions = scalaVersions.map((_, "0.4.7"))
@@ -34,7 +36,7 @@ object versions {
   val organizeimports = "0.6.0"
   val semanticdb      = "4.5.13"
   val mainargs        = "0.3.0"
-  val scoverage       = "2.0.5"
+  val scoverage       = "2.0.7"
   val scalajsdom      = "2.3.0"
 }
 
@@ -78,38 +80,64 @@ object riscvassembler extends Module {
   }
 }
 
-def LLVMTriplesLinux = Seq("x86_64-linux-gnu", "arm64-linux-gnu", "powerpc64le-linux-gnu", "riscv64-linux-gnu")
-def LLVMTriplesMac   = Seq("x86_64-apple-darwin20.3.0", "arm64-apple-darwin20.3.0")
-def currentOS        = os.proc("uname", "-s").call().out.trim.toLowerCase
-def LLVMTriples = currentOS match {
-  case "linux"  => LLVMTriplesLinux
-  case "darwin" => LLVMTriplesMac
-  // case _        => // On Windows? Use WSL.
-}
-
+// Build ScalaNative or Native Image for current platform
 object rvasmcli extends RVasmcliBase
 
+def LLVMTriples = System.getProperty("os.name").toLowerCase match {
+  case os if os.contains("linux") =>
+    Seq("x86_64-linux-gnu", "arm64-linux-gnu", "powerpc64le-linux-gnu", "riscv64-linux-gnu")
+  case os if os.contains("mac") =>
+    Seq("x86_64-apple-darwin20.3.0", "arm64-apple-darwin20.3.0")
+}
+
+// Build ScalaNative or Native Image for cross-architecture depending on LLVM Triple setting above.
 object rvasmclicross extends Cross[RVASMCLI](LLVMTriples: _*)
 class RVASMCLI(val LLVMtriple: String) extends RVasmcliBase {
   def nativeTarget = Some(LLVMtriple)
 }
 
-trait RVasmcliBase extends ScalaNativeModule with TpolecatModule with ScalafixModule with ScalafmtModule {
+/*
+ * This trait allows building both Scala Native and Native Image (using GraalVM)
+ * Scala Native: `mill rvasmcli.nativeLink`
+ * Native Image: `mill rvasmcli.nativeImage`
+ * The trait is also used for cross-building to different architectures
+ */
+trait RVasmcliBase
+  extends ScalaNativeModule
+  with NativeImage
+  with TpolecatModule
+  with ScalafixModule
+  with ScalafmtModule {
   def millSourcePath = build.millSourcePath / "rvasmcli"
   def ivyDeps = Agg(
     ivy"com.lihaoyi::os-lib::${versions.oslib}",
     ivy"com.lihaoyi::mainargs::${versions.mainargs}",
   )
-  def scalaVersion       = scala3
-  def scalaNativeVersion = scalaNativeVersions.head._2
-  def moduleDeps         = Seq(riscvassembler.native(scala3, scalaNativeVersions.head._2))
-  def mainClass          = Some("com.carlosedp.rvasmcli.Main")
-  def logLevel           = NativeLogLevel.Info
-  def releaseMode        = ReleaseMode.Debug
-  if (currentOS == "linux") {
+  def scalaVersion = scala3
+  // Scala Native settings
+  def scalaNativeVersion      = scalaNativeVersions.head._2
+  def moduleDeps              = Seq(riscvassembler.native(scala3, scalaNativeVersions.head._2))
+  private def actualMainClass = "com.carlosedp.rvasmcli.Main"
+  def mainClass               = Some(actualMainClass)
+  def logLevel                = NativeLogLevel.Info
+  def releaseMode             = ReleaseMode.Debug
+  if (System.getProperty("os.name").toLowerCase == "linux") {
     def nativeLTO            = LTO.Thin
-    def nativeLinkingOptions = Seq("-static", "-fuse-ld=lld")
+    def nativeLinkingOptions = Array("-static", "-fuse-ld=lld")
   }
+  // Native Image (GraalVM) settings
+  def nativeImageName = "rvasmcli"
+  def nativeImageGraalVmJvmId = T {
+    sys.env.getOrElse("GRAALVM_ID", "graalvm-java17:22.2.0")
+  }
+  def nativeImageClassPath = runClasspath()
+  def nativeImageMainClass = actualMainClass
+  def nativeImageOptions = super.nativeImageOptions() ++ Seq(
+    "--no-fallback",
+    "--enable-url-protocols=http,https",
+    "-Djdk.http.auth.tunneling.disabledSchemes=",
+  )
+
   object test extends Tests with RiscvAssemblerTest
 }
 
