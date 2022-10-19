@@ -2,7 +2,7 @@ pull_request_rules:
   - name: Automatic merge on approval and CI success
     conditions:
       - base=main
-      - label="Please Merge"
+      - label="please merge"
       - status-success=test (8)
       - status-success=test (11)
       - status-success=test (17)
