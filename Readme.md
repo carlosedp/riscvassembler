@@ -14,6 +14,7 @@ A RISC-V assembler library for Scala/Chisel HDL projects. For details, check the
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://api.mergify.com/v1/badges/carlosedp/riscvassembler&style=flat)](https://mergify.com)
 [![Scaladoc](https://www.javadoc.io/badge/com.carlosedp/riscvassembler_2.13.svg?color=blue&label=Scaladoc)](https://javadoc.io/doc/com.carlosedp/riscvassembler_2.13/latest)
 
+Leveraging the library, I have a Web application built in Scala.js that runs in the browser to assemble web instructions to hex. Check it out at https://carlosedp.github.io/rvasmweb/. The source code for the site is [here](https://github.com/carlosedp/rvasmweb/).
 
 ## Using in your project
 
