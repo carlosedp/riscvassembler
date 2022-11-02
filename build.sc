@@ -13,7 +13,7 @@ import mill.contrib.scoverage.{ScoverageModule, ScoverageReport}
 import $ivy.`com.goyeau::mill-scalafix::0.2.11`
 import com.goyeau.mill.scalafix.ScalafixModule
 import $ivy.`io.chris-kipp::mill-ci-release::0.1.3`
-import io.kipp.mill.ci.release.CiReleaseModule
+import io.kipp.mill.ci.release.{CiReleaseModule, SonatypeHost}
 import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.0`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
 import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.1`
@@ -43,7 +43,7 @@ object versions {
 object riscvassembler extends Module {
   object jvm extends Cross[RiscvAssemblerJVMModule](scalaVersions: _*)
   class RiscvAssemblerJVMModule(val crossScalaVersion: String)
-    extends RiscvAssemblerModule
+    extends RiscvAssemblerLib
     with RiscvAssemblerPublish
     with ScoverageModule {
     def millSourcePath   = super.millSourcePath / os.up
@@ -53,7 +53,7 @@ object riscvassembler extends Module {
 
   object native extends Cross[RiscvAssemblerNativeModule](scalaNativeVersions: _*)
   class RiscvAssemblerNativeModule(val crossScalaVersion: String, crossScalaNativeVersion: String)
-    extends RiscvAssemblerModule
+    extends RiscvAssemblerLib
     with RiscvAssemblerPublish
     with ScalaNativeModule {
     def millSourcePath     = super.millSourcePath / os.up / os.up
@@ -65,7 +65,7 @@ object riscvassembler extends Module {
 
   object scalajs extends Cross[RiscvAssemblerScalajsModule](scalaJsVersions: _*)
   class RiscvAssemblerScalajsModule(val crossScalaVersion: String, crossScalaJsVersion: String)
-    extends RiscvAssemblerModule
+    extends RiscvAssemblerLib
     with RiscvAssemblerPublish
     with ScalaJSModule {
     def millSourcePath = super.millSourcePath / os.up / os.up
@@ -81,6 +81,8 @@ object riscvassembler extends Module {
 }
 
 // Build ScalaNative or Native Image for current platform
+// Scala Native: `mill rvasmcli.nativeLink`
+// Native Image: `mill rvasmcli.nativeImage`
 object rvasmcli extends RVasmcliBase
 
 def LLVMTriples = System.getProperty("os.name").toLowerCase match {
@@ -91,17 +93,14 @@ def LLVMTriples = System.getProperty("os.name").toLowerCase match {
 }
 
 // Build ScalaNative or Native Image for cross-architecture depending on LLVM Triple setting above.
+// Cross build for available architectures on current OS with: `mill rvasmclicross.__.nativeLink`
 object rvasmclicross extends Cross[RVASMCLI](LLVMTriples: _*)
 class RVASMCLI(val LLVMtriple: String) extends RVasmcliBase {
   def nativeTarget = Some(LLVMtriple)
 }
 
-/*
- * This trait allows building both Scala Native and Native Image (using GraalVM)
- * Scala Native: `mill rvasmcli.nativeLink`
- * Native Image: `mill rvasmcli.nativeImage`
- * The trait is also used for cross-building to different architectures
- */
+// This trait allows building both Scala Native and Native Image (using GraalVM)
+// The trait is also used for cross-building to different architectures
 trait RVasmcliBase
   extends ScalaNativeModule
   with NativeImage
@@ -148,7 +147,7 @@ object scoverage extends ScoverageReport {
   override def scoverageVersion = versions.scoverage
 }
 
-trait RiscvAssemblerModule
+trait RiscvAssemblerLib
   extends CrossScalaModule
   with TpolecatModule
   with BuildInfo
@@ -195,7 +194,7 @@ trait RiscvAssemblerTest extends ScalaModule with TestModule.ScalaTest {
   def ivyDeps = Agg(ivy"org.scalatest::scalatest::${versions.scalatest}")
 }
 
-trait RiscvAssemblerPublish extends RiscvAssemblerModule with CiReleaseModule {
+trait RiscvAssemblerPublish extends RiscvAssemblerLib with CiReleaseModule {
   def publishVersion = super.publishVer
   def pomSettings = PomSettings(
     description    = "RiscvAssembler is a RISC-V assembler library to be used on Scala and Chisel HDL projects.",
@@ -207,8 +206,7 @@ trait RiscvAssemblerPublish extends RiscvAssemblerModule with CiReleaseModule {
       Developer("carlosedp", "Carlos Eduardo de Paula", "https://github.com/carlosedp"),
     ),
   )
-  override def sonatypeUri:         String = "https://s01.oss.sonatype.org/service/local"
-  override def sonatypeSnapshotUri: String = "https://s01.oss.sonatype.org/content/repositories/snapshots"
+  override def sonatypeHost = Some(SonatypeHost.s01)
 }
 
 // Toplevel commands and aliases
