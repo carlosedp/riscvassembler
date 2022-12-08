@@ -12,7 +12,7 @@ import $ivy.`com.lihaoyi::mill-contrib-scoverage:`
 import mill.contrib.scoverage.{ScoverageModule, ScoverageReport}
 import $ivy.`com.goyeau::mill-scalafix::0.2.11`
 import com.goyeau.mill.scalafix.ScalafixModule
-import $ivy.`io.chris-kipp::mill-ci-release::0.1.3`
+import $ivy.`io.chris-kipp::mill-ci-release::0.1.4`
 import io.kipp.mill.ci.release.{CiReleaseModule, SonatypeHost}
 import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.0`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
@@ -32,7 +32,7 @@ val scalaJsVersions     = scalaVersions.map((_, "1.11.0"))
 
 object versions {
   val scalatest       = "3.2.14"
-  val oslib           = "0.8.1"
+  val oslib           = "0.9.0"
   val organizeimports = "0.6.0"
   val semanticdb      = "4.5.13"
   val mainargs        = "0.3.0"
