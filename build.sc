@@ -20,7 +20,7 @@ import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.1`
 import io.github.davidgregory084.TpolecatModule
 import $ivy.`com.lihaoyi::mill-contrib-buildinfo:`
 import mill.contrib.buildinfo.BuildInfo
-import $ivy.`io.github.alexarchambault.mill::mill-native-image::0.1.22`
+import $ivy.`io.github.alexarchambault.mill::mill-native-image::0.1.23`
 import io.github.alexarchambault.millnativeimage.NativeImage
 
 val scala212            = "2.12.17"
