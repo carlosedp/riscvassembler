@@ -12,7 +12,7 @@ import $ivy.`com.lihaoyi::mill-contrib-scoverage:`
 import mill.contrib.scoverage.{ScoverageModule, ScoverageReport}
 import $ivy.`com.goyeau::mill-scalafix::0.2.11`
 import com.goyeau.mill.scalafix.ScalafixModule
-import $ivy.`io.chris-kipp::mill-ci-release::0.1.4`
+import $ivy.`io.chris-kipp::mill-ci-release::0.1.5`
 import io.kipp.mill.ci.release.{CiReleaseModule, SonatypeHost}
 import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.0`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
@@ -20,7 +20,7 @@ import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.1`
 import io.github.davidgregory084.TpolecatModule
 import $ivy.`com.lihaoyi::mill-contrib-buildinfo:`
 import mill.contrib.buildinfo.BuildInfo
-import $ivy.`io.github.alexarchambault.mill::mill-native-image::0.1.22`
+import $ivy.`io.github.alexarchambault.mill::mill-native-image::0.1.23`
 import io.github.alexarchambault.millnativeimage.NativeImage
 
 val scala212            = "2.12.17"
