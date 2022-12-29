@@ -182,7 +182,7 @@ protected object FillInstruction {
 
       case InstType.U => {
         val rd  = data("rd").toBinaryString.padZero(5)
-        val imm = data("imm").to32Bit.toBinaryString.padZero(32).take(20)
+        val imm = data("imm").to32Bit.toBinaryString.padZero(20)
         imm + rd + op.opcode
       }
 
