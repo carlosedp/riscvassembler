@@ -133,6 +133,15 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     inst should be(None)
   }
 
+  behavior of "Instructions"
+
+  it should "assemble SRAI Instruction" in {
+    val i = RISCVAssembler.binOutput("srai x0, x0, 0")
+    i should be(
+      "01000000000000000101000000010011",
+    )
+  }
+
   behavior of "Pseudo-Instructions"
 
   it should "map NOP Pseudo Instruction" in {
