@@ -55,7 +55,14 @@ protected object InstructionParser {
           ),
         )
       case InstType.I => {
-        if (instructionParts.length != 4) return None
+        // First check if instruction has appropriate arguments
+        if (
+          instructionParts.length != 4 && !Seq("ECALL", "EBREAK", "FENCE.I", "FENCE").contains(
+            instructionParts(0).toUpperCase,
+          )
+        )
+          return None
+        // Treat instructions that contains offsets (Loads)
         if (inst.hasOffset) {
           val imm =
             if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
@@ -71,30 +78,47 @@ protected object InstructionParser {
             ),
           )
         } else {
-          // If instruction contains fixed imm (like SRAI, SRLI, SLLI), use the fixed imm padded right to fill 12 bits
-          val shamt =
-            if (instructionParts(3).startsWith("0x")) BigInt(instructionParts(3).substring(2), 16).toLong
-            else instructionParts(3).toLong
-          if (inst.fixed != "" && shamt >= 64) return None // Shamt has 5 bits
-          val imm = if (inst.fixed != "") {
-            BigInt(inst.fixed + shamt.toBinaryString.padZero(5).takeRight(5), 2).toLong
-          } else {
-            if (instructionParts(3).startsWith("0x")) BigInt(instructionParts(3).substring(2), 16).toLong
-            else instructionParts(3).toLong
-          }
-          Some(
-            (
-              inst,
-              Map(
-                "rd"  -> RegMap(instructionParts(1)),
-                "rs1" -> RegMap(instructionParts(2)),
-                "imm" -> imm,
+          // Treat instructions with no arguments
+          if (Seq("ECALL", "EBREAK", "FENCE.I").contains(instructionParts(0).toUpperCase)) {
+            val imm = BigInt(inst.fixed, 2).toLong
+            Some(
+              (
+                inst,
+                Map(
+                  "rd"  -> 0,
+                  "rs1" -> 0,
+                  "imm" -> imm,
+                ),
               ),
-            ),
-          )
+            )
+          } else if (Seq("FENCE").contains(instructionParts(0).toUpperCase)) {
+            // Treat FENCE instruction (not implemented)
+            None
+          } else {
+            // Treat other I instructions (Shifts)
+            val shamt =
+              if (instructionParts(3).startsWith("0x")) BigInt(instructionParts(3).substring(2), 16).toLong
+              else instructionParts(3).toLong
+            val imm = if (inst.fixed != "") {
+              if (shamt >= 64) return None // Shamt has 5 bits
+              // If instruction contains fixed imm (like SRAI, SRLI, SLLI), use the fixed imm padded right to fill 12 bits
+              BigInt(inst.fixed + shamt.toBinaryString.padZero(5).takeRight(5), 2).toLong
+            } else {
+              if (instructionParts(3).startsWith("0x")) BigInt(instructionParts(3).substring(2), 16).toLong
+              else instructionParts(3).toLong
+            }
+            Some(
+              (
+                inst,
+                Map(
+                  "rd"  -> RegMap(instructionParts(1)),
+                  "rs1" -> RegMap(instructionParts(2)),
+                  "imm" -> imm,
+                ),
+              ),
+            )
+          }
         }
-        // if (inst.isCsr) {} else {}
-        // if (inst.isFence) {}
       }
       case InstType.S => {
         if (instructionParts.length != 4) return None

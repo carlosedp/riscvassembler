@@ -156,6 +156,34 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     )
   }
 
+  // it should "assemble FENCE Instruction" in {
+  //   val i = RISCVAssembler.binOutput("fence 31, 31")
+  //   i should be(
+  //     "00001111111100000000000000001111",
+  //   )
+  // }
+
+  it should "assemble FENCE.i Instruction" in {
+    val i = RISCVAssembler.binOutput("fence.i")
+    i should be(
+      "00000000000000000001000000001111",
+    )
+  }
+
+  it should "assemble ECALL Instruction" in {
+    val i = RISCVAssembler.binOutput("ecall")
+    i should be(
+      "00000000000000000000000001110011",
+    )
+  }
+
+  it should "assemble EBREAK Instruction" in {
+    val i = RISCVAssembler.binOutput("ebreak")
+    i should be(
+      "00000000000100000000000001110011",
+    )
+  }
+
   behavior of "Pseudo-Instructions"
 
   it should "map NOP Pseudo Instruction" in {
