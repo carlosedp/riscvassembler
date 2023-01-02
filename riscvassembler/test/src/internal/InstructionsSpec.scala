@@ -142,6 +142,20 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     )
   }
 
+  it should "assemble SRAI Instruction with max shamt" in {
+    val i = RISCVAssembler.binOutput("srai x0, x0, 63")
+    i should be(
+      "01000001111100000101000000010011",
+    )
+  }
+
+  it should "assemble SRAI Instruction with invalid shamt" in {
+    val i = RISCVAssembler.binOutput("srai x0, x0, 64")
+    i should be(
+      "00000000000000000000000000000000",
+    )
+  }
+
   behavior of "Pseudo-Instructions"
 
   it should "map NOP Pseudo Instruction" in {

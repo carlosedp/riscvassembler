@@ -72,8 +72,13 @@ protected object InstructionParser {
           )
         } else {
           // If instruction contains fixed imm (like SRAI, SRLI, SLLI), use the fixed imm padded right to fill 12 bits
-          val imm = if (inst.fixed != "") { BigInt(inst.fixed + "00000", 2).toLong }
-          else {
+          val shamt =
+            if (instructionParts(3).startsWith("0x")) BigInt(instructionParts(3).substring(2), 16).toLong
+            else instructionParts(3).toLong
+          if (inst.fixed != "" && shamt >= 64) return None // Shamt has 5 bits
+          val imm = if (inst.fixed != "") {
+            BigInt(inst.fixed + shamt.toBinaryString.padZero(5).takeRight(5), 2).toLong
+          } else {
             if (instructionParts(3).startsWith("0x")) BigInt(instructionParts(3).substring(2), 16).toLong
             else instructionParts(3).toLong
           }
