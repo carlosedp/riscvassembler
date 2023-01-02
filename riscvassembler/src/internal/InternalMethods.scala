@@ -92,8 +92,42 @@ protected object InstructionParser {
               ),
             )
           } else if (Seq("FENCE").contains(instructionParts(0).toUpperCase)) {
-            // Treat FENCE instruction (not implemented)
-            None
+            // Treat FENCE instruction
+            val imm = if (instructionParts.length == 3) {
+              val pred = instructionParts(1)
+                .map(_ match {
+                  case bit if bit.toLower == 'i' => 8
+                  case bit if bit.toLower == 'o' => 4
+                  case bit if bit.toLower == 'r' => 2
+                  case bit if bit.toLower == 'w' => 1
+                  case _                         => 0
+                })
+                .sum
+                .toBinaryString
+              val succ = instructionParts(2)
+                .map(_ match {
+                  case bit if bit.toLower == 'i' => 8
+                  case bit if bit.toLower == 'o' => 4
+                  case bit if bit.toLower == 'r' => 2
+                  case bit if bit.toLower == 'w' => 1
+                  case _                         => 0
+                })
+                .sum
+                .toBinaryString
+              BigInt("0000" + pred + succ, 2).toLong
+            } else {
+              BigInt("000011111111", 2).toLong
+            }
+            Some(
+              (
+                inst,
+                Map(
+                  "rd"  -> 0,
+                  "rs1" -> 0,
+                  "imm" -> imm,
+                ),
+              ),
+            )
           } else {
             // Treat other I instructions (Shifts)
             val shamt =
