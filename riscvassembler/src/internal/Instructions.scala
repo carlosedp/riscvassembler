@@ -61,11 +61,11 @@ protected object Instructions {
     Instruction(name = "SRA", instType     = InstType.R, opcode = "0110011", funct7 = "0100000", funct3 = "101"),
     Instruction(name = "OR", instType      = InstType.R, opcode = "0110011", funct7 = "0000000", funct3 = "110"),
     Instruction(name = "AND", instType     = InstType.R, opcode = "0110011", funct7 = "0000000", funct3 = "111"),
+    Instruction(name = "FENCE", instType   = InstType.I, opcode = "0001111", funct3 = "000"),
     Instruction(name = "FENCE.I", instType = InstType.I, opcode = "0001111", funct3 = "001", fixed      = "000000000000"),
     Instruction(name = "ECALL", instType   = InstType.I, opcode = "1110011", funct3 = "000", fixed      = "000000000000"),
     Instruction(name = "EBREAK", instType  = InstType.I, opcode = "1110011", funct3 = "000", fixed      = "000000000001"),
     // Instructions below are still not implemented
-    Instruction(name = "FENCE", instType  = InstType.I, opcode = "0001111", funct3 = "000"),
     Instruction(name = "CSRRW", instType  = InstType.I, opcode = "1110011", funct3 = "001", isCsr = true, hasImm = false),
     Instruction(name = "CSRRS", instType  = InstType.I, opcode = "1110011", funct3 = "010", isCsr = true, hasImm = false),
     Instruction(name = "CSRRC", instType  = InstType.I, opcode = "1110011", funct3 = "011", isCsr = true, hasImm = false),

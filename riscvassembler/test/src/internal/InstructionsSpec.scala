@@ -156,12 +156,26 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     )
   }
 
-  // it should "assemble FENCE Instruction" in {
-  //   val i = RISCVAssembler.binOutput("fence 31, 31")
-  //   i should be(
-  //     "00001111111100000000000000001111",
-  //   )
-  // }
+  it should "assemble FENCE Instruction" in {
+    val i = RISCVAssembler.binOutput("fence iorw, iorw")
+    i should be(
+      "00001111111100000000000000001111",
+    )
+  }
+
+  it should "assemble FENCE Instruction with input read" in {
+    val i = RISCVAssembler.binOutput("fence ir, ir")
+    i should be(
+      "00001010101000000000000000001111",
+    )
+  }
+
+  it should "assemble FENCE Instruction with no arguments" in {
+    val i = RISCVAssembler.binOutput("fence")
+    i should be(
+      "00001111111100000000000000001111",
+    )
+  }
 
   it should "assemble FENCE.i Instruction" in {
     val i = RISCVAssembler.binOutput("fence.i")
