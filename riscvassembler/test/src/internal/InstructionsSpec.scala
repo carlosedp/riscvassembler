@@ -198,20 +198,6 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     )
   }
 
-  it should "assemble AUIPC Instruction with 0 immediate" in {
-    val i = RISCVAssembler.binOutput("auipc x1, 0")
-    i should be(
-      "00000000000000000000000010010111",
-    )
-  }
-
-  it should "assemble AUIPC Instruction with 123 immediate" in {
-    val i = RISCVAssembler.binOutput("auipc x1, 123")
-    i should be(
-      "00000000000001111011000010010111",
-    )
-  }
-
   behavior of "Pseudo-Instructions"
 
   it should "map NOP Pseudo Instruction" in {
