@@ -24,7 +24,7 @@ When using SBT, add the following lines to your `build.sbt` file.
 
 ```scala
 // Import libraries
-libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.6.1"  //ReleaseVerSBT
+libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.6.2"  //ReleaseVerSBT
 ```
 
 ### Mill
@@ -34,7 +34,7 @@ If you use `mill` build tool, add the following dep to your `build.sc`:
 ```scala
 // Add to your ivyDeps
 def ivyDeps = Agg(
-  ivy"com.carlosedp::riscvassembler:1.6.1"  //ReleaseVerMill
+  ivy"com.carlosedp::riscvassembler:1.6.2"  //ReleaseVerMill
   ...
 )
 ```
