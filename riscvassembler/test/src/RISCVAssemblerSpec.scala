@@ -32,6 +32,11 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
     output should be(correct)
   }
 
+  it should "convert binary instruction to hex" in {
+    val output = RISCVAssembler.hexOutput("11111111111111111111000001101111")
+    output should be("FFFFF06F")
+  }
+
   it should "generate hex output for single I-type instruction" in {
     val input =
       """

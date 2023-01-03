@@ -41,7 +41,7 @@ object ObjectUtils {
    * @return
    *   The Long converted from the string.
    */
-  implicit class IntToBase(digits: String) {
+  implicit class StringToLong(digits: String) {
 
     /**
      * Convert a string in a specified base to a Long
@@ -50,7 +50,7 @@ object ObjectUtils {
      * @return
      *   The Long converted from the string.
      */
-    def base(b: Int): Long = BigInt(digits, b).toLong
+    private def base(b: Int): Long = BigInt(digits, b).toLong
 
     /**
      * Convert a string to a base 2 (binary) Long

@@ -1,8 +1,64 @@
 package com.carlosedp.riscvassembler
 
+import scala.collection.mutable.ArrayBuffer
 import scala.util.Try
 
 import com.carlosedp.riscvassembler.ObjectUtils._
+
+protected object LineParser {
+
+  /**
+   * Parses input string lines to generate the list of instructions, addresses
+   * and label addresses
+   *
+   * @param input
+   *   input multiline assembly string
+   * @return
+   *   a tuple containing:
+   *   - `ArrayBuffer[String]` with the assembly instruction
+   *   - `ArrayBuffer[String]` with the assembly instruction address
+   *   - `Map[String, String]` with the assembly label addresses
+   */
+  def apply(input: String): (ArrayBuffer[String], ArrayBuffer[String], Map[String, String]) = {
+    val instList = input.split("\n").toList.filter(_.nonEmpty).filter(!_.trim().isEmpty()).map(_.trim)
+    val ignores  = Seq(".", "/")
+
+    // Filter lines which begin with characters from `ignores`
+    val instListFilter = instList.filterNot(l => ignores.contains(l.trim().take(1))).toIndexedSeq
+
+    // Remove inline comments
+    val instListNocomment = instListFilter.map(_.split("/")(0).trim).toIndexedSeq
+
+    var idx              = 0
+    val instructions     = scala.collection.mutable.ArrayBuffer.empty[String]
+    val instructionsAddr = scala.collection.mutable.ArrayBuffer.empty[String]
+    val labelIndex       = scala.collection.mutable.Map[String, String]()
+
+    instListNocomment.foreach { data =>
+      // That's an ugly parser, but works for now :)
+      // println(s"-- Processing line: $data, address: ${(idx * 4L).toHexString}")
+      val hasLabel = data.indexOf(":")
+      if (hasLabel != -1) {
+        if (""".+:\s*(\/.*)?$""".r.findFirstIn(data).isDefined) {
+          // Has label without code, this label points to next address
+          labelIndex(data.split(":")(0).replace(":", "")) = ((idx + 1) * 4L).toHexString
+          idx += 1
+        } else {
+          // Has label and code in the same line, this label points to this address
+          labelIndex(data.split(':')(0).replace(":", "").trim) = (idx * 4L).toHexString
+          instructions.append(data.split(':')(1).trim)
+          instructionsAddr.append((idx * 4L).toHexString)
+          idx += 1
+        }
+      } else {
+        instructions.append(data.trim)
+        instructionsAddr.append((idx * 4L).toHexString)
+        idx += 1
+      }
+    }
+    (instructions, instructionsAddr, labelIndex.toMap)
+  }
+}
 
 protected object InstructionParser {
 
@@ -260,23 +316,6 @@ protected object FillInstruction {
           .reverse + rd + op.opcode
       }
     }
-}
-
-protected object GenHex {
-
-  /**
-   * Generate the hex string of the instruction from binary
-   *
-   * @param input
-   *   the binary string of the instruction
-   * @return
-   *   the hex string of the instruction
-   */
-  def apply(input: String): String = {
-    // Make this 64bit in the future
-    val x = input.b
-    f"0x$x%08X".toString.takeRight(8)
-  }
 }
 
 protected object RegMap {

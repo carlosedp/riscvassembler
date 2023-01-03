@@ -78,13 +78,6 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
   }
 
   // ------------------------------------------------------------
-  behavior of "GenHex"
-  it should "convert binary instruction to hex" in {
-    val output = GenHex("11111111111111111111000001101111")
-    output should be("FFFFF06F")
-  }
-
-  // ------------------------------------------------------------
 
   behavior of "InstructionParser"
 
