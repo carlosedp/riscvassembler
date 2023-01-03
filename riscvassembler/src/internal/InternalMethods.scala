@@ -65,7 +65,7 @@ protected object InstructionParser {
         // Treat instructions that contains offsets (Loads)
         if (inst.hasOffset) {
           val imm =
-            if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
+            if (instructionParts(2).startsWith("0x")) instructionParts(2).substring(2).h
             else instructionParts(2).toLong
           Some(
             (
@@ -80,7 +80,7 @@ protected object InstructionParser {
         } else {
           // Treat instructions with no arguments
           if (Seq("ECALL", "EBREAK", "FENCE.I").contains(instructionParts(0).toUpperCase)) {
-            val imm = BigInt(inst.fixed, 2).toLong
+            val imm = inst.fixed.b
             Some(
               (
                 inst,
@@ -114,9 +114,9 @@ protected object InstructionParser {
                 })
                 .sum
                 .toBinaryString
-              BigInt("0000" + pred + succ, 2).toLong
+              ("0000" + pred + succ).b
             } else {
-              BigInt("000011111111", 2).toLong
+              "000011111111".b
             }
             Some(
               (
@@ -131,14 +131,14 @@ protected object InstructionParser {
           } else {
             // Treat other I instructions (Shifts)
             val shamt =
-              if (instructionParts(3).startsWith("0x")) BigInt(instructionParts(3).substring(2), 16).toLong
+              if (instructionParts(3).startsWith("0x")) instructionParts(3).substring(2).h
               else instructionParts(3).toLong
             val imm = if (inst.fixed != "") {
               if (shamt >= 64) return None // Shamt has 5 bits
               // If instruction contains fixed imm (like SRAI, SRLI, SLLI), use the fixed imm padded right to fill 12 bits
-              BigInt(inst.fixed + shamt.toBinaryString.padZero(5).takeRight(5), 2).toLong
+              (inst.fixed + shamt.toBinaryString.padZero(5).takeRight(5)).b
             } else {
-              if (instructionParts(3).startsWith("0x")) BigInt(instructionParts(3).substring(2), 16).toLong
+              if (instructionParts(3).startsWith("0x")) instructionParts(3).substring(2).h
               else instructionParts(3).toLong
             }
             Some(
@@ -157,7 +157,7 @@ protected object InstructionParser {
       case InstType.S => {
         if (instructionParts.length != 4) return None
         val imm =
-          if (instructionParts(2).startsWith("0x")) BigInt(instructionParts(2).substring(2), 16).toLong
+          if (instructionParts(2).startsWith("0x")) instructionParts(2).substring(2).h
           else instructionParts(2).toLong
         Some(
           (
@@ -173,8 +173,8 @@ protected object InstructionParser {
       case InstType.B => {
         if (instructionParts.length != 4) return None
         val imm = instructionParts(3) match {
-          case i if i.startsWith("0x")      => BigInt(i.substring(2), 16).toLong
-          case i if Try(i.toLong).isFailure => (BigInt(labelIndex(i), 16) - BigInt(addr, 16)).toLong
+          case i if i.startsWith("0x")      => i.substring(2).h
+          case i if Try(i.toLong).isFailure => labelIndex(i).h - addr.h
           case i                            => i.toLong
         }
         Some(
@@ -191,8 +191,8 @@ protected object InstructionParser {
       case InstType.U | InstType.J => {
         if (instructionParts.length != 3) return None
         val imm = instructionParts(2) match {
-          case i if i.startsWith("0x")      => BigInt(i.substring(2), 16).toLong
-          case i if Try(i.toLong).isFailure => (BigInt(labelIndex(i), 16) - BigInt(addr, 16)).toLong
+          case i if i.startsWith("0x")      => i.substring(2).h
+          case i if Try(i.toLong).isFailure => labelIndex(i).h - addr.h
           case i                            => i.toLong
         }
         Some((inst, Map("rd" -> RegMap(instructionParts(1)), "imm" -> imm)))
@@ -274,7 +274,7 @@ protected object GenHex {
    */
   def apply(input: String): String = {
     // Make this 64bit in the future
-    val x = BigInt(input, 2).toLong
+    val x = input.b
     f"0x$x%08X".toString.takeRight(8)
   }
 }

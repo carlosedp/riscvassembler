@@ -37,46 +37,46 @@ object ObjectUtils {
   }
 
   /**
-   * Convert a string in a specified base to a BigInt
+   * Convert a string in a specified base to a Long
    * @return
-   *   The BigInt converted from the string.
+   *   The Long converted from the string.
    */
   implicit class IntToBase(digits: String) {
 
     /**
-     * Convert a string in a specified base to a BigInt
+     * Convert a string in a specified base to a Long
      * @param b
      *   The base of the string.
      * @return
-     *   The BigInt converted from the string.
+     *   The Long converted from the string.
      */
-    def base(b: Int) = BigInt(digits, b)
+    def base(b: Int): Long = BigInt(digits, b).toLong
 
     /**
-     * Convert a string to a base 2 (binary) BigInt
+     * Convert a string to a base 2 (binary) Long
      * @param b
      *   The base of the string.
      * @return
-     *   The BigInt converted from the string.
+     *   The Long converted from the string.
      */
     def b = base(2)
 
     /**
-     * Convert a string to a base 8 (octal) BigInt
+     * Convert a string to a base 8 (octal) Long
      * @param b
      *   The base of the string.
      * @return
-     *   The BigInt converted from the string.
+     *   The Long converted from the string.
      */
     def o = base(8)
 
     /**
-     * Convert a string to a base 16 (hex) BigInt
+     * Convert a string to a base 16 (hex) Long
      * @param b
      *   The base of the string.
      * @return
-     *   The BigInt converted from the string.
+     *   The Long converted from the string.
      */
-    def x = base(16)
+    def h = base(16)
   }
 }
