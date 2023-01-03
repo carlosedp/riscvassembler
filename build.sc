@@ -27,7 +27,7 @@ val scala212            = "2.12.17"
 val scala213            = "2.13.10"
 val scala3              = "3.2.0"
 val scalaVersions       = Seq(scala212, scala213, scala3)
-val scalaNativeVersions = scalaVersions.map((_, "0.4.7"))
+val scalaNativeVersions = scalaVersions.map((_, "0.4.8"))
 val scalaJsVersions     = scalaVersions.map((_, "1.11.0"))
 
 object versions {
@@ -81,8 +81,8 @@ object riscvassembler extends Module {
 }
 
 // Build ScalaNative or Native Image for current platform
-// Scala Native: `mill rvasmcli.nativeLink`
-// Native Image: `mill rvasmcli.nativeImage`
+// Scala Native: `./mill rvasmcli.nativeLink`
+// Native Image: `./mill rvasmcli.nativeImage`
 object rvasmcli extends RVasmcliBase
 
 def LLVMTriples = System.getProperty("os.name").toLowerCase match {
@@ -93,7 +93,9 @@ def LLVMTriples = System.getProperty("os.name").toLowerCase match {
 }
 
 // Build ScalaNative or Native Image for cross-architecture depending on LLVM Triple setting above.
-// Cross build for available architectures on current OS with: `mill rvasmclicross.__.nativeLink`
+// Cross build for available architectures on current OS with: `./mill rvasmclicross.__.nativeLink`
+// On Mac, install LLVM using Homebrew which contains libs for amd64 and arm64
+// On Linux, install "build-essential clang build-essential clang crossbuild-essential-arm64 crossbuild-essential-riscv64 crossbuild-essential-amd64 crossbuild-essential-ppc64el"
 object rvasmclicross extends Cross[RVASMCLI](LLVMTriples: _*)
 class RVASMCLI(val LLVMtriple: String) extends RVasmcliBase {
   def nativeTarget = Some(LLVMtriple)

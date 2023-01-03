@@ -142,6 +142,62 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
     )
   }
 
+  it should "assemble SRAI Instruction with max shamt" in {
+    val i = RISCVAssembler.binOutput("srai x0, x0, 63")
+    i should be(
+      "01000001111100000101000000010011",
+    )
+  }
+
+  it should "assemble SRAI Instruction with invalid shamt" in {
+    val i = RISCVAssembler.binOutput("srai x0, x0, 64")
+    i should be(
+      "00000000000000000000000000000000",
+    )
+  }
+
+  it should "assemble FENCE Instruction" in {
+    val i = RISCVAssembler.binOutput("fence iorw, iorw")
+    i should be(
+      "00001111111100000000000000001111",
+    )
+  }
+
+  it should "assemble FENCE Instruction with input read" in {
+    val i = RISCVAssembler.binOutput("fence ir, ir")
+    i should be(
+      "00001010101000000000000000001111",
+    )
+  }
+
+  it should "assemble FENCE Instruction with no arguments" in {
+    val i = RISCVAssembler.binOutput("fence")
+    i should be(
+      "00001111111100000000000000001111",
+    )
+  }
+
+  it should "assemble FENCE.i Instruction" in {
+    val i = RISCVAssembler.binOutput("fence.i")
+    i should be(
+      "00000000000000000001000000001111",
+    )
+  }
+
+  it should "assemble ECALL Instruction" in {
+    val i = RISCVAssembler.binOutput("ecall")
+    i should be(
+      "00000000000000000000000001110011",
+    )
+  }
+
+  it should "assemble EBREAK Instruction" in {
+    val i = RISCVAssembler.binOutput("ebreak")
+    i should be(
+      "00000000000100000000000001110011",
+    )
+  }
+
   behavior of "Pseudo-Instructions"
 
   it should "map NOP Pseudo Instruction" in {

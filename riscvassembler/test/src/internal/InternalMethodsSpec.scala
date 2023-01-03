@@ -61,9 +61,9 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
       opcode   = "0110111",
       instType = InstType.U,
     )
-    val opdata = Map("rd" -> 2L, "imm" -> 0xc0000000L)
+    val opdata = Map("rd" -> 2L, "imm" -> 0xfffffL)
     val output = FillInstruction(i, opdata)
-    output should be("11000000000000000000000100110111")
+    output should be("11111111111111111111000100110111")
   }
 
   it should "fill J-type instruction" in {
