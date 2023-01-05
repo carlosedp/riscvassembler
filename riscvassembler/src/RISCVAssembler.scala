@@ -1,7 +1,8 @@
 package com.carlosedp.riscvassembler
 
-import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
+
+import com.carlosedp.riscvassembler.ObjectUtils._
 
 object RISCVAssembler {
 
@@ -59,62 +60,10 @@ object RISCVAssembler {
    *   the assembled hex string
    */
   def fromString(input: String): String = {
-    val (instructions, addresses, labels) = parseLines(input)
+    val (instructions, addresses, labels) = LineParser(input)
     (instructions zip addresses).map { case (i: String, a: String) => { binOutput(i, a, labels) } }
-      .map(GenHex(_))
+      .map(hexOutput(_))
       .mkString("\n") + "\n"
-  }
-
-  /**
-   * Parses input string lines to generate the list of instructions, addresses
-   * and label addresses
-   *
-   * @param input
-   *   input multiline assembly string
-   * @return
-   *   a tuple containing:
-   *   - `ArrayBuffer[String]` with the assembly instruction
-   *   - `ArrayBuffer[String]` with the assembly instruction address
-   *   - `Map[String, String]` with the assembly label addresses
-   */
-  def parseLines(input: String): (ArrayBuffer[String], ArrayBuffer[String], Map[String, String]) = {
-    val instList = input.split("\n").toList.filter(_.nonEmpty).filter(!_.trim().isEmpty()).map(_.trim)
-    val ignores  = Seq(".", "/")
-
-    // Filter lines which begin with characters from `ignores`
-    val instListFilter = instList.filterNot(l => ignores.contains(l.trim().take(1))).toIndexedSeq
-
-    // Remove inline comments
-    val instListNocomment = instListFilter.map(_.split("/")(0).trim).toIndexedSeq
-
-    var idx              = 0
-    val instructions     = scala.collection.mutable.ArrayBuffer.empty[String]
-    val instructionsAddr = scala.collection.mutable.ArrayBuffer.empty[String]
-    val labelIndex       = scala.collection.mutable.Map[String, String]()
-
-    instListNocomment.foreach { data =>
-      // That's an ugly parser, but works for now :)
-      // println(s"-- Processing line: $data, address: ${(idx * 4L).toHexString}")
-      val hasLabel = data.indexOf(":")
-      if (hasLabel != -1) {
-        if (""".+:\s*(\/.*)?$""".r.findFirstIn(data).isDefined) {
-          // Has label without code, this label points to next address
-          labelIndex(data.split(":")(0).replace(":", "")) = ((idx + 1) * 4L).toHexString
-          idx += 1
-        } else {
-          // Has label and code in the same line, this label points to this address
-          labelIndex(data.split(':')(0).replace(":", "").trim) = (idx * 4L).toHexString
-          instructions.append(data.split(':')(1).trim)
-          instructionsAddr.append((idx * 4L).toHexString)
-          idx += 1
-        }
-      } else {
-        instructions.append(data.trim)
-        instructionsAddr.append((idx * 4L).toHexString)
-        idx += 1
-      }
-    }
-    (instructions, instructionsAddr, labelIndex.toMap)
   }
 
   /**
@@ -122,7 +71,7 @@ object RISCVAssembler {
    * @param input
    *   the input instruction (eg. "add x1, x2, x3")
    * @return
-   *   the binary output in string format
+   *   the binary output in string
    */
   def binOutput(
     instruction: String,
@@ -136,5 +85,18 @@ object RISCVAssembler {
       case _          => return "0" * width
     }
     FillInstruction(op, opdata).takeRight(width)
+  }
+
+  /**
+   * Generate the hex string of the instruction from binary
+   *
+   * @param input
+   *   the binary string of the instruction
+   * @return
+   *   the hex string of the instruction in string
+   */
+  def hexOutput(input: String): String = {
+    val x = input.b
+    f"0x$x%08X".toString.takeRight(8)
   }
 }

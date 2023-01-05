@@ -48,17 +48,17 @@ class ObjectUtilsSpec extends AnyFlatSpec with Matchers {
 
   behavior of "Converting"
 
-  it should "convert a binary string to BigInt" in {
+  it should "convert a binary string to Long" in {
     val output = "101010".b
     output should be(42)
   }
 
-  it should "convert an hex string to BigInt" in {
-    val output = "abc".x
+  it should "convert an hex string to Long" in {
+    val output = "abc".h
     output should be(2748)
   }
 
-  it should "convert an oct string to BigInt" in {
+  it should "convert an oct string to Long" in {
     val output = "567".o
     output should be(375)
   }
