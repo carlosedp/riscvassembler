@@ -31,7 +31,7 @@ val scalaNativeVersions = scalaVersions.map((_, "0.4.8"))
 val scalaJsVersions     = scalaVersions.map((_, "1.11.0"))
 
 object versions {
-  val scalatest       = "3.2.14"
+  val scalatest       = "3.2.15"
   val oslib           = "0.9.0"
   val organizeimports = "0.6.0"
   val semanticdb      = "4.5.13"
