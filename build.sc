@@ -48,7 +48,11 @@ object riscvassembler extends Module {
     with ScoverageModule {
     def millSourcePath   = super.millSourcePath / os.up
     def scoverageVersion = versions.scoverage
-    object test extends ScoverageTests with RiscvAssemblerTest {}
+    object test extends ScoverageTests with RiscvAssemblerTest {
+      // Add JVM specific tests to the source path
+      def testSourcesJVM   = T.sources(super.millSourcePath / "jvm" / "src")
+      override def sources = T.sources(super.sources() ++ testSourcesJVM())
+    }
   }
 
   object native extends Cross[RiscvAssemblerNativeModule](scalaNativeVersions: _*)

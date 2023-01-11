@@ -317,40 +317,4 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
 
     output should be(correct)
   }
-
-//   it should "generate hex output from file source" in {
-//     val prog = """
-//     lui x2, 0xc0000000
-//     addi x1, x0, 4
-//     addi x2, x0, 4
-//     nop
-//     add  x3, x2, x1
-//     beq x1, x2, +4094
-//     sb x3, 1024(x2)
-//     lw x4, 80(x1)
-//     jal x1, +2048
-//     """.stripMargin
-//     import java.io.{File, FileWriter}
-//     val file       = "/tmp/hexprogram.txt"
-//     val fileWriter = new FileWriter(new File(file))
-//     fileWriter.write(prog)
-//     fileWriter.close()
-//     val output = RISCVAssembler.fromFile(file).trim
-
-//     val correct =
-//       """
-//         |c0000137
-//         |00400093
-//         |00400113
-//         |00000013
-//         |001101b3
-//         |7e208fe3
-//         |40310023
-//         |0500a203
-//         |001000ef
-//         |""".stripMargin.toUpperCase.trim
-
-//     output should be(correct)
-//   }
-
 }
