@@ -16,7 +16,7 @@ import $ivy.`io.chris-kipp::mill-ci-release::0.1.5`
 import io.kipp.mill.ci.release.{CiReleaseModule, SonatypeHost}
 import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.0`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
-import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.1`
+import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.2`
 import io.github.davidgregory084.TpolecatModule
 import $ivy.`com.lihaoyi::mill-contrib-buildinfo:`
 import mill.contrib.buildinfo.BuildInfo
@@ -25,10 +25,10 @@ import io.github.alexarchambault.millnativeimage.NativeImage
 
 val scala212            = "2.12.17"
 val scala213            = "2.13.10"
-val scala3              = "3.2.0"
+val scala3              = "3.2.1"
 val scalaVersions       = Seq(scala212, scala213, scala3)
-val scalaNativeVersions = scalaVersions.map((_, "0.4.8"))
-val scalaJsVersions     = scalaVersions.map((_, "1.11.0"))
+val scalaNativeVersions = scalaVersions.map((_, "0.4.9"))
+val scalaJsVersions     = scalaVersions.map((_, "1.12.0"))
 
 object versions {
   val scalatest       = "3.2.15"
@@ -48,7 +48,11 @@ object riscvassembler extends Module {
     with ScoverageModule {
     def millSourcePath   = super.millSourcePath / os.up
     def scoverageVersion = versions.scoverage
-    object test extends ScoverageTests with RiscvAssemblerTest {}
+    object test extends ScoverageTests with RiscvAssemblerTest {
+      // Add JVM specific tests to the source path
+      def testSourcesJVM   = T.sources(super.millSourcePath / "jvm" / "src")
+      override def sources = T.sources(super.sources() ++ testSourcesJVM())
+    }
   }
 
   object native extends Cross[RiscvAssemblerNativeModule](scalaNativeVersions: _*)
