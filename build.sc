@@ -79,6 +79,7 @@ object riscvassembler extends Module {
     def scalaJSUseMainModuleInitializer = true
     def moduleKind                      = T(ModuleKind.CommonJSModule)
     object test extends Tests with RiscvAssemblerTest {
+      def moduleKind  = T(ModuleKind.NoModule)
       def jsEnvConfig = T(JsEnvConfig.JsDom())
     }
   }
