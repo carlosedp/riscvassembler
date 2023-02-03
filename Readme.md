@@ -123,7 +123,7 @@ Generated Output:
 0800006F
 ```
 
-To generate the tool binary yourself, use `./mill bin` and the native executable will be generated and it's name printed on screen.
+To generate the tool binary yourself, use `./mill run bin` and the native executable will be generated and it's name printed on screen.
 
 Native binaries for major OS/Arch combinations will be published soon.
 

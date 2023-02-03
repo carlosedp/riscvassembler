@@ -27,8 +27,8 @@ val scala212            = "2.12.17"
 val scala213            = "2.13.10"
 val scala3              = "3.2.1"
 val scalaVersions       = Seq(scala212, scala213, scala3)
-val scalaNativeVersions = scalaVersions.map((_, "0.4.9"))
-val scalaJsVersions     = scalaVersions.map((_, "1.12.0"))
+val scalaNativeVersions = scalaVersions.map((_, "0.4.10"))
+val scalaJsVersions     = scalaVersions.map((_, "1.13.0"))
 
 object versions {
   val scalatest       = "3.2.15"
@@ -78,17 +78,15 @@ object riscvassembler extends Module {
 
     def scalaJSUseMainModuleInitializer = true
     def moduleKind                      = T(ModuleKind.CommonJSModule)
-    object test extends Tests with RiscvAssemblerTest {
-      def moduleKind  = T(ModuleKind.NoModule)
-      def jsEnvConfig = T(JsEnvConfig.JsDom())
-    }
+    def jsEnvConfig                     = T(JsEnvConfig.ExoegoJsDomNodeJs())
+    object test extends Tests with RiscvAssemblerTest {}
   }
 }
 
 // Build ScalaNative or Native Image for current platform
 // Scala Native: `./mill rvasmcli.nativeLink`
 // Native Image: `./mill rvasmcli.nativeImage`
-object rvasmcli extends RVasmcliBase
+object rvasmcli extends RVASMcliBase
 
 def LLVMTriples = System.getProperty("os.name").toLowerCase match {
   case os if os.contains("linux") =>
@@ -102,13 +100,13 @@ def LLVMTriples = System.getProperty("os.name").toLowerCase match {
 // On Mac, install LLVM using Homebrew which contains libs for amd64 and arm64
 // On Linux, install "build-essential clang build-essential clang crossbuild-essential-arm64 crossbuild-essential-riscv64 crossbuild-essential-amd64 crossbuild-essential-ppc64el"
 object rvasmclicross extends Cross[RVASMCLI](LLVMTriples: _*)
-class RVASMCLI(val LLVMtriple: String) extends RVasmcliBase {
+class RVASMCLI(val LLVMtriple: String) extends RVASMcliBase {
   def nativeTarget = Some(LLVMtriple)
 }
 
 // This trait allows building both Scala Native and Native Image (using GraalVM)
 // The trait is also used for cross-building to different architectures
-trait RVasmcliBase
+trait RVASMcliBase
   extends ScalaNativeModule
   with NativeImage
   with TpolecatModule
@@ -122,12 +120,12 @@ trait RVasmcliBase
   )
   def scalafixIvyDeps = Agg(ivy"com.github.liancheng::organize-imports:${versions.organizeimports}")
   // Scala Native settings
-  def scalaNativeVersion      = scalaNativeVersions.head._2
-  def moduleDeps              = Seq(riscvassembler.native(scala3, scalaNativeVersions.head._2))
-  private def actualMainClass = "com.carlosedp.rvasmcli.Main"
-  def mainClass               = Some(actualMainClass)
-  def logLevel                = NativeLogLevel.Info
-  def releaseMode             = ReleaseMode.Debug
+  def scalaNativeVersion = scalaNativeVersions.head._2
+  def moduleDeps         = Seq(riscvassembler.native(scala3, scalaNativeVersions.head._2))
+  def actualMainClass    = "com.carlosedp.rvasmcli.Main"
+  def mainClass          = Some(actualMainClass)
+  def logLevel           = NativeLogLevel.Info
+  def releaseMode        = ReleaseMode.Debug
   if (System.getProperty("os.name").toLowerCase == "linux") {
     def nativeLTO            = LTO.Thin
     def nativeLinkingOptions = Array("-static", "-fuse-ld=lld")
@@ -135,7 +133,7 @@ trait RVasmcliBase
   // Native Image (GraalVM) settings
   def nativeImageName = "rvasmcli"
   def nativeImageGraalVmJvmId = T {
-    sys.env.getOrElse("GRAALVM_ID", "graalvm-java17:22.2.0")
+    sys.env.getOrElse("GRAALVM_ID", "graalvm-java17:22.3.1")
   }
   def nativeImageClassPath = runClasspath()
   def nativeImageMainClass = actualMainClass
@@ -216,49 +214,43 @@ trait RiscvAssemblerPublish extends RiscvAssemblerLib with CiReleaseModule {
   override def sonatypeHost = Some(SonatypeHost.s01)
 }
 
-// Toplevel commands and aliases
-def runTasks(t: Seq[String])(implicit ev: eval.Evaluator) = T.task {
-  mill.main.MainModule.evaluateTasks(
-    ev,
-    t.flatMap(x => x +: Seq("+")).flatMap(x => x.split(" ")).dropRight(1),
-    mill.define.SelectMode.Separated,
-  )(identity)
-}
-def lint(implicit ev: eval.Evaluator) = T.command {
-  runTasks(
-    Seq(
-      s"riscvassembler.jvm[$scala3].fix",
-      "rvasmcli.fix",
-      "mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources",
-    ),
-  )
-}
-def deps(implicit ev: eval.Evaluator) = T.command {
-  mill.scalalib.Dependency.showUpdates(ev)
-}
-def coverage(implicit ev: eval.Evaluator) = T.command {
-  runTasks(
-    Seq(
-      s"riscvassembler.jvm[$scala3].test",
-      "rvasmcli.test",
-      "scoverage.htmlReportAll",
-      "scoverage.xmlReportAll",
-      "scoverage.consoleReportAll",
-    ),
-  )
-}
-def pub(implicit ev: eval.Evaluator) = T.command {
-  runTasks(Seq("io.kipp.mill.ci.release.ReleaseModule/publishAll"))
-}
-def publocal(implicit ev: eval.Evaluator) = T.command {
-  runTasks(Seq("riscvassembler.__.publishLocal"))
-}
-def bin(implicit ev: eval.Evaluator) = T.command {
-  runTasks(Seq("show rvasmcli.nativeLink"))
-}
-def testall(implicit ev: eval.Evaluator) = T.command {
-  runTasks(Seq("riscvassembler.__.test", "rvasmcli.test"))
-}
-def test(implicit ev: eval.Evaluator) = T.command {
-  runTasks(Seq("riscvassembler.jvm[" + scala3 + "].test", "rvasmcli.test"))
+// -----------------------------------------------------------------------------
+// Command Aliases
+// -----------------------------------------------------------------------------
+// Alias commands are run like `./mill run [alias]`
+// Define the alias as a map element containing the alias name and a Seq with the tasks to be executed
+val aliases: Map[String, Seq[String]] = Map(
+  "lint" -> Seq(
+    s"riscvassembler.jvm[$scala3].fix",
+    "rvasmcli.fix",
+    "mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources",
+  ),
+  "deps"     -> Seq("mill.scalalib.Dependency/showUpdates"),
+  "checkfmt" -> Seq("mill.scalalib.scalafmt.ScalafmtModule/checkFormatAll __.sources"),
+  "coverage" -> Seq(
+    s"riscvassembler.jvm[$scala3].test",
+    "rvasmcli.test",
+    "scoverage.htmlReportAll",
+    "scoverage.xmlReportAll",
+    "scoverage.consoleReportAll",
+  ),
+  "pub"      -> Seq("io.kipp.mill.ci.release.ReleaseModule/publishAll"),
+  "publocal" -> Seq("riscvassembler.__.publishLocal"),
+  "bin"      -> Seq("show rvasmcli.nativeLink"),
+  "testall"  -> Seq("riscvassembler.__.test", "rvasmcli.test"),
+  "test"     -> Seq("riscvassembler.jvm[" + scala3 + "].test", "rvasmcli.test"),
+)
+
+// The toplevel alias runner
+def run(ev: eval.Evaluator, alias: String) = T.command {
+  aliases.get(alias) match {
+    case Some(t) =>
+      mill.main.MainModule.evaluateTasks(
+        ev,
+        t.flatMap(x => x +: Seq("+")).flatMap(x => x.split(" ")).dropRight(1),
+        mill.define.SelectMode.Separated,
+      )(identity)
+    case None => println(s"${Console.RED}ERROR:${Console.RESET} The task alias \"$alias\" does not exist.")
+  }
+  ()
 }

@@ -43,11 +43,11 @@ jobs:
       id: coursier-cache
 
     - name: Check Formatting
-      run: ./mill mill.scalalib.scalafmt.ScalafmtModule/checkFormatAll __.sources
+      run: ./mill run checkfmt
       if: startsWith(matrix.jvm, '17')
 
     - name: Run tests for all versions
-      run: ./mill testall
+      run: ./mill run testall
 
   code-coverage:
     needs: [test]
@@ -70,7 +70,7 @@ jobs:
       id: coursier-cache
 
     - name: Run code coverage
-      run: ./mill coverage
+      run: ./mill run coverage
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
@@ -97,7 +97,7 @@ jobs:
         id: coursier-cache
 
       - name: Publish
-        run: ./mill -i io.kipp.mill.ci.release.ReleaseModule/publishAll
+        run: ./mill run pub
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
@@ -125,7 +125,7 @@ jobs:
         id: coursier-cache
 
       - name: Publish
-        run: ./mill -i io.kipp.mill.ci.release.ReleaseModule/publishAll
+        run: ./mill run pub
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
