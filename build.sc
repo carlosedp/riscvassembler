@@ -242,7 +242,12 @@ val aliases: Map[String, Seq[String]] = Map(
 )
 
 // The toplevel alias runner
-def run(ev: eval.Evaluator, alias: String) = T.command {
+def run(ev: eval.Evaluator, alias: String = "") = T.command {
+  if (alias == "") {
+    println("Use './mill run [alias]'.\nAvailable aliases:");
+    aliases.foreach(x => println(x._1 + " " * (15 - x._1.length) + " - Commands: (" + x._2.mkString(", ") + ")"))
+    sys.exit(1)
+  }
   aliases.get(alias) match {
     case Some(t) =>
       mill.main.MainModule.evaluateTasks(
