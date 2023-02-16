@@ -37,7 +37,7 @@ object versions {
   val semanticdb      = "4.5.13"
   val mainargs        = "0.3.0"
   val scoverage       = "2.0.8"
-  val scalajsdom      = "2.3.0"
+  val scalajsdom      = "2.4.0"
 }
 
 object riscvassembler extends Module {
