@@ -34,7 +34,9 @@ object RISCVAssembler {
    * @return
    *   the output hex string
    */
-  def fromFile(filename: String): String =
+  def fromFile(
+    filename: String,
+  ): String =
     fromString(Source.fromFile(filename).getLines().mkString("\n"))
 
   /**
@@ -59,7 +61,9 @@ object RISCVAssembler {
    * @return
    *   the assembled hex string
    */
-  def fromString(input: String): String = {
+  def fromString(
+    input: String,
+  ): String = {
     val (instructions, addresses, labels) = LineParser(input)
     (instructions zip addresses).map { case (i: String, a: String) => { binOutput(i, a, labels) } }
       .map(hexOutput(_))
@@ -95,7 +99,9 @@ object RISCVAssembler {
    * @return
    *   the hex string of the instruction in string
    */
-  def hexOutput(input: String): String = {
+  def hexOutput(
+    input: String,
+  ): String = {
     val x = input.b
     f"0x$x%08X".toString.takeRight(8)
   }
