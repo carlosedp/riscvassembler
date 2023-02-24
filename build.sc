@@ -42,8 +42,9 @@ object versions {
 
 object riscvassembler extends Module {
   object jvm extends Cross[RiscvAssemblerJVMModule](scalaVersions: _*)
-  class RiscvAssemblerJVMModule(val crossScalaVersion: String)
-    extends RiscvAssemblerLib
+  class RiscvAssemblerJVMModule(
+    val crossScalaVersion: String,
+  ) extends RiscvAssemblerLib
     with RiscvAssemblerPublish
     with ScoverageModule {
     def millSourcePath   = super.millSourcePath / os.up
@@ -56,8 +57,10 @@ object riscvassembler extends Module {
   }
 
   object native extends Cross[RiscvAssemblerNativeModule](scalaNativeVersions: _*)
-  class RiscvAssemblerNativeModule(val crossScalaVersion: String, crossScalaNativeVersion: String)
-    extends RiscvAssemblerLib
+  class RiscvAssemblerNativeModule(
+    val crossScalaVersion:   String,
+    crossScalaNativeVersion: String,
+  ) extends RiscvAssemblerLib
     with RiscvAssemblerPublish
     with ScalaNativeModule {
     def millSourcePath     = super.millSourcePath / os.up / os.up
@@ -68,8 +71,10 @@ object riscvassembler extends Module {
   }
 
   object scalajs extends Cross[RiscvAssemblerScalajsModule](scalaJsVersions: _*)
-  class RiscvAssemblerScalajsModule(val crossScalaVersion: String, crossScalaJsVersion: String)
-    extends RiscvAssemblerLib
+  class RiscvAssemblerScalajsModule(
+    val crossScalaVersion: String,
+    crossScalaJsVersion:   String,
+  ) extends RiscvAssemblerLib
     with RiscvAssemblerPublish
     with ScalaJSModule {
     def millSourcePath = super.millSourcePath / os.up / os.up
@@ -100,7 +105,9 @@ def LLVMTriples = System.getProperty("os.name").toLowerCase match {
 // On Mac, install LLVM using Homebrew which contains libs for amd64 and arm64
 // On Linux, install "build-essential clang build-essential clang crossbuild-essential-arm64 crossbuild-essential-riscv64 crossbuild-essential-amd64 crossbuild-essential-ppc64el"
 object rvasmclicross extends Cross[RVASMCLI](LLVMTriples: _*)
-class RVASMCLI(val LLVMtriple: String) extends RVASMcliBase {
+class RVASMCLI(
+  val LLVMtriple: String,
+) extends RVASMcliBase {
   def nativeTarget = Some(LLVMtriple)
 }
 
@@ -242,7 +249,10 @@ val aliases: Map[String, Seq[String]] = Map(
 )
 
 // The toplevel alias runner
-def run(ev: eval.Evaluator, alias: String = "") = T.command {
+def run(
+  ev:    eval.Evaluator,
+  alias: String = "",
+) = T.command {
   if (alias == "") {
     println("Use './mill run [alias]'.\nAvailable aliases:");
     aliases.foreach(x => println(x._1 + " " * (15 - x._1.length) + " - Commands: (" + x._2.mkString(", ") + ")"))

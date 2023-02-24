@@ -19,7 +19,9 @@ case class Instruction(
 )
 
 protected object Instructions {
-  def apply(instruction: String): Option[Instruction] =
+  def apply(
+    instruction: String,
+  ): Option[Instruction] =
     instructions.find(_.name == instruction.toUpperCase)
 
   // scalafmt: { maxColumn = 130}
@@ -79,7 +81,9 @@ protected object Instructions {
  * This function transforms a pseudo instruction to it's real conterpart
  */
 protected object PseudoInstructions {
-  def apply(instructionData: Array[String]): Option[Array[String]] =
+  def apply(
+    instructionData: Array[String],
+  ): Option[Array[String]] =
     instructionData(0).toUpperCase match {
       // Map received params to the corresponding RISC-V instruction
       case "NOP"  => { Some(Array("addi", "x0", "x0", "0")) }
