@@ -59,7 +59,9 @@ object Main {
     output
   }
 
-  def main(args: Array[String]): Unit = {
+  def main(
+    args: Array[String],
+  ): Unit = {
     println("RISC-V Assembler for Scala")
     val out = ParserForMethods(this).runOrExit(args.toIndexedSeq)
     println(out)
