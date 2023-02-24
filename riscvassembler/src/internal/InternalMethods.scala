@@ -19,13 +19,7 @@ protected object LineParser {
    *   - `ArrayBuffer[String]` with the assembly instruction address
    *   - `Map[String, String]` with the assembly label addresses
    */
-  def apply(
-    input: String,
-  ): (
-    ArrayBuffer[String],
-    ArrayBuffer[String],
-    Map[String, String],
-  ) = {
+  def apply(input: String): (ArrayBuffer[String], ArrayBuffer[String], Map[String, String]) = {
     val instList = input.split("\n").toList.filter(_.nonEmpty).filter(!_.trim().isEmpty()).map(_.trim)
     val ignores  = Seq(".", "/")
 
@@ -84,12 +78,7 @@ protected object InstructionParser {
     input:      String,
     addr:       String = "0",
     labelIndex: Map[String, String] = Map[String, String](),
-  ): Option[
-    (
-      Instruction,
-      Map[String, Long],
-    ),
-  ] = {
+  ): Option[(Instruction, Map[String, Long])] = {
     // The regex splits the input into groups (dependind on type):
     // (0) - Instruction name
     // (1) - Instruction rd
@@ -282,10 +271,7 @@ protected object FillInstruction {
    * @return
    *   the filled instruction binary
    */
-  def apply(
-    op:   Instruction,
-    data: Map[String, Long],
-  ): String =
+  def apply(op: Instruction, data: Map[String, Long]): String =
     op.instType match {
       case InstType.R => {
         val rd  = data("rd").toBinaryString.padZero(5)
@@ -342,9 +328,7 @@ protected object RegMap {
    * @return
    *   the register number
    */
-  def apply(
-    input: String,
-  ): Long =
+  def apply(input: String): Long =
     input.toLowerCase match {
       case "x0" | "zero"      => 0
       case "x1" | "ra"        => 1
