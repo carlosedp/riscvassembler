@@ -83,7 +83,7 @@ object riscvassembler extends Module {
 
     def scalaJSUseMainModuleInitializer = true
     def moduleKind                      = T(ModuleKind.CommonJSModule)
-    def jsEnvConfig                     = T(JsEnvConfig.ExoegoJsDomNodeJs())
+    def jsEnvConfig                     = T(JsEnvConfig.ExoegoJsDomNodeJs(args = List("--dns-result-order=ipv4first")))
     object test extends Tests with RiscvAssemblerTest {}
   }
 }
