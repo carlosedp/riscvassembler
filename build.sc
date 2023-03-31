@@ -249,23 +249,13 @@ val aliases: Map[String, Seq[String]] = Map(
 )
 
 // The toplevel alias runner
-def run(
-  ev:    eval.Evaluator,
-  alias: String = "",
-) = T.command {
-  if (alias == "") {
-    println("Use './mill run [alias]'.\nAvailable aliases:");
-    aliases.foreach(x => println(x._1 + " " * (15 - x._1.length) + " - Commands: (" + x._2.mkString(", ") + ")"))
-    sys.exit(1)
-  }
+def run(ev: eval.Evaluator, alias: String = "") = T.command {
   aliases.get(alias) match {
     case Some(t) =>
-      mill.main.MainModule.evaluateTasks(
-        ev,
-        t.flatMap(x => x +: Seq("+")).flatMap(x => x.split(" ")).dropRight(1),
-        mill.define.SelectMode.Separated,
-      )(identity)
-    case None => println(s"${Console.RED}ERROR:${Console.RESET} The task alias \"$alias\" does not exist.")
+      mill.main.MainModule.evaluateTasks(ev, t.flatMap(_.split(' ')) :+ "+", mill.define.SelectMode.Separated)(identity)
+    case None =>
+      Console.err.println("Use './mill run [alias]'."); Console.out.println("Available aliases:")
+      aliases.foreach(x => Console.out.println(s"${x._1.padTo(15, ' ')} - Commands: (${x._2.mkString(", ")})"));
+      sys.exit(1)
   }
-  ()
 }
