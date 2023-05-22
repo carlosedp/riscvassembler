@@ -8,7 +8,7 @@ import scalafmt._
 import java.util.Date
 
 // Plugins
-import $ivy.`com.lihaoyi::mill-contrib-scoverage:`
+import $ivy.`com.lihaoyi::mill-contrib-scoverage:$MILL_VERSION`
 import mill.contrib.scoverage.{ScoverageModule, ScoverageReport}
 import $ivy.`com.goyeau::mill-scalafix::0.2.11`
 import com.goyeau.mill.scalafix.ScalafixModule
@@ -18,7 +18,7 @@ import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.1`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
 import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.2`
 import io.github.davidgregory084.TpolecatModule
-import $ivy.`com.lihaoyi::mill-contrib-buildinfo:`
+import $ivy.`com.lihaoyi::mill-contrib-buildinfo:$MILL_VERSION`
 import mill.contrib.buildinfo.BuildInfo
 
 val scala212            = "2.12.17"
@@ -214,6 +214,7 @@ val aliases: Map[String, Seq[String]] = Map(
   ),
   "deps"     -> Seq("mill.scalalib.Dependency/showUpdates"),
   "checkfmt" -> Seq("mill.scalalib.scalafmt.ScalafmtModule/checkFormatAll __.sources"),
+  "fmt"      -> Seq("mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources"),
   "coverage" -> Seq(
     s"riscvassembler.jvm[$scala3].test",
     "rvasmcli.test",
