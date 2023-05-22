@@ -20,30 +20,28 @@ import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.2`
 import io.github.davidgregory084.TpolecatModule
 import $ivy.`com.lihaoyi::mill-contrib-buildinfo:`
 import mill.contrib.buildinfo.BuildInfo
-import $ivy.`io.github.alexarchambault.mill::mill-native-image::0.1.24`
-import io.github.alexarchambault.millnativeimage.NativeImage
 
 val scala212            = "2.12.17"
 val scala213            = "2.13.10"
 val scala3              = "3.2.2"
 val scalaVersions       = Seq(scala212, scala213, scala3)
-val scalaNativeVersions = scalaVersions.map((_, "0.4.11"))
-val scalaJsVersions     = scalaVersions.map((_, "1.13.0"))
+val scalaNativeVersions = scalaVersions.map((_, "0.4.12"))
+val scalaJsVersions     = scalaVersions.map((_, "1.13.1"))
 
 object versions {
-  val scalatest       = "3.2.15"
+  val scalatest       = "3.2.16"
   val oslib           = "0.9.1"
   val organizeimports = "0.6.0"
   val semanticdb      = "4.5.13"
   val mainargs        = "0.5.0"
   val scoverage       = "2.0.8"
-  val scalajsdom      = "2.4.0"
+  val scalajsdom      = "2.6.0"
 }
 
 object riscvassembler extends Module {
   object jvm extends Cross[RiscvAssemblerJVMModule](scalaVersions: _*)
   class RiscvAssemblerJVMModule(
-    val crossScalaVersion: String,
+    val crossScalaVersion: String
   ) extends RiscvAssemblerLib
     with RiscvAssemblerPublish
     with ScoverageModule {
@@ -83,14 +81,13 @@ object riscvassembler extends Module {
 
     def scalaJSUseMainModuleInitializer = true
     def moduleKind                      = T(ModuleKind.CommonJSModule)
-    def jsEnvConfig                     = T(JsEnvConfig.ExoegoJsDomNodeJs(args = List("--dns-result-order=ipv4first")))
+    def jsEnvConfig                     = T(JsEnvConfig.NodeJs(args = List("--dns-result-order=ipv4first")))
     object test extends Tests with RiscvAssemblerTest {}
   }
 }
 
-// Build ScalaNative or Native Image for current platform
+// Build ScalaNative for current platform
 // Scala Native: `./mill rvasmcli.nativeLink`
-// Native Image: `./mill rvasmcli.nativeImage`
 object rvasmcli extends RVASMcliBase
 
 def LLVMTriples = System.getProperty("os.name").toLowerCase match {
@@ -100,22 +97,20 @@ def LLVMTriples = System.getProperty("os.name").toLowerCase match {
     Seq("x86_64-apple-darwin20.3.0", "arm64-apple-darwin20.3.0")
 }
 
-// Build ScalaNative or Native Image for cross-architecture depending on LLVM Triple setting above.
+// Build ScalaNative for cross-architecture depending on LLVM Triple setting above.
 // Cross build for available architectures on current OS with: `./mill rvasmclicross.__.nativeLink`
 // On Mac, install LLVM using Homebrew which contains libs for amd64 and arm64
 // On Linux, install "build-essential clang build-essential clang crossbuild-essential-arm64 crossbuild-essential-riscv64 crossbuild-essential-amd64 crossbuild-essential-ppc64el"
 object rvasmclicross extends Cross[RVASMCLI](LLVMTriples: _*)
 class RVASMCLI(
-  val LLVMtriple: String,
+  val LLVMtriple: String
 ) extends RVASMcliBase {
   def nativeTarget = Some(LLVMtriple)
 }
 
-// This trait allows building both Scala Native and Native Image (using GraalVM)
-// The trait is also used for cross-building to different architectures
+// This trait allows building Scala Native for current platform and cross-building for other platforms
 trait RVASMcliBase
   extends ScalaNativeModule
-  with NativeImage
   with TpolecatModule
   with ScalafixModule
   with ScalafmtModule {
@@ -129,27 +124,12 @@ trait RVASMcliBase
   // Scala Native settings
   def scalaNativeVersion = scalaNativeVersions.head._2
   def moduleDeps         = Seq(riscvassembler.native(scala3, scalaNativeVersions.head._2))
-  def actualMainClass    = "com.carlosedp.rvasmcli.Main"
-  def mainClass          = Some(actualMainClass)
   def logLevel           = NativeLogLevel.Info
-  def releaseMode        = ReleaseMode.Debug
+  def releaseMode        = ReleaseMode.ReleaseFast
   if (System.getProperty("os.name").toLowerCase == "linux") {
     def nativeLTO            = LTO.Thin
     def nativeLinkingOptions = Array("-static", "-fuse-ld=lld")
   }
-  // Native Image (GraalVM) settings
-  def nativeImageName = "rvasmcli"
-  def nativeImageGraalVmJvmId = T {
-    sys.env.getOrElse("GRAALVM_ID", "graalvm-java17:22.3.1")
-  }
-  def nativeImageClassPath = runClasspath()
-  def nativeImageMainClass = actualMainClass
-  def nativeImageOptions = super.nativeImageOptions() ++ Seq(
-    "--no-fallback",
-    "--enable-url-protocols=http,https",
-    "-Djdk.http.auth.tunneling.disabledSchemes=",
-  )
-
   object test extends Tests with RiscvAssemblerTest
 }
 
@@ -166,7 +146,7 @@ trait RiscvAssemblerLib
   with ScalafixModule
   with ScalafmtModule {
   def ivyDeps = Agg(
-    ivy"com.lihaoyi::os-lib::${versions.oslib}",
+    ivy"com.lihaoyi::os-lib::${versions.oslib}"
   )
   def scalafixIvyDeps = Agg(ivy"com.github.liancheng::organize-imports:${versions.organizeimports}")
   def scalacPluginIvyDeps =
@@ -209,13 +189,13 @@ trait RiscvAssemblerTest extends ScalaModule with TestModule.ScalaTest {
 trait RiscvAssemblerPublish extends RiscvAssemblerLib with CiReleaseModule {
   def publishVersion = super.publishVer
   def pomSettings = PomSettings(
-    description    = "RiscvAssembler is a RISC-V assembler library to be used on Scala and Chisel HDL projects.",
-    organization   = "com.carlosedp",
-    url            = "https://github.com/carlosedp/riscvassembler",
-    licenses       = Seq(License.MIT),
+    description = "RiscvAssembler is a RISC-V assembler library to be used on Scala and Chisel HDL projects.",
+    organization = "com.carlosedp",
+    url = "https://github.com/carlosedp/riscvassembler",
+    licenses = Seq(License.MIT),
     versionControl = VersionControl.github("carlosedp", "RiscvAssembler"),
     developers = Seq(
-      Developer("carlosedp", "Carlos Eduardo de Paula", "https://github.com/carlosedp"),
+      Developer("carlosedp", "Carlos Eduardo de Paula", "https://github.com/carlosedp")
     ),
   )
   override def sonatypeHost = Some(SonatypeHost.s01)
@@ -243,7 +223,7 @@ val aliases: Map[String, Seq[String]] = Map(
   ),
   "pub"      -> Seq("io.kipp.mill.ci.release.ReleaseModule/publishAll"),
   "publocal" -> Seq("riscvassembler.__.publishLocal"),
-  "bin"      -> Seq("show rvasmcli.nativeLink"),
+  "cli"      -> Seq("show rvasmcli.nativeLink"),
   "testall"  -> Seq("riscvassembler.__.test", "rvasmcli.test"),
   "test"     -> Seq("riscvassembler.jvm[" + scala3 + "].test", "rvasmcli.test"),
 )
@@ -252,7 +232,7 @@ val aliases: Map[String, Seq[String]] = Map(
 def run(ev: eval.Evaluator, alias: String = "") = T.command {
   aliases.get(alias) match {
     case Some(t) =>
-      mill.main.MainModule.evaluateTasks(ev, t.flatMap(x => Seq(x, "+")).flatMap(_.split("\\s+")).init, false)(identity)
+      mill.main.MainModule.evaluateTasks(ev, t.flatMap(x => (x + " +").split("\\s+")).init, false)(identity)
     case None =>
       Console.err.println("Use './mill run [alias]'."); Console.out.println("Available aliases:")
       aliases.foreach(x => Console.out.println(s"${x._1.padTo(15, ' ')} - Commands: (${x._2.mkString(", ")})"));
