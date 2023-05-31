@@ -12,7 +12,7 @@ import $ivy.`com.lihaoyi::mill-contrib-scoverage:$MILL_VERSION`
 import mill.contrib.scoverage.{ScoverageModule, ScoverageReport}
 import $ivy.`com.goyeau::mill-scalafix::0.2.11`
 import com.goyeau.mill.scalafix.ScalafixModule
-import $ivy.`io.chris-kipp::mill-ci-release::0.1.5`
+import $ivy.`io.chris-kipp::mill-ci-release::0.1.7`
 import io.kipp.mill.ci.release.{CiReleaseModule, SonatypeHost}
 import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.1`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
@@ -41,7 +41,7 @@ object versions {
 object riscvassembler extends Module {
   object jvm extends Cross[RiscvAssemblerJVMModule](scalaVersions: _*)
   class RiscvAssemblerJVMModule(
-    val crossScalaVersion: String
+    val crossScalaVersion: String,
   ) extends RiscvAssemblerLib
     with RiscvAssemblerPublish
     with ScoverageModule {
@@ -103,17 +103,13 @@ def LLVMTriples = System.getProperty("os.name").toLowerCase match {
 // On Linux, install "build-essential clang build-essential clang crossbuild-essential-arm64 crossbuild-essential-riscv64 crossbuild-essential-amd64 crossbuild-essential-ppc64el"
 object rvasmclicross extends Cross[RVASMCLI](LLVMTriples: _*)
 class RVASMCLI(
-  val LLVMtriple: String
+  val LLVMtriple: String,
 ) extends RVASMcliBase {
   def nativeTarget = Some(LLVMtriple)
 }
 
 // This trait allows building Scala Native for current platform and cross-building for other platforms
-trait RVASMcliBase
-  extends ScalaNativeModule
-  with TpolecatModule
-  with ScalafixModule
-  with ScalafmtModule {
+trait RVASMcliBase extends ScalaNativeModule with TpolecatModule with ScalafixModule with ScalafmtModule {
   def scalaVersion   = scala3
   def millSourcePath = build.millSourcePath / "rvasmcli"
   def ivyDeps = Agg(
@@ -146,7 +142,7 @@ trait RiscvAssemblerLib
   with ScalafixModule
   with ScalafmtModule {
   def ivyDeps = Agg(
-    ivy"com.lihaoyi::os-lib::${versions.oslib}"
+    ivy"com.lihaoyi::os-lib::${versions.oslib}",
   )
   def scalafixIvyDeps = Agg(ivy"com.github.liancheng::organize-imports:${versions.organizeimports}")
   def scalacPluginIvyDeps =
@@ -189,13 +185,13 @@ trait RiscvAssemblerTest extends ScalaModule with TestModule.ScalaTest {
 trait RiscvAssemblerPublish extends RiscvAssemblerLib with CiReleaseModule {
   def publishVersion = super.publishVer
   def pomSettings = PomSettings(
-    description = "RiscvAssembler is a RISC-V assembler library to be used on Scala and Chisel HDL projects.",
-    organization = "com.carlosedp",
-    url = "https://github.com/carlosedp/riscvassembler",
-    licenses = Seq(License.MIT),
+    description    = "RiscvAssembler is a RISC-V assembler library to be used on Scala and Chisel HDL projects.",
+    organization   = "com.carlosedp",
+    url            = "https://github.com/carlosedp/riscvassembler",
+    licenses       = Seq(License.MIT),
     versionControl = VersionControl.github("carlosedp", "RiscvAssembler"),
     developers = Seq(
-      Developer("carlosedp", "Carlos Eduardo de Paula", "https://github.com/carlosedp")
+      Developer("carlosedp", "Carlos Eduardo de Paula", "https://github.com/carlosedp"),
     ),
   )
   override def sonatypeHost = Some(SonatypeHost.s01)
