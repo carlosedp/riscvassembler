@@ -10,11 +10,11 @@ import java.util.Date
 // Plugins
 import $ivy.`com.lihaoyi::mill-contrib-scoverage:$MILL_VERSION`
 import mill.contrib.scoverage.{ScoverageModule, ScoverageReport}
-import $ivy.`com.goyeau::mill-scalafix::0.2.11`
+import $ivy.`com.goyeau::mill-scalafix::0.3.0`
 import com.goyeau.mill.scalafix.ScalafixModule
-import $ivy.`io.chris-kipp::mill-ci-release::0.1.5`
+import $ivy.`io.chris-kipp::mill-ci-release::0.1.9`
 import io.kipp.mill.ci.release.{CiReleaseModule, SonatypeHost}
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.1`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.4.0`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
 import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.2`
 import io.github.davidgregory084.TpolecatModule
@@ -34,7 +34,7 @@ object versions {
   val organizeimports = "0.6.0"
   val semanticdb      = "4.5.13"
   val mainargs        = "0.5.0"
-  val scoverage       = "2.0.8"
+  val scoverage       = "2.0.10"
   val scalajsdom      = "2.6.0"
 }
 
