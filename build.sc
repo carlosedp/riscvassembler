@@ -23,7 +23,7 @@ import mill.contrib.buildinfo.BuildInfo
 import $ivy.`com.carlosedp::mill-aliases::0.2.1`
 import com.carlosedp.aliases._
 
-val scala212            = "2.12.18"
+val scala212            = "2.12.17"
 val scala213            = "2.13.11"
 val scala3              = "3.3.0"
 val scalaVersions       = Seq(scala212, scala213, scala3)
@@ -33,7 +33,6 @@ val scalaJsVersions     = scalaVersions.map((_, "1.13.1"))
 object versions {
   val scalatest  = "3.2.16"
   val oslib      = "0.9.1"
-  val semanticdb = "4.5.13"
   val mainargs   = "0.5.0"
   val scoverage  = "2.0.10"
   val scalajsdom = "2.6.0"
@@ -144,10 +143,6 @@ trait RiscvAssemblerLib
   def ivyDeps = Agg(
     ivy"com.lihaoyi::os-lib::${versions.oslib}",
   )
-  def scalacPluginIvyDeps =
-    super.scalacPluginIvyDeps() ++ (if (!isScala3(crossScalaVersion))
-                                      Agg(ivy"org.scalameta:::semanticdb-scalac:${versions.semanticdb}")
-                                    else Agg.empty)
   def artifactName = "riscvassembler"
   def publishVer: T[String] = T {
     val isTag = T.ctx().env.get("GITHUB_REF").exists(_.startsWith("refs/tags"))

@@ -132,8 +132,9 @@ jobs:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
 
-      - name: Create Release for Tag
-        id: release_tag
-        uses: ncipollo/release-action@v1
+      - name: Publish release from tag
+        uses: ghalactic/github-release-from-tag@v4
         with:
-          name: ${{ github.ref }}
+          generateReleaseNotes: "true"
+          prerelease: "false"
+          draft: "false"

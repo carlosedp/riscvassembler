@@ -84,11 +84,12 @@ object RISCVAssembler {
     width:       Int = 32,
   ): String = {
     val cleanInst = "\\/\\*.*\\*\\/".r.replaceAllIn(instruction, "").toLowerCase.trim
-    val (op, opdata) = InstructionParser(cleanInst, address, labelIndex) match {
-      case Some(data) => data
-      case _          => return "0" * width
+
+    InstructionParser(cleanInst, address, labelIndex) match {
+      case Some((op, opdata)) => FillInstruction(op, opdata).takeRight(width)
+      case _                  => "0" * width
     }
-    FillInstruction(op, opdata).takeRight(width)
+
   }
 
   /**
