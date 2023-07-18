@@ -52,9 +52,7 @@ object riscvassembler extends Module {
   object native extends Cross[RiscvAssemblerNativeModule](versions.scalaVersions)
   trait RiscvAssemblerNativeModule extends ScalaNativeModule with RiscvAssemblerModule with RiscvAssemblerPublish {
     def scalaNativeVersion = versions.scalaNative
-    object test extends ScalaNativeTests with RiscvAssemblerTests {
-      def nativeLinkStubs = true
-    }
+    object test extends ScalaNativeTests with RiscvAssemblerTests
   }
 
   object scalajs extends Cross[RiscvAssemblerScalajsModule](versions.scalaVersions)
@@ -122,7 +120,7 @@ trait RiscvAssemblerPublish extends RiscvAssemblerModule with CiReleaseModule {
 }
 
 // Build rvasmcli Scala Native binary for current platform
-// Scala Native: `./mill rvasmcli.nativeLink`
+// Scala Native: `./mill show rvasmcli.nativeLink`
 object rvasmcli extends RVASMcliBase {
   object test extends ScalaNativeTests with TestModule.ScalaTest {
     def ivyDeps     = Agg(ivy"org.scalatest::scalatest::${versions.scalatest}")
@@ -131,7 +129,7 @@ object rvasmcli extends RVASMcliBase {
 }
 
 // Build rvasmcli Scala Native binary for cross-architecture depending on LLVM Triple setting below.
-// Cross build for all available architectures on current OS with: `./mill rvasmclicross.__.nativeLink`
+// Cross build for all available architectures on current OS with: `./mill show rvasmclicross.__.nativeLink`
 // On Mac, install LLVM using Homebrew which contains libs for amd64 and arm64
 // On Linux, install "build-essential clang build-essential clang crossbuild-essential-arm64 crossbuild-essential-riscv64 crossbuild-essential-amd64 crossbuild-essential-ppc64el"
 def LLVMTriples = System.getProperty("os.name").toLowerCase match {
@@ -180,7 +178,6 @@ object MyAliases extends Aliases {
   )
   def deps     = alias("mill.scalalib.Dependency/showUpdates")
   def checkfmt = alias("mill.scalalib.scalafmt.ScalafmtModule/checkFormatAll __.sources")
-  def fmt      = alias("mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources")
   def coverage = alias(
     s"riscvassembler.jvm[${versions.scala3}].test",
     "rvasmcli.test",
@@ -192,5 +189,5 @@ object MyAliases extends Aliases {
   def publocal = alias("riscvassembler.__.publishLocal")
   def cli      = alias("show rvasmcli.nativeLink")
   def testall  = alias("riscvassembler.__.test", "rvasmcli.test")
-  def test     = alias("riscvassembler.jvm[" + versions.scala3 + "].test", "rvasmcli.test")
+  def test     = alias(s"riscvassembler.jvm[${versions.scala3}].test", "rvasmcli.test")
 }
