@@ -2,10 +2,10 @@ name: Scala CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     tags: ["*"]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 concurrency:
   group: ${{ github.ref }}
@@ -15,65 +15,65 @@ jobs:
   test:
     strategy:
       matrix:
-        jvm: [ '8', '11', '17' ]
+        jvm: ["8", "11", "17"]
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - name: Setup Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: ${{ matrix.jvm }}
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: ${{ matrix.jvm }}
 
-    - name: Setup Nodejs
-      uses: actions/setup-node@v3
-      with:
-        node-version: 19
+      - name: Setup Nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm install
 
-    - name: Cache packages
-      uses: coursier/cache-action@v6
-      id: coursier-cache
+      - name: Cache packages
+        uses: coursier/cache-action@v6
+        id: coursier-cache
 
-    - name: Check Formatting
-      run: ./mill run checkfmt
-      if: startsWith(matrix.jvm, '17')
+      - name: Check Formatting
+        run: ./mill Alias/run checkfmt
+        if: startsWith(matrix.jvm, '17')
 
-    - name: Run tests for all versions
-      run: ./mill run testall
+      - name: Run tests for all versions
+        run: ./mill Alias/run testall
 
   code-coverage:
     needs: [test]
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - name: Setup Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: 17
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: 17
 
-    - name: Cache packages
-      uses: coursier/cache-action@v6
-      id: coursier-cache
+      - name: Cache packages
+        uses: coursier/cache-action@v6
+        id: coursier-cache
 
-    - name: Run code coverage
-      run: ./mill run coverage
+      - name: Run code coverage
+        run: ./mill Alias/run coverage
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
 
   publish-snapshot:
     needs: [test]
@@ -89,15 +89,15 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: "temurin"
+          java-version: "17"
 
       - name: Cache packages
         uses: coursier/cache-action@v6
         id: coursier-cache
 
       - name: Publish
-        run: ./mill run pub
+        run: ./mill Alias/run pub
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
@@ -117,26 +117,24 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: "temurin"
+          java-version: "17"
 
       - name: Cache packages
         uses: coursier/cache-action@v6
         id: coursier-cache
 
       - name: Publish
-        run: ./mill run pub
+        run: ./mill Alias/run pub
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
 
-      - name: Create Release for Tag
-        id: release_tag
-        uses: Akryum/release-tag@conventional
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish release from tag
+        uses: ghalactic/github-release-from-tag@v4
         with:
-          tag_name: ${{ github.ref }}
-          preset: angular # Use conventional-changelog preset
+          generateReleaseNotes: "true"
+          prerelease: "false"
+          draft: "false"

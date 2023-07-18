@@ -16,26 +16,26 @@ import $ivy.`io.chris-kipp::mill-ci-release::0.1.9`
 import io.kipp.mill.ci.release.{CiReleaseModule, SonatypeHost}
 import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.4.0`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
-import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.2`
+import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.5`
 import io.github.davidgregory084.TpolecatModule
 import $ivy.`com.lihaoyi::mill-contrib-buildinfo:$MILL_VERSION`
 import mill.contrib.buildinfo.BuildInfo
+import $ivy.`com.carlosedp::mill-aliases::0.3.0`
+import com.carlosedp.aliases._
 
 val scala212            = "2.12.17"
-val scala213            = "2.13.10"
+val scala213            = "2.13.11"
 val scala3              = "3.3.0"
 val scalaVersions       = Seq(scala212, scala213, scala3)
 val scalaNativeVersions = scalaVersions.map((_, "0.4.12"))
 val scalaJsVersions     = scalaVersions.map((_, "1.13.1"))
 
 object versions {
-  val scalatest       = "3.2.16"
-  val oslib           = "0.9.1"
-  val organizeimports = "0.6.0"
-  val semanticdb      = "4.5.13"
-  val mainargs        = "0.5.0"
-  val scoverage       = "2.0.10"
-  val scalajsdom      = "2.6.0"
+  val scalatest  = "3.2.16"
+  val oslib      = "0.9.1"
+  val mainargs   = "0.5.0"
+  val scoverage  = "2.0.10"
+  val scalajsdom = "2.6.0"
 }
 
 object riscvassembler extends Module {
@@ -116,7 +116,6 @@ trait RVASMcliBase extends ScalaNativeModule with TpolecatModule with ScalafixMo
     ivy"com.lihaoyi::os-lib::${versions.oslib}",
     ivy"com.lihaoyi::mainargs::${versions.mainargs}",
   )
-  def scalafixIvyDeps = Agg(ivy"com.github.liancheng::organize-imports:${versions.organizeimports}")
   // Scala Native settings
   def scalaNativeVersion = scalaNativeVersions.head._2
   def moduleDeps         = Seq(riscvassembler.native(scala3, scalaNativeVersions.head._2))
@@ -144,11 +143,6 @@ trait RiscvAssemblerLib
   def ivyDeps = Agg(
     ivy"com.lihaoyi::os-lib::${versions.oslib}",
   )
-  def scalafixIvyDeps = Agg(ivy"com.github.liancheng::organize-imports:${versions.organizeimports}")
-  def scalacPluginIvyDeps =
-    super.scalacPluginIvyDeps() ++ (if (!isScala3(crossScalaVersion))
-                                      Agg(ivy"org.scalameta:::semanticdb-scalac:${versions.semanticdb}")
-                                    else Agg.empty)
   def artifactName = "riscvassembler"
   def publishVer: T[String] = T {
     val isTag = T.ctx().env.get("GITHUB_REF").exists(_.startsWith("refs/tags"))
@@ -200,39 +194,25 @@ trait RiscvAssemblerPublish extends RiscvAssemblerLib with CiReleaseModule {
 // -----------------------------------------------------------------------------
 // Command Aliases
 // -----------------------------------------------------------------------------
-// Alias commands are run like `./mill run [alias]`
-// Define the alias as a map element containing the alias name and a Seq with the tasks to be executed
-val aliases: Map[String, Seq[String]] = Map(
-  "lint" -> Seq(
+object MyAliases extends Aliases {
+  def lint = alias(
     s"riscvassembler.jvm[$scala3].fix",
     "rvasmcli.fix",
     "mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources",
-  ),
-  "deps"     -> Seq("mill.scalalib.Dependency/showUpdates"),
-  "checkfmt" -> Seq("mill.scalalib.scalafmt.ScalafmtModule/checkFormatAll __.sources"),
-  "fmt"      -> Seq("mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources"),
-  "coverage" -> Seq(
+  )
+  def deps     = alias("mill.scalalib.Dependency/showUpdates")
+  def checkfmt = alias("mill.scalalib.scalafmt.ScalafmtModule/checkFormatAll __.sources")
+  def fmt      = alias("mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources")
+  def coverage = alias(
     s"riscvassembler.jvm[$scala3].test",
     "rvasmcli.test",
     "scoverage.htmlReportAll",
     "scoverage.xmlReportAll",
     "scoverage.consoleReportAll",
-  ),
-  "pub"      -> Seq("io.kipp.mill.ci.release.ReleaseModule/publishAll"),
-  "publocal" -> Seq("riscvassembler.__.publishLocal"),
-  "cli"      -> Seq("show rvasmcli.nativeLink"),
-  "testall"  -> Seq("riscvassembler.__.test", "rvasmcli.test"),
-  "test"     -> Seq("riscvassembler.jvm[" + scala3 + "].test", "rvasmcli.test"),
-)
-
-// The toplevel alias runner
-def run(ev: eval.Evaluator, alias: String = "") = T.command {
-  aliases.get(alias) match {
-    case Some(t) =>
-      mill.main.MainModule.evaluateTasks(ev, t.flatMap(x => (x + " +").split("\\s+")).init, false)(identity)
-    case None =>
-      Console.err.println("Use './mill run [alias]'."); Console.out.println("Available aliases:")
-      aliases.foreach(x => Console.out.println(s"${x._1.padTo(15, ' ')} - Commands: (${x._2.mkString(", ")})"));
-      sys.exit(1)
-  }
+  )
+  def pub      = alias("io.kipp.mill.ci.release.ReleaseModule/publishAll")
+  def publocal = alias("riscvassembler.__.publishLocal")
+  def cli      = alias("show rvasmcli.nativeLink")
+  def testall  = alias("riscvassembler.__.test", "rvasmcli.test")
+  def test     = alias("riscvassembler.jvm[" + scala3 + "].test", "rvasmcli.test")
 }
