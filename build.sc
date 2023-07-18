@@ -133,9 +133,9 @@ trait RiscvAssemblerPublish extends RiscvAssemblerLib with CiReleaseModule {
 // Build rvasmcli Scala Native binary for current platform
 // Scala Native: `./mill rvasmcli.nativeLink`
 object rvasmcli extends RVASMcliBase {
-  // object test extends ScalaTests with RiscvAssemblerTest { //TODO: Fix tests
-  //   def releaseMode = ReleaseMode.Debug
-  // }
+  object test extends ScalaTests with RiscvAssemblerTest { // TODO: Fix tests
+    def releaseMode = ReleaseMode.Debug
+  }
 }
 
 // Build rvasmcli Scala Native binary for cross-architecture depending on LLVM Triple setting below.
@@ -199,6 +199,6 @@ object MyAliases extends Aliases {
   def pub      = alias("io.kipp.mill.ci.release.ReleaseModule/publishAll")
   def publocal = alias("riscvassembler.__.publishLocal")
   def cli      = alias("show rvasmcli.nativeLink")
-  def testall  = alias("riscvassembler.__.test", "rvasmcli.test") // TODO: Add "rvasmcli.test" once fixed
+  def testall  = alias("riscvassembler.__.test") // TODO: Add "rvasmcli.test" once fixed
   def test     = alias("riscvassembler.jvm[" + scala3 + "].test", "rvasmcli.test")
 }
