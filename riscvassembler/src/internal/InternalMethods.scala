@@ -3,7 +3,7 @@ package com.carlosedp.riscvassembler
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Try
 
-import com.carlosedp.riscvassembler.ObjectUtils._
+import ObjectUtils._
 
 protected object LineParser {
 

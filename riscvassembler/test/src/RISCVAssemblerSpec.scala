@@ -5,14 +5,6 @@ import org.scalatest.matchers.should._
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 
 class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with BeforeAndAfterAll with Matchers {
-//   val tmpdir = os.pwd / "tmphex"
-//   var memoryfile: os.Path = _
-
-//   override def beforeAll(): Unit = os.makeDir.all(tmpdir)
-//   override def afterAll():  Unit = { val _ = scala.util.Try(os.remove(tmpdir)) }
-//   override def beforeEach(): Unit =
-//     memoryfile = tmpdir / (scala.util.Random.alphanumeric.filter(_.isLetter).take(15).mkString + ".s")
-//   override def afterEach(): Unit = os.remove.all(memoryfile)
 
   behavior of "RISCVAssembler"
 
