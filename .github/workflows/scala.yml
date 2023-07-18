@@ -107,6 +107,8 @@ jobs:
   publish-release:
     needs: [test]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     if: contains(github.ref, 'refs/tags/')
     steps:
       - name: Checkout

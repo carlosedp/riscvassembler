@@ -2,7 +2,7 @@ package com.carlosedp.riscvassembler
 
 import scala.io.Source
 
-import com.carlosedp.riscvassembler.ObjectUtils._
+import ObjectUtils._
 
 object RISCVAssembler {
 

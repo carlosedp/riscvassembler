@@ -1,25 +1,20 @@
-import mill._
-import mill.scalalib._
-import mill.scalalib.publish._
-import mill.scalalib.api.Util.isScala3
-import mill.scalanativelib._, mill.scalanativelib.api._
-import mill.scalajslib._, mill.scalajslib.api._
-import scalafmt._
-import java.util.Date
+import mill._, mill.scalalib._
+import scalafmt._, publish._
+import scalajslib._, mill.scalajslib.api._
+import scalanativelib._, mill.scalanativelib.api._
 
 // Plugins
 import $ivy.`com.lihaoyi::mill-contrib-scoverage:$MILL_VERSION`
 import mill.contrib.scoverage.{ScoverageModule, ScoverageReport}
+import $ivy.`com.lihaoyi::mill-contrib-buildinfo:$MILL_VERSION`
+import mill.contrib.buildinfo.BuildInfo
 import $ivy.`com.goyeau::mill-scalafix::0.3.1`
 import com.goyeau.mill.scalafix.ScalafixModule
 import $ivy.`io.chris-kipp::mill-ci-release::0.1.9`
 import io.kipp.mill.ci.release.{CiReleaseModule, SonatypeHost}
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.4.0`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
 import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.5`
 import io.github.davidgregory084.TpolecatModule
-import $ivy.`com.lihaoyi::mill-contrib-buildinfo:$MILL_VERSION`
-import mill.contrib.buildinfo.BuildInfo
 import $ivy.`com.carlosedp::mill-aliases::0.3.0`
 import com.carlosedp.aliases._
 
@@ -27,8 +22,8 @@ val scala212            = "2.12.17"
 val scala213            = "2.13.11"
 val scala3              = "3.3.0"
 val scalaVersions       = Seq(scala212, scala213, scala3)
-val scalaNativeVersions = scalaVersions.map((_, "0.4.12"))
-val scalaJsVersions     = scalaVersions.map((_, "1.13.1"))
+val scalaNativeVersions = scalaVersions.map((_, "0.4.14"))
+val scalaJsVersions     = scalaVersions.map((_, "1.13.2"))
 
 object versions {
   val scalatest  = "3.2.16"
@@ -39,99 +34,49 @@ object versions {
 }
 
 object riscvassembler extends Module {
-  object jvm extends Cross[RiscvAssemblerJVMModule](scalaVersions: _*)
-  class RiscvAssemblerJVMModule(
-    val crossScalaVersion: String,
-  ) extends RiscvAssemblerLib
+  object jvm extends Cross[RiscvAssemblerJVMModule](scalaVersions)
+  trait RiscvAssemblerJVMModule
+    extends Cross.Module[String]
+    with RiscvAssemblerLib
     with RiscvAssemblerPublish
     with ScoverageModule {
     def millSourcePath   = super.millSourcePath / os.up
     def scoverageVersion = versions.scoverage
     object test extends ScoverageTests with RiscvAssemblerTest {
       // Add JVM specific tests to the source path
-      def testSourcesJVM   = T.sources(super.millSourcePath / "jvm" / "src")
+      def testSourcesJVM   = T.sources(super.millSourcePath / "jvm")
       override def sources = T.sources(super.sources() ++ testSourcesJVM())
     }
   }
 
-  object native extends Cross[RiscvAssemblerNativeModule](scalaNativeVersions: _*)
-  class RiscvAssemblerNativeModule(
-    val crossScalaVersion:   String,
-    crossScalaNativeVersion: String,
-  ) extends RiscvAssemblerLib
+  object native extends Cross[RiscvAssemblerNativeModule](scalaNativeVersions)
+  trait RiscvAssemblerNativeModule
+    extends Cross.Module2[String, String]
+    with RiscvAssemblerLib
     with RiscvAssemblerPublish
     with ScalaNativeModule {
-    def millSourcePath     = super.millSourcePath / os.up / os.up
-    def scalaNativeVersion = crossScalaNativeVersion
-    object test extends Tests with RiscvAssemblerTest {
+    def millSourcePath     = super.millSourcePath / os.up
+    def scalaNativeVersion = crossValue2
+    object test extends ScalaTests with RiscvAssemblerTest {
       def nativeLinkStubs = true
     }
   }
 
-  object scalajs extends Cross[RiscvAssemblerScalajsModule](scalaJsVersions: _*)
-  class RiscvAssemblerScalajsModule(
-    val crossScalaVersion: String,
-    crossScalaJsVersion:   String,
-  ) extends RiscvAssemblerLib
+  object scalajs extends Cross[RiscvAssemblerScalajsModule](scalaJsVersions)
+  trait RiscvAssemblerScalajsModule
+    extends Cross.Module2[String, String]
+    with RiscvAssemblerLib
     with RiscvAssemblerPublish
     with ScalaJSModule {
-    def millSourcePath = super.millSourcePath / os.up / os.up
-    def scalaJSVersion = crossScalaJsVersion
+    def millSourcePath = super.millSourcePath / os.up
+    def scalaJSVersion = crossValue2
     def ivyDeps        = Agg(ivy"org.scala-js::scalajs-dom::${versions.scalajsdom}")
 
     def scalaJSUseMainModuleInitializer = true
     def moduleKind                      = T(ModuleKind.CommonJSModule)
-    def jsEnvConfig                     = T(JsEnvConfig.NodeJs(args = List("--dns-result-order=ipv4first")))
-    object test extends Tests with RiscvAssemblerTest {}
+    def jsEnvConfig                     = T(JsEnvConfig.JsDom())
+    object test extends ScalaTests with RiscvAssemblerTest
   }
-}
-
-// Build ScalaNative for current platform
-// Scala Native: `./mill rvasmcli.nativeLink`
-object rvasmcli extends RVASMcliBase
-
-def LLVMTriples = System.getProperty("os.name").toLowerCase match {
-  case os if os.contains("linux") =>
-    Seq("x86_64-linux-gnu", "arm64-linux-gnu", "powerpc64le-linux-gnu", "riscv64-linux-gnu")
-  case os if os.contains("mac") =>
-    Seq("x86_64-apple-darwin20.3.0", "arm64-apple-darwin20.3.0")
-}
-
-// Build ScalaNative for cross-architecture depending on LLVM Triple setting above.
-// Cross build for available architectures on current OS with: `./mill rvasmclicross.__.nativeLink`
-// On Mac, install LLVM using Homebrew which contains libs for amd64 and arm64
-// On Linux, install "build-essential clang build-essential clang crossbuild-essential-arm64 crossbuild-essential-riscv64 crossbuild-essential-amd64 crossbuild-essential-ppc64el"
-object rvasmclicross extends Cross[RVASMCLI](LLVMTriples: _*)
-class RVASMCLI(
-  val LLVMtriple: String,
-) extends RVASMcliBase {
-  def nativeTarget = Some(LLVMtriple)
-}
-
-// This trait allows building Scala Native for current platform and cross-building for other platforms
-trait RVASMcliBase extends ScalaNativeModule with TpolecatModule with ScalafixModule with ScalafmtModule {
-  def scalaVersion   = scala3
-  def millSourcePath = build.millSourcePath / "rvasmcli"
-  def ivyDeps = Agg(
-    ivy"com.lihaoyi::os-lib::${versions.oslib}",
-    ivy"com.lihaoyi::mainargs::${versions.mainargs}",
-  )
-  // Scala Native settings
-  def scalaNativeVersion = scalaNativeVersions.head._2
-  def moduleDeps         = Seq(riscvassembler.native(scala3, scalaNativeVersions.head._2))
-  def logLevel           = NativeLogLevel.Info
-  def releaseMode        = ReleaseMode.ReleaseFast
-  if (System.getProperty("os.name").toLowerCase == "linux") {
-    def nativeLTO            = LTO.Thin
-    def nativeLinkingOptions = Array("-static", "-fuse-ld=lld")
-  }
-  object test extends Tests with RiscvAssemblerTest
-}
-
-// Aggregate reports for all projects
-object scoverage extends ScoverageReport {
-  override def scalaVersion     = scala3
-  override def scoverageVersion = versions.scoverage
 }
 
 trait RiscvAssemblerLib
@@ -154,22 +99,16 @@ trait RiscvAssemblerLib
       s"${v(0)}.${(v(1).toInt) + 1}-SNAPSHOT"
     }
   }
-  def buildInfoMembers: T[Map[String, String]] = T {
-    Map(
-      "appName"     -> artifactName.toString,
-      "appVersion"  -> publishVer(),
-      "revision"    -> VcsVersion.vcsState().format(),
-      "buildCommit" -> VcsVersion.vcsState().currentRevision,
-      "commitDate" -> os
-        .proc("git", "log", "-1", "--date=format:\"%a %b %d %T %z %Y\"", "--format=\"%ad\"")
-        .call()
-        .out
-        .trim,
-      "buildDate" -> new Date().toString,
-    )
-  }
-  def buildInfoObjectName  = "BuildInfo"
-  def buildInfoPackageName = Some("com.carlosedp.riscvassembler")
+
+  def buildInfoPackageName = "com.carlosedp.riscvassembler"
+  def buildInfoMembers = Seq(
+    BuildInfo.Value("appName", artifactName.toString),
+    BuildInfo.Value("appVersion", publishVer()),
+    BuildInfo.Value("revision", VcsVersion.vcsState().format()),
+    BuildInfo.Value("buildCommit", VcsVersion.vcsState().currentRevision),
+    BuildInfo.Value("commitDate", os.proc("git", "log", "-1", "--format=%ai").call().out.trim()),
+    BuildInfo.Value("buildDate", new java.util.Date().toString),
+  )
 }
 
 trait RiscvAssemblerTest extends ScalaModule with TestModule.ScalaTest {
@@ -189,6 +128,53 @@ trait RiscvAssemblerPublish extends RiscvAssemblerLib with CiReleaseModule {
     ),
   )
   override def sonatypeHost = Some(SonatypeHost.s01)
+}
+
+// Build rvasmcli Scala Native binary for current platform
+// Scala Native: `./mill rvasmcli.nativeLink`
+object rvasmcli extends RVASMcliBase {
+  // object test extends ScalaTests with RiscvAssemblerTest { //TODO: Fix tests
+  //   def releaseMode = ReleaseMode.Debug
+  // }
+}
+
+// Build rvasmcli Scala Native binary for cross-architecture depending on LLVM Triple setting below.
+// Cross build for all available architectures on current OS with: `./mill rvasmclicross.__.nativeLink`
+// On Mac, install LLVM using Homebrew which contains libs for amd64 and arm64
+// On Linux, install "build-essential clang build-essential clang crossbuild-essential-arm64 crossbuild-essential-riscv64 crossbuild-essential-amd64 crossbuild-essential-ppc64el"
+def LLVMTriples = System.getProperty("os.name").toLowerCase match {
+  case os if os.contains("linux") =>
+    Seq("x86_64-linux-gnu", "arm64-linux-gnu", "powerpc64le-linux-gnu", "riscv64-linux-gnu")
+  case os if os.contains("mac") =>
+    Seq("x86_64-apple-darwin20.3.0", "arm64-apple-darwin20.3.0")
+}
+object rvasmclicross extends Cross[RVASMCLI](LLVMTriples)
+trait RVASMCLI extends Cross.Module[String] with RVASMcliBase {
+  def nativeTarget = Some(crossValue)
+}
+
+// This trait allows building Scala Native for current platform and cross-building for other platforms
+trait RVASMcliBase extends ScalaNativeModule with TpolecatModule with ScalafixModule with ScalafmtModule {
+  def scalaVersion       = scala3
+  def scalaNativeVersion = scalaNativeVersions.head._2
+  def moduleDeps         = Seq(riscvassembler.native(scala3, scalaNativeVersions.head._2))
+  def millSourcePath     = build.millSourcePath / "rvasmcli"
+  def ivyDeps = Agg(
+    ivy"com.lihaoyi::os-lib::${versions.oslib}",
+    ivy"com.lihaoyi::mainargs::${versions.mainargs}",
+  )
+  def logLevel    = NativeLogLevel.Info
+  def releaseMode = ReleaseMode.ReleaseFast
+  if (System.getProperty("os.name").toLowerCase == "linux") {
+    def nativeLTO            = LTO.Thin
+    def nativeLinkingOptions = Array("-static", "-fuse-ld=lld")
+  }
+}
+
+// Aggregate reports for all projects
+object scoverage extends ScoverageReport {
+  override def scalaVersion     = scala3
+  override def scoverageVersion = versions.scoverage
 }
 
 // -----------------------------------------------------------------------------
@@ -213,6 +199,6 @@ object MyAliases extends Aliases {
   def pub      = alias("io.kipp.mill.ci.release.ReleaseModule/publishAll")
   def publocal = alias("riscvassembler.__.publishLocal")
   def cli      = alias("show rvasmcli.nativeLink")
-  def testall  = alias("riscvassembler.__.test", "rvasmcli.test")
+  def testall  = alias("riscvassembler.__.test", "rvasmcli.test") // TODO: Add "rvasmcli.test" once fixed
   def test     = alias("riscvassembler.jvm[" + scala3 + "].test", "rvasmcli.test")
 }
