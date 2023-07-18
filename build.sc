@@ -18,69 +18,60 @@ import io.github.davidgregory084.TpolecatModule
 import $ivy.`com.carlosedp::mill-aliases::0.3.0`
 import com.carlosedp.aliases._
 
-val scala212            = "2.12.17"
-val scala213            = "2.13.11"
-val scala3              = "3.3.0"
-val scalaVersions       = Seq(scala212, scala213, scala3)
-val scalaNativeVersions = scalaVersions.map((_, "0.4.14"))
-val scalaJsVersions     = scalaVersions.map((_, "1.13.2"))
+// Versions
 
 object versions {
-  val scalatest  = "3.2.16"
-  val oslib      = "0.9.1"
-  val mainargs   = "0.5.0"
-  val scoverage  = "2.0.10"
-  val scalajsdom = "2.6.0"
+  val scala212      = "2.12.17"
+  val scala213      = "2.13.11"
+  val scala3        = "3.3.0"
+  val scalaNative   = "0.4.14"
+  val scalaJs       = "1.13.2"
+  val scalaVersions = Seq(scala212, scala213, scala3)
+  val scalatest     = "3.2.16"
+  val oslib         = "0.9.1"
+  val mainargs      = "0.5.0"
+  val scoverage     = "2.0.10"
+  val scalajsdom    = "2.6.0"
 }
 
 object riscvassembler extends Module {
-  object jvm extends Cross[RiscvAssemblerJVMModule](scalaVersions)
+  object jvm extends Cross[RiscvAssemblerJVMModule](versions.scalaVersions)
   trait RiscvAssemblerJVMModule
-    extends Cross.Module[String]
-    with RiscvAssemblerLib
+    extends ScalaModule
+    with RiscvAssemblerModule
     with RiscvAssemblerPublish
     with ScoverageModule {
-    def millSourcePath   = super.millSourcePath / os.up
     def scoverageVersion = versions.scoverage
-    object test extends ScoverageTests with RiscvAssemblerTest {
+    object test extends ScalaTests with ScoverageTests with RiscvAssemblerTests {
       // Add JVM specific tests to the source path
       def testSourcesJVM   = T.sources(super.millSourcePath / "jvm")
       override def sources = T.sources(super.sources() ++ testSourcesJVM())
     }
   }
 
-  object native extends Cross[RiscvAssemblerNativeModule](scalaNativeVersions)
-  trait RiscvAssemblerNativeModule
-    extends Cross.Module2[String, String]
-    with RiscvAssemblerLib
-    with RiscvAssemblerPublish
-    with ScalaNativeModule {
-    def millSourcePath     = super.millSourcePath / os.up
-    def scalaNativeVersion = crossValue2
-    object test extends ScalaTests with RiscvAssemblerTest {
+  object native extends Cross[RiscvAssemblerNativeModule](versions.scalaVersions)
+  trait RiscvAssemblerNativeModule extends ScalaNativeModule with RiscvAssemblerModule with RiscvAssemblerPublish {
+    def scalaNativeVersion = versions.scalaNative
+    object test extends ScalaNativeTests with RiscvAssemblerTests {
       def nativeLinkStubs = true
     }
   }
 
-  object scalajs extends Cross[RiscvAssemblerScalajsModule](scalaJsVersions)
-  trait RiscvAssemblerScalajsModule
-    extends Cross.Module2[String, String]
-    with RiscvAssemblerLib
-    with RiscvAssemblerPublish
-    with ScalaJSModule {
-    def millSourcePath = super.millSourcePath / os.up
-    def scalaJSVersion = crossValue2
+  object scalajs extends Cross[RiscvAssemblerScalajsModule](versions.scalaVersions)
+  trait RiscvAssemblerScalajsModule extends ScalaJSModule with RiscvAssemblerModule with RiscvAssemblerPublish {
+    def scalaJSVersion = versions.scalaJs
     def ivyDeps        = Agg(ivy"org.scala-js::scalajs-dom::${versions.scalajsdom}")
 
     def scalaJSUseMainModuleInitializer = true
     def moduleKind                      = T(ModuleKind.CommonJSModule)
-    def jsEnvConfig                     = T(JsEnvConfig.JsDom())
-    object test extends ScalaTests with RiscvAssemblerTest
+    def jsEnvConfig                     = T(JsEnvConfig.NodeJs())
+    object test extends ScalaJSTests with RiscvAssemblerTests
   }
 }
 
-trait RiscvAssemblerLib
-  extends CrossScalaModule
+trait RiscvAssemblerModule
+  extends PlatformScalaModule
+  with CrossScalaModule
   with TpolecatModule
   with BuildInfo
   with ScalafixModule
@@ -109,13 +100,13 @@ trait RiscvAssemblerLib
     BuildInfo.Value("commitDate", os.proc("git", "log", "-1", "--format=%ai").call().out.trim()),
     BuildInfo.Value("buildDate", new java.util.Date().toString),
   )
+
+  trait RiscvAssemblerTests extends ScalaTests with TestModule.ScalaTest {
+    def ivyDeps = Agg(ivy"org.scalatest::scalatest::${versions.scalatest}")
+  }
 }
 
-trait RiscvAssemblerTest extends ScalaModule with TestModule.ScalaTest {
-  def ivyDeps = Agg(ivy"org.scalatest::scalatest::${versions.scalatest}")
-}
-
-trait RiscvAssemblerPublish extends RiscvAssemblerLib with CiReleaseModule {
+trait RiscvAssemblerPublish extends RiscvAssemblerModule with CiReleaseModule {
   def publishVersion = super.publishVer
   def pomSettings = PomSettings(
     description    = "RiscvAssembler is a RISC-V assembler library to be used on Scala and Chisel HDL projects.",
@@ -133,7 +124,8 @@ trait RiscvAssemblerPublish extends RiscvAssemblerLib with CiReleaseModule {
 // Build rvasmcli Scala Native binary for current platform
 // Scala Native: `./mill rvasmcli.nativeLink`
 object rvasmcli extends RVASMcliBase {
-  object test extends ScalaTests with RiscvAssemblerTest { // TODO: Fix tests
+  object test extends ScalaNativeTests with TestModule.ScalaTest {
+    def ivyDeps     = Agg(ivy"org.scalatest::scalatest::${versions.scalatest}")
     def releaseMode = ReleaseMode.Debug
   }
 }
@@ -155,9 +147,9 @@ trait RVASMCLI extends Cross.Module[String] with RVASMcliBase {
 
 // This trait allows building Scala Native for current platform and cross-building for other platforms
 trait RVASMcliBase extends ScalaNativeModule with TpolecatModule with ScalafixModule with ScalafmtModule {
-  def scalaVersion       = scala3
-  def scalaNativeVersion = scalaNativeVersions.head._2
-  def moduleDeps         = Seq(riscvassembler.native(scala3, scalaNativeVersions.head._2))
+  def scalaVersion       = versions.scala3
+  def scalaNativeVersion = versions.scalaNative
+  def moduleDeps         = Seq(riscvassembler.native(versions.scala3))
   def millSourcePath     = build.millSourcePath / "rvasmcli"
   def ivyDeps = Agg(
     ivy"com.lihaoyi::os-lib::${versions.oslib}",
@@ -173,7 +165,7 @@ trait RVASMcliBase extends ScalaNativeModule with TpolecatModule with ScalafixMo
 
 // Aggregate reports for all projects
 object scoverage extends ScoverageReport {
-  override def scalaVersion     = scala3
+  override def scalaVersion     = versions.scala3
   override def scoverageVersion = versions.scoverage
 }
 
@@ -182,7 +174,7 @@ object scoverage extends ScoverageReport {
 // -----------------------------------------------------------------------------
 object MyAliases extends Aliases {
   def lint = alias(
-    s"riscvassembler.jvm[$scala3].fix",
+    s"riscvassembler.jvm[${versions.scala3}].fix",
     "rvasmcli.fix",
     "mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources",
   )
@@ -190,7 +182,7 @@ object MyAliases extends Aliases {
   def checkfmt = alias("mill.scalalib.scalafmt.ScalafmtModule/checkFormatAll __.sources")
   def fmt      = alias("mill.scalalib.scalafmt.ScalafmtModule/reformatAll __.sources")
   def coverage = alias(
-    s"riscvassembler.jvm[$scala3].test",
+    s"riscvassembler.jvm[${versions.scala3}].test",
     "rvasmcli.test",
     "scoverage.htmlReportAll",
     "scoverage.xmlReportAll",
@@ -199,6 +191,6 @@ object MyAliases extends Aliases {
   def pub      = alias("io.kipp.mill.ci.release.ReleaseModule/publishAll")
   def publocal = alias("riscvassembler.__.publishLocal")
   def cli      = alias("show rvasmcli.nativeLink")
-  def testall  = alias("riscvassembler.__.test") // TODO: Add "rvasmcli.test" once fixed
-  def test     = alias("riscvassembler.jvm[" + scala3 + "].test", "rvasmcli.test")
+  def testall  = alias("riscvassembler.__.test", "rvasmcli.test")
+  def test     = alias("riscvassembler.jvm[" + versions.scala3 + "].test", "rvasmcli.test")
 }
