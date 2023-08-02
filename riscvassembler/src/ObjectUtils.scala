@@ -2,7 +2,7 @@ package com.carlosedp.riscvassembler
 
 object ObjectUtils {
   implicit class StringWithPad(
-    s: String,
+      s: String
   ) {
 
     /**
@@ -13,8 +13,8 @@ object ObjectUtils {
      *   The character to pad with.
      */
     def padStr(
-      length:  Int,
-      padChar: Char,
+        length:  Int,
+        padChar: Char,
     ): String =
       s.reverse.padTo(length, padChar).reverse
 
@@ -25,7 +25,7 @@ object ObjectUtils {
      *   The length to pad to.
      */
     def padZero(
-      length: Int,
+        length: Int
     ): String =
       s.padStr(length, '0')
   }
@@ -34,9 +34,9 @@ object ObjectUtils {
    * Number manipulation functions
    */
   implicit class NumericManipulation[T: Numeric](
-    x: T,
+      x: T
   )(
-    implicit n: Numeric[T],
+      implicit n: Numeric[T]
   ) {
 
     /**
@@ -53,7 +53,7 @@ object ObjectUtils {
    *   The Long converted from the string.
    */
   implicit class StringToLong(
-    digits: String,
+      digits: String
   ) {
 
     /**
@@ -64,7 +64,7 @@ object ObjectUtils {
      *   The Long converted from the string.
      */
     private def base(
-      b: Int,
+        b: Int
     ): Long = BigInt(digits, b).toLong
 
     /**

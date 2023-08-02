@@ -15,13 +15,13 @@ import io.kipp.mill.ci.release.{CiReleaseModule, SonatypeHost}
 import de.tobiasroeser.mill.vcs.version.VcsVersion
 import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.5`
 import io.github.davidgregory084.TpolecatModule
-import $ivy.`com.carlosedp::mill-aliases::0.3.0`
+import $ivy.`com.carlosedp::mill-aliases::0.4.1`
 import com.carlosedp.aliases._
 
 // Versions
 
 object versions {
-  val scala212      = "2.12.17"
+  val scala212      = "2.12.18"
   val scala213      = "2.13.11"
   val scala3        = "3.3.0"
   val scalaNative   = "0.4.14"
@@ -77,7 +77,8 @@ trait RiscvAssemblerModule
   def ivyDeps = Agg(
     ivy"com.lihaoyi::os-lib::${versions.oslib}",
   )
-  def artifactName = "riscvassembler"
+  def scalafixIvyDeps = super.scalacPluginIvyDeps() ++ Agg(ivy"com.github.xuwei-k::scalafix-rules:0.3.0")
+  def artifactName    = "riscvassembler"
   def publishVer: T[String] = T {
     val isTag = T.ctx().env.get("GITHUB_REF").exists(_.startsWith("refs/tags"))
     val state = VcsVersion.vcsState()

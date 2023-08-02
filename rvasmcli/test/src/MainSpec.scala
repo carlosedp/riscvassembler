@@ -1,9 +1,9 @@
 package com.carlosedp.rvasmcli
 
-import org.scalatest.flatspec._
-import org.scalatest.matchers.should._
+import org.scalatest.flatspec.*
+import org.scalatest.matchers.should.*
 
-class MainSpec extends AnyFlatSpec with Matchers {
+class MainSpec extends AnyFlatSpec with Matchers:
 
   behavior of "rvasmcli"
 
@@ -50,5 +50,3 @@ class MainSpec extends AnyFlatSpec with Matchers {
     var _ = os.remove(testfilein)
     var _ = os.remove(testfileout)
   }
-
-}

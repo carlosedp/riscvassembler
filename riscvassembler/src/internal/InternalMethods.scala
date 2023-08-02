@@ -3,7 +3,7 @@ package com.carlosedp.riscvassembler
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Try
 
-import ObjectUtils._
+import com.carlosedp.riscvassembler.ObjectUtils._
 
 protected object LineParser {
 
@@ -20,11 +20,11 @@ protected object LineParser {
    *   - `Map[String, String]` with the assembly label addresses
    */
   def apply(
-    input: String,
+      input: String
   ): (
-    ArrayBuffer[String],
-    ArrayBuffer[String],
-    Map[String, String],
+      ArrayBuffer[String],
+      ArrayBuffer[String],
+      Map[String, String],
   ) = {
     val instList = input.split("\n").toList.filter(_.nonEmpty).filter(!_.trim().isEmpty()).map(_.trim)
     val ignores  = Seq(".", "/")
@@ -81,14 +81,14 @@ protected object InstructionParser {
    *   a tuple containing the Instruction and opdata
    */
   def apply(
-    input:      String,
-    addr:       String = "0",
-    labelIndex: Map[String, String] = Map[String, String](),
+      input:      String,
+      addr:       String = "0",
+      labelIndex: Map[String, String] = Map[String, String](),
   ): Option[
     (
-      Instruction,
-      Map[String, Long],
-    ),
+        Instruction,
+        Map[String, Long],
+    )
   ] = {
     // The regex splits the input into groups (dependind on type):
     // (0) - Instruction name
@@ -119,13 +119,13 @@ protected object InstructionParser {
               "rs1" -> RegMap(instructionParts(2)),
               "rs2" -> RegMap(instructionParts(3)),
             ),
-          ),
+          )
         )
       case InstType.I => {
         // First check if instruction has appropriate arguments
         if (
           instructionParts.length != 4 && !Seq("ECALL", "EBREAK", "FENCE.I", "FENCE").contains(
-            instructionParts(0).toUpperCase,
+            instructionParts(0).toUpperCase
           )
         )
           return None
@@ -142,7 +142,7 @@ protected object InstructionParser {
                 "rs1" -> RegMap(instructionParts(3)),
                 "imm" -> imm,
               ),
-            ),
+            )
           )
         } else {
           // Treat instructions with no arguments
@@ -156,7 +156,7 @@ protected object InstructionParser {
                   "rs1" -> 0,
                   "imm" -> imm,
                 ),
-              ),
+              )
             )
           } else if (Seq("FENCE").contains(instructionParts(0).toUpperCase)) {
             // Treat FENCE instruction
@@ -193,7 +193,7 @@ protected object InstructionParser {
                   "rs1" -> 0,
                   "imm" -> imm,
                 ),
-              ),
+              )
             )
           } else {
             // Treat other I instructions (Shifts)
@@ -216,7 +216,7 @@ protected object InstructionParser {
                   "rs1" -> RegMap(instructionParts(2)),
                   "imm" -> imm,
                 ),
-              ),
+              )
             )
           }
         }
@@ -234,7 +234,7 @@ protected object InstructionParser {
               "rs1" -> RegMap(instructionParts(3)),
               "imm" -> imm,
             ),
-          ),
+          )
         )
       }
       case InstType.B => {
@@ -252,7 +252,7 @@ protected object InstructionParser {
               "rs2" -> RegMap(instructionParts(2)),
               "imm" -> imm,
             ),
-          ),
+          )
         )
       }
       case InstType.U | InstType.J => {
@@ -283,8 +283,8 @@ protected object FillInstruction {
    *   the filled instruction binary
    */
   def apply(
-    op:   Instruction,
-    data: Map[String, Long],
+      op:   Instruction,
+      data: Map[String, Long],
   ): String =
     op.instType match {
       case InstType.R => {
@@ -343,7 +343,7 @@ protected object RegMap {
    *   the register number
    */
   def apply(
-    input: String,
+      input: String
   ): Long =
     input.toLowerCase match {
       case "x0" | "zero"      => 0

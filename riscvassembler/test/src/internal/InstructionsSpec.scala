@@ -138,63 +138,63 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
   it should "assemble SRAI Instruction" in {
     val i = RISCVAssembler.binOutput("srai x0, x0, 0")
     i should be(
-      "01000000000000000101000000010011",
+      "01000000000000000101000000010011"
     )
   }
 
   it should "assemble SRAI Instruction with max shamt" in {
     val i = RISCVAssembler.binOutput("srai x0, x0, 63")
     i should be(
-      "01000001111100000101000000010011",
+      "01000001111100000101000000010011"
     )
   }
 
   it should "assemble SRAI Instruction with invalid shamt" in {
     val i = RISCVAssembler.binOutput("srai x0, x0, 64")
     i should be(
-      "00000000000000000000000000000000",
+      "00000000000000000000000000000000"
     )
   }
 
   it should "assemble FENCE Instruction" in {
     val i = RISCVAssembler.binOutput("fence iorw, iorw")
     i should be(
-      "00001111111100000000000000001111",
+      "00001111111100000000000000001111"
     )
   }
 
   it should "assemble FENCE Instruction with input read" in {
     val i = RISCVAssembler.binOutput("fence ir, ir")
     i should be(
-      "00001010101000000000000000001111",
+      "00001010101000000000000000001111"
     )
   }
 
   it should "assemble FENCE Instruction with no arguments" in {
     val i = RISCVAssembler.binOutput("fence")
     i should be(
-      "00001111111100000000000000001111",
+      "00001111111100000000000000001111"
     )
   }
 
   it should "assemble FENCE.i Instruction" in {
     val i = RISCVAssembler.binOutput("fence.i")
     i should be(
-      "00000000000000000001000000001111",
+      "00000000000000000001000000001111"
     )
   }
 
   it should "assemble ECALL Instruction" in {
     val i = RISCVAssembler.binOutput("ecall")
     i should be(
-      "00000000000000000000000001110011",
+      "00000000000000000000000001110011"
     )
   }
 
   it should "assemble EBREAK Instruction" in {
     val i = RISCVAssembler.binOutput("ebreak")
     i should be(
-      "00000000000100000000000001110011",
+      "00000000000100000000000001110011"
     )
   }
 
@@ -203,129 +203,129 @@ class InstructionsSpec extends AnyFlatSpec with Matchers {
   it should "map NOP Pseudo Instruction" in {
     val i = PseudoInstructions(Array("nop")).get
     i should be(
-      Array("addi", "x0", "x0", "0"),
+      Array("addi", "x0", "x0", "0")
     )
   }
 
   it should "map MV Pseudo Instruction" in {
     val i = PseudoInstructions(Array("mv", "x1", "x2")).get
     i should be(
-      Array("addi", "x1", "x2", "0"),
+      Array("addi", "x1", "x2", "0")
     )
   }
 
   it should "map NOT Pseudo Instruction" in {
     val i = PseudoInstructions(Array("not", "x1", "x2")).get
     i should be(
-      Array("xori", "x1", "x2", "-1"),
+      Array("xori", "x1", "x2", "-1")
     )
   }
   it should "map NEG Pseudo Instruction" in {
     val i = PseudoInstructions(Array("neg", "x1", "x2")).get
     i should be(
-      Array("sub", "x1", "x0", "x2"),
+      Array("sub", "x1", "x0", "x2")
     )
   }
   it should "map SEQZ Pseudo Instruction" in {
     val i = PseudoInstructions(Array("seqz", "x1", "x2")).get
     i should be(
-      Array("sltiu", "x1", "x2", "1"),
+      Array("sltiu", "x1", "x2", "1")
     )
   }
   it should "map SNEZ Pseudo Instruction" in {
     val i = PseudoInstructions(Array("snez", "x1", "x2")).get
     i should be(
-      Array("sltu", "x1", "x0", "x2"),
+      Array("sltu", "x1", "x0", "x2")
     )
   }
   it should "map SLTZ Pseudo Instruction" in {
     val i = PseudoInstructions(Array("sltz", "x1", "x2")).get
     i should be(
-      Array("slt", "x1", "x2", "x0"),
+      Array("slt", "x1", "x2", "x0")
     )
   }
   it should "map SGTZ Pseudo Instruction" in {
     val i = PseudoInstructions(Array("sgtz", "x1", "x2")).get
     i should be(
-      Array("slt", "x1", "x0", "x2"),
+      Array("slt", "x1", "x0", "x2")
     )
   }
   it should "map BEQZ Pseudo Instruction" in {
     val i = PseudoInstructions(Array("beqz", "x1", "4")).get
     i should be(
-      Array("beq", "x1", "x0", "4"),
+      Array("beq", "x1", "x0", "4")
     )
   }
   it should "map BNEZ Pseudo Instruction" in {
     val i = PseudoInstructions(Array("bnez", "x1", "4")).get
     i should be(
-      Array("bne", "x1", "x0", "4"),
+      Array("bne", "x1", "x0", "4")
     )
   }
   it should "map BLEZ Pseudo Instruction" in {
     val i = PseudoInstructions(Array("blez", "x1", "4")).get
     i should be(
-      Array("bge", "x0", "x1", "4"),
+      Array("bge", "x0", "x1", "4")
     )
   }
   it should "map BGEZ Pseudo Instruction" in {
     val i = PseudoInstructions(Array("bgez", "x1", "4")).get
     i should be(
-      Array("bge", "x1", "x0", "4"),
+      Array("bge", "x1", "x0", "4")
     )
   }
   it should "map BLTZ Pseudo Instruction" in {
     val i = PseudoInstructions(Array("bltz", "x1", "4")).get
     i should be(
-      Array("blt", "x1", "x0", "4"),
+      Array("blt", "x1", "x0", "4")
     )
   }
   it should "map BGTZ Pseudo Instruction" in {
     val i = PseudoInstructions(Array("bgtz", "x1", "4")).get
     i should be(
-      Array("blt", "x0", "x1", "4"),
+      Array("blt", "x0", "x1", "4")
     )
   }
   it should "map BGT Pseudo Instruction" in {
     val i = PseudoInstructions(Array("bgt", "x1", "x2", "4")).get
     i should be(
-      Array("blt", "x2", "x1", "4"),
+      Array("blt", "x2", "x1", "4")
     )
   }
   it should "map BLE Pseudo Instruction" in {
     val i = PseudoInstructions(Array("ble", "x1", "x2", "4")).get
     i should be(
-      Array("bge", "x2", "x1", "4"),
+      Array("bge", "x2", "x1", "4")
     )
   }
   it should "map BGTU Pseudo Instruction" in {
     val i = PseudoInstructions(Array("bgtu", "x1", "x2", "4")).get
     i should be(
-      Array("bltu", "x2", "x1", "4"),
+      Array("bltu", "x2", "x1", "4")
     )
   }
   it should "map BLEU Pseudo Instruction" in {
     val i = PseudoInstructions(Array("bleu", "x1", "x2", "4")).get
     i should be(
-      Array("bgeu", "x2", "x1", "4"),
+      Array("bgeu", "x2", "x1", "4")
     )
   }
   it should "map J Pseudo Instruction" in {
     val i = PseudoInstructions(Array("j", "4")).get
     i should be(
-      Array("jal", "x0", "4"),
+      Array("jal", "x0", "4")
     )
   }
   it should "map JR Pseudo Instruction" in {
     val i = PseudoInstructions(Array("jr", "x2")).get
     i should be(
-      Array("jalr", "x0", "x2", "0"),
+      Array("jalr", "x0", "x2", "0")
     )
   }
   it should "map RET Pseudo Instruction" in {
     val i = PseudoInstructions(Array("ret")).get
     i should be(
-      Array("jalr", "x0", "x1", "0"),
+      Array("jalr", "x0", "x1", "0")
     )
   }
   it should "map an invalid Pseudo Instruction to None" in {

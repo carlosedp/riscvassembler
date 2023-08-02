@@ -2,7 +2,7 @@ package com.carlosedp.riscvassembler
 
 import scala.io.Source
 
-import ObjectUtils._
+import com.carlosedp.riscvassembler.ObjectUtils._
 
 object RISCVAssembler {
 
@@ -35,7 +35,7 @@ object RISCVAssembler {
    *   the output hex string
    */
   def fromFile(
-    filename: String,
+      filename: String
   ): String =
     fromString(Source.fromFile(filename).getLines().mkString("\n"))
 
@@ -62,7 +62,7 @@ object RISCVAssembler {
    *   the assembled hex string
    */
   def fromString(
-    input: String,
+      input: String
   ): String = {
     val (instructions, addresses, labels) = LineParser(input)
     (instructions zip addresses).map { case (i: String, a: String) => { binOutput(i, a, labels) } }
@@ -78,10 +78,10 @@ object RISCVAssembler {
    *   the binary output in string
    */
   def binOutput(
-    instruction: String,
-    address:     String = "0",
-    labelIndex:  Map[String, String] = Map[String, String](),
-    width:       Int = 32,
+      instruction: String,
+      address:     String = "0",
+      labelIndex:  Map[String, String] = Map[String, String](),
+      width:       Int = 32,
   ): String = {
     val cleanInst = "\\/\\*.*\\*\\/".r.replaceAllIn(instruction, "").toLowerCase.trim
 
@@ -101,7 +101,7 @@ object RISCVAssembler {
    *   the hex string of the instruction in string
    */
   def hexOutput(
-    input: String,
+      input: String
   ): String = {
     val x = input.b
     f"0x$x%08X".toString.takeRight(8)

@@ -6,21 +6,21 @@ object InstType extends Enumeration {
 }
 
 case class Instruction(
-  name:      String,
-  realName:  String = "",
-  instType:  InstType.Type,
-  funct3:    String = "",
-  funct7:    String = "",
-  opcode:    String,
-  hasOffset: Boolean = false,
-  isCsr:     Boolean = false,
-  hasImm:    Boolean = false,
-  fixed:     String = "",
+    name:      String,
+    realName:  String = "",
+    instType:  InstType.Type,
+    funct3:    String = "",
+    funct7:    String = "",
+    opcode:    String,
+    hasOffset: Boolean = false,
+    isCsr:     Boolean = false,
+    hasImm:    Boolean = false,
+    fixed:     String = "",
 )
 
 protected object Instructions {
   def apply(
-    instruction: String,
+      instruction: String
   ): Option[Instruction] =
     instructions.find(_.name == instruction.toUpperCase)
 
@@ -82,7 +82,7 @@ protected object Instructions {
  */
 protected object PseudoInstructions {
   def apply(
-    instructionData: Array[String],
+      instructionData: Array[String]
   ): Option[Array[String]] =
     instructionData(0).toUpperCase match {
       // Map received params to the corresponding RISC-V instruction
