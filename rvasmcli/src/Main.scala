@@ -24,7 +24,7 @@ object Main:
         doc   = "If defined, output will be redirected to this file (overwrite if exists)",
       )
       fileOut: String = "",
-  ): String =
+    ): String =
     var output = ""
     var hex    = ""
     if !assembly.isEmpty() then
@@ -56,9 +56,7 @@ object Main:
                   |""".stripMargin
     output
 
-  def main(
-      args: Array[String]
-  ): Unit =
+  def main(args: Array[String]): Unit =
     println("RISC-V Assembler for Scala")
     val out = ParserForMethods(this).runOrExit(args.toIndexedSeq)
     println(out)

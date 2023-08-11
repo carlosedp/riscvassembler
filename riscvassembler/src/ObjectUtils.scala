@@ -3,7 +3,7 @@ package com.carlosedp.riscvassembler
 object ObjectUtils {
   implicit class StringWithPad(
       s: String
-  ) {
+    ) {
 
     /**
      * Left-pads a string to a specified length with a specified character.
@@ -12,10 +12,7 @@ object ObjectUtils {
      * @param padChar
      *   The character to pad with.
      */
-    def padStr(
-        length:  Int,
-        padChar: Char,
-    ): String =
+    def padStr(length: Int, padChar: Char): String =
       s.reverse.padTo(length, padChar).reverse
 
     /**
@@ -24,9 +21,7 @@ object ObjectUtils {
      * @param length
      *   The length to pad to.
      */
-    def padZero(
-        length: Int
-    ): String =
+    def padZero(length: Int): String =
       s.padStr(length, '0')
   }
 
@@ -35,16 +30,17 @@ object ObjectUtils {
    */
   implicit class NumericManipulation[T: Numeric](
       x: T
-  )(
+    )(
       implicit n: Numeric[T]
-  ) {
+    ) {
 
     /**
      * Truncates a number to 32-bit and returns a Long.
      * @return
      *   The 32-bit long.
      */
-    def to32Bit: Long = n.toLong(x) & 0xffffffffL
+    def to32Bit: Long =
+      n.toLong(x) & 0xffffffffL
   }
 
   /**
@@ -52,9 +48,7 @@ object ObjectUtils {
    * @return
    *   The Long converted from the string.
    */
-  implicit class StringToLong(
-      digits: String
-  ) {
+  implicit class StringToLong(digits: String) {
 
     /**
      * Convert a string in a specified base to a Long
@@ -63,9 +57,8 @@ object ObjectUtils {
      * @return
      *   The Long converted from the string.
      */
-    private def base(
-        b: Int
-    ): Long = BigInt(digits, b).toLong
+    private def base(b: Int): Long =
+      BigInt(digits, b).toLong
 
     /**
      * Convert a string to a base 2 (binary) Long
