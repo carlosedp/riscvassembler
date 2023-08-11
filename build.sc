@@ -29,7 +29,7 @@ object versions {
   val scalaVersions = Seq(scala212, scala213, scala3)
   val scalatest     = "3.2.16"
   val oslib         = "0.9.1"
-  val mainargs      = "0.5.0"
+  val mainargs      = "0.5.1"
   val scoverage     = "2.0.10"
   val scalajsdom    = "2.6.0"
 }
@@ -37,10 +37,10 @@ object versions {
 object riscvassembler extends Module {
   object jvm extends Cross[RiscvAssemblerJVMModule](versions.scalaVersions)
   trait RiscvAssemblerJVMModule
-    extends ScalaModule
-    with RiscvAssemblerModule
-    with RiscvAssemblerPublish
-    with ScoverageModule {
+      extends ScalaModule
+      with RiscvAssemblerModule
+      with RiscvAssemblerPublish
+      with ScoverageModule {
     def scoverageVersion = versions.scoverage
     object test extends ScalaTests with ScoverageTests with RiscvAssemblerTests {
       // Add JVM specific tests to the source path
@@ -68,14 +68,14 @@ object riscvassembler extends Module {
 }
 
 trait RiscvAssemblerModule
-  extends PlatformScalaModule
-  with CrossScalaModule
-  with TpolecatModule
-  with BuildInfo
-  with ScalafixModule
-  with ScalafmtModule {
+    extends PlatformScalaModule
+    with CrossScalaModule
+    with TpolecatModule
+    with BuildInfo
+    with ScalafixModule
+    with ScalafmtModule {
   def ivyDeps = Agg(
-    ivy"com.lihaoyi::os-lib::${versions.oslib}",
+    ivy"com.lihaoyi::os-lib::${versions.oslib}"
   )
   def scalafixIvyDeps = super.scalacPluginIvyDeps() ++ Agg(ivy"com.github.xuwei-k::scalafix-rules:0.3.0")
   def artifactName    = "riscvassembler"
@@ -114,7 +114,7 @@ trait RiscvAssemblerPublish extends RiscvAssemblerModule with CiReleaseModule {
     licenses       = Seq(License.MIT),
     versionControl = VersionControl.github("carlosedp", "RiscvAssembler"),
     developers = Seq(
-      Developer("carlosedp", "Carlos Eduardo de Paula", "https://github.com/carlosedp"),
+      Developer("carlosedp", "Carlos Eduardo de Paula", "https://github.com/carlosedp")
     ),
   )
   override def sonatypeHost = Some(SonatypeHost.s01)
