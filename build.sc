@@ -21,10 +21,10 @@ import com.carlosedp.aliases._
 // Versions
 
 object versions {
-  val scala213      = "2.13.11"
-  val scala3        = "3.3.0"
-  val scalaNative   = "0.4.14"
-  val scalaJs       = "1.13.2"
+  val scala213      = "2.13.12"
+  val scala3        = "3.3.1"
+  val scalaNative   = "0.4.15"
+  val scalaJs       = "1.14.0"
   val scalaVersions = Seq(scala213, scala3)
   val scalatest     = "3.2.17"
   val oslib         = "0.9.1"
