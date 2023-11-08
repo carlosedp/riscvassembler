@@ -3,7 +3,6 @@ pull_request_rules:
     conditions:
       - base=main
       - label="please merge"
-      - status-success=test (8)
       - status-success=test (11)
       - status-success=test (17)
       - "#review-requested=0"
@@ -16,7 +15,6 @@ pull_request_rules:
       - base=main
       - author=dependabot[bot]
       - files~=^.github/workflows/
-      - status-success=test (8)
       - status-success=test (11)
       - status-success=test (17)
       - "#review-requested=0"
