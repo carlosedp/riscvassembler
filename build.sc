@@ -28,7 +28,7 @@ object versions {
   val scalaVersions = Seq(scala213, scala3)
   val scalatest     = "3.2.17"
   val oslib         = "0.9.3"
-  val mainargs      = "0.5.4"
+  val mainargs      = "0.6.1"
   val scoverage     = "2.0.11"
   val scalajsdom    = "2.8.0"
 }
