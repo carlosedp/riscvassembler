@@ -8,7 +8,7 @@ import $ivy.`com.lihaoyi::mill-contrib-scoverage:$MILL_VERSION`
 import mill.contrib.scoverage.{ScoverageModule, ScoverageReport}
 import $ivy.`com.lihaoyi::mill-contrib-buildinfo:$MILL_VERSION`
 import mill.contrib.buildinfo.BuildInfo
-import $ivy.`com.goyeau::mill-scalafix::0.3.2`
+import $ivy.`com.goyeau::mill-scalafix::0.4.0`
 import com.goyeau.mill.scalafix.ScalafixModule
 import $ivy.`io.chris-kipp::mill-ci-release::0.1.10`
 import io.kipp.mill.ci.release.{CiReleaseModule, SonatypeHost}
