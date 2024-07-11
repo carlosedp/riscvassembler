@@ -1,9 +1,7 @@
 package com.carlosedp.riscvassembler
 
 object ObjectUtils {
-  implicit class StringWithPad(
-      s: String
-    ) {
+  implicit class StringWithPad(s: String) {
 
     /**
      * Left-pads a string to a specified length with a specified character.

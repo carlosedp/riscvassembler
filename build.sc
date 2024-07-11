@@ -21,14 +21,14 @@ import com.carlosedp.aliases._
 // Versions
 
 object versions {
-  val scala213      = "2.13.12"
-  val scala3        = "3.3.1"
-  val scalaNative   = "0.4.15"
-  val scalaJs       = "1.14.0"
+  val scala213      = "2.13.14"
+  val scala3        = "3.3.3"
+  val scalaNative   = "0.5.4"
+  val scalaJs       = "1.16.0"
   val scalaVersions = Seq(scala213, scala3)
-  val scalatest     = "3.2.18"
-  val oslib         = "0.9.3"
-  val mainargs      = "0.6.3"
+  val scalatest     = "3.2.19"
+  val oslib         = "0.10.2"
+  val mainargs      = "0.7.0"
   val scoverage     = "2.1.1"
   val scalajsdom    = "2.8.0"
 }
