@@ -53,10 +53,10 @@ What the library **can and can not do**:
 - It **can** accept either offsets or [labels](https://github.com/riscv-non-isa/riscv-asm-manual/blob/master/riscv-asm.md#labels) (in the same or previous line) for jump/branch instructions;
 - It **can** implement [some](./riscvassembler/src/internal/Instructions.scala#73) pseudo-instructions (more to come soon);
 - It **can** generate one machine code for each input asm instruction;
-- It **can not** decompose one pseudo-instruction to multiple instructions. Eg. `li x1, 0x80000000` to `addiw	ra,zero,1` + `ra,ra,0x1f` as gcc;
+- It **can not** decompose one pseudo-instruction to multiple instructions. Eg. `li x1, 0x80000000` to `addiw	ra,zero,1` + `ra,ra,0x1f` as gcc does;
 - It **can not** validate your input asm code. Imm values might get truncated if not proper used;
-- It **can not** support [assembler relocation functions](https://github.com/riscv-non-isa/riscv-asm-manual/blob/master/riscv-asm.md#assembler-relocation-functions);
-- The library ignores all [asm directives](https://github.com/riscv-non-isa/riscv-asm-manual/blob/master/riscv-asm.md#pseudo-ops).
+- It **can not** support [assembler relocation functions](https://github.com/riscv-non-isa/riscv-asm-manual/blob/main/src/asm-manual.adoc#assembler-relocation-functions);
+- The library ignores all [asm directives](https://github.com/riscv-non-isa/riscv-asm-manual/blob/main/src/asm-manual.adoc#pseudo-ops).
 
 The program can be a single line or multi-line statements(supports inline or full-line comments) and can be generated from a simple string, multi-line string or loaded from a file.
 
@@ -65,7 +65,7 @@ The program can be a single line or multi-line statements(supports inline or ful
 **Reading from file:**
 
 ```asm
-# Sample file "input.asm":
+; Sample file "input.asm":
 addi x0, x0, 0
 addi x1, x1, 1
 addi x2, x2, 2
