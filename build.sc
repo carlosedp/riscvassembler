@@ -29,7 +29,7 @@ object versions {
   val scalatest     = "3.2.19"
   val oslib         = "0.11.3"
   val mainargs      = "0.7.6"
-  val scoverage     = "2.2.1"
+  val scoverage     = "2.3.0"
   val scalajsdom    = "2.8.0"
 }
 
