@@ -8,14 +8,14 @@ import $ivy.`com.lihaoyi::mill-contrib-scoverage:$MILL_VERSION`
 import mill.contrib.scoverage.{ScoverageModule, ScoverageReport}
 import $ivy.`com.lihaoyi::mill-contrib-buildinfo:$MILL_VERSION`
 import mill.contrib.buildinfo.BuildInfo
-import $ivy.`com.goyeau::mill-scalafix::0.4.2`
+import $ivy.`com.goyeau::mill-scalafix::0.5.1`
 import com.goyeau.mill.scalafix.ScalafixModule
-import $ivy.`io.chris-kipp::mill-ci-release::0.1.10`
+import $ivy.`io.chris-kipp::mill-ci-release::0.3.0`
 import io.kipp.mill.ci.release.{CiReleaseModule, SonatypeHost}
 import de.tobiasroeser.mill.vcs.version.VcsVersion
 import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.5`
 import io.github.davidgregory084.TpolecatModule
-import $ivy.`com.carlosedp::mill-aliases::0.5.0`
+import $ivy.`com.carlosedp::mill-aliases::0.6.0`
 import com.carlosedp.aliases._
 
 // Versions
@@ -27,9 +27,9 @@ object versions {
   val scalaJs       = "1.16.0"
   val scalaVersions = Seq(scala213, scala3)
   val scalatest     = "3.2.19"
-  val oslib         = "0.11.3"
+  val oslib         = "0.11.4"
   val mainargs      = "0.7.6"
-  val scoverage     = "2.2.1"
+  val scoverage     = "2.3.0"
   val scalajsdom    = "2.8.0"
 }
 
