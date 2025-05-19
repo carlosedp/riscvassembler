@@ -187,7 +187,8 @@ class RISCVAssemblerInternalSpec extends AnyFlatSpec with Matchers {
       instType = InstType.U,
     )
     inst should be(d)
-    instData should be(Map("rd" -> 2, "imm" -> 0xc0000000L))
+    println(instData)
+    instData should be(Map("rd" -> 2L, "imm" -> 0xc0000000L))
   }
 
   it should "parse U-type instruction with dec input" in {
