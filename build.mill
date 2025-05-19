@@ -10,21 +10,20 @@ import $ivy.`com.lihaoyi::mill-contrib-buildinfo:$MILL_VERSION`
 import mill.contrib.buildinfo.BuildInfo
 import $ivy.`com.goyeau::mill-scalafix::0.5.1`
 import com.goyeau.mill.scalafix.ScalafixModule
-import $ivy.`io.chris-kipp::mill-ci-release::0.3.0`
-import io.kipp.mill.ci.release.{CiReleaseModule, SonatypeHost}
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.4.1`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
 import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.5`
 import io.github.davidgregory084.TpolecatModule
-import $ivy.`com.carlosedp::mill-aliases::0.6.0`
+import $ivy.`com.carlosedp::mill-aliases::0.7.0`
 import com.carlosedp.aliases._
 
 // Versions
 
 object versions {
-  val scala213      = "2.13.14"
-  val scala3        = "3.3.3"
-  val scalaNative   = "0.5.4"
-  val scalaJs       = "1.16.0"
+  val scala213      = "2.13.16"
+  val scala3        = "3.3.6"
+  val scalaNative   = "0.5.7"
+  val scalaJs       = "1.19.0"
   val scalaVersions = Seq(scala213, scala3)
   val scalatest     = "3.2.19"
   val oslib         = "0.11.4"
@@ -104,7 +103,7 @@ trait RiscvAssemblerModule
   }
 }
 
-trait RiscvAssemblerPublish extends RiscvAssemblerModule with CiReleaseModule {
+trait RiscvAssemblerPublish extends RiscvAssemblerModule with SonatypeCentralPublishModule {
   def publishVersion = super.publishVer
   def pomSettings = PomSettings(
     description    = "RiscvAssembler is a RISC-V assembler library to be used on Scala and Chisel HDL projects.",
@@ -116,7 +115,6 @@ trait RiscvAssemblerPublish extends RiscvAssemblerModule with CiReleaseModule {
       Developer("carlosedp", "Carlos Eduardo de Paula", "https://github.com/carlosedp")
     ),
   )
-  override def sonatypeHost = Some(SonatypeHost.s01)
 }
 
 // Build rvasmcli Scala Native binary for current platform
@@ -185,7 +183,7 @@ object MyAliases extends Aliases {
     "scoverage.xmlReportAll",
     "scoverage.consoleReportAll",
   )
-  def pub      = alias("io.kipp.mill.ci.release.ReleaseModule/publishAll")
+  def pub      = alias("mill.scalalib.SonatypeCentralPublishModule/")
   def publocal = alias("riscvassembler.__.publishLocal")
   def cli      = alias("show rvasmcli.nativeLink")
   def testall  = alias("riscvassembler.__.test", "rvasmcli.test")
