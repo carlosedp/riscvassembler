@@ -47,13 +47,13 @@ object riscvassembler extends Module {
     }
   }
 
-  object native extends Cross[RiscvAssemblerNativeModule](versions.scalaVersions)
+  object native                    extends Cross[RiscvAssemblerNativeModule](versions.scalaVersions)
   trait RiscvAssemblerNativeModule extends ScalaNativeModule with RiscvAssemblerModule with RiscvAssemblerPublish {
     def scalaNativeVersion = versions.scalaNative
     object test extends ScalaNativeTests with RiscvAssemblerTests
   }
 
-  object scalajs extends Cross[RiscvAssemblerScalajsModule](versions.scalaVersions)
+  object scalajs                    extends Cross[RiscvAssemblerScalajsModule](versions.scalaVersions)
   trait RiscvAssemblerScalajsModule extends ScalaJSModule with RiscvAssemblerModule with RiscvAssemblerPublish {
     def scalaJSVersion = versions.scalaJs
     def ivyDeps        = Agg(ivy"org.scala-js::scalajs-dom::${versions.scalajsdom}")
@@ -89,7 +89,7 @@ trait RiscvAssemblerModule
   }
 
   def buildInfoPackageName = "com.carlosedp.riscvassembler"
-  def buildInfoMembers = Seq(
+  def buildInfoMembers     = Seq(
     BuildInfo.Value("appName", artifactName.toString),
     BuildInfo.Value("appVersion", publishVer()),
     BuildInfo.Value("revision", VcsVersion.vcsState().format()),
@@ -105,13 +105,13 @@ trait RiscvAssemblerModule
 
 trait RiscvAssemblerPublish extends RiscvAssemblerModule with SonatypeCentralPublishModule {
   def publishVersion = super.publishVer
-  def pomSettings = PomSettings(
+  def pomSettings    = PomSettings(
     description    = "RiscvAssembler is a RISC-V assembler library to be used on Scala and Chisel HDL projects.",
     organization   = "com.carlosedp",
     url            = "https://github.com/carlosedp/riscvassembler",
     licenses       = Seq(License.MIT),
     versionControl = VersionControl.github("carlosedp", "RiscvAssembler"),
-    developers = Seq(
+    developers     = Seq(
       Developer("carlosedp", "Carlos Eduardo de Paula", "https://github.com/carlosedp")
     ),
   )
@@ -137,7 +137,7 @@ def LLVMTriples = System.getProperty("os.name").toLowerCase match {
     Seq("x86_64-apple-darwin20.3.0", "arm64-apple-darwin20.3.0")
 }
 object rvasmclicross extends Cross[RVASMCLI](LLVMTriples)
-trait RVASMCLI extends Cross.Module[String] with RVASMcliBase {
+trait RVASMCLI       extends Cross.Module[String] with RVASMcliBase {
   def nativeTarget = Some(crossValue)
 }
 
@@ -147,7 +147,7 @@ trait RVASMcliBase extends ScalaNativeModule with TpolecatModule with ScalafixMo
   def scalaNativeVersion = versions.scalaNative
   def moduleDeps         = Seq(riscvassembler.native(versions.scala3))
   def millSourcePath     = build.millSourcePath / "rvasmcli"
-  def ivyDeps = Agg(
+  def ivyDeps            = Agg(
     ivy"com.lihaoyi::os-lib::${versions.oslib}",
     ivy"com.lihaoyi::mainargs::${versions.mainargs}",
   )

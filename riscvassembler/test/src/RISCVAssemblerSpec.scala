@@ -106,7 +106,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
       addi x1, x1
       wrong info
       """.stripMargin
-    val output = RISCVAssembler.fromString(input).trim
+    val output  = RISCVAssembler.fromString(input).trim
     val correct =
       """
         |00000000
@@ -165,7 +165,7 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
         nop
         beqz x0, +4
         """.stripMargin
-    val output = RISCVAssembler.fromString(input).trim
+    val output  = RISCVAssembler.fromString(input).trim
     val correct =
       """
         |00000013
