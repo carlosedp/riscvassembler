@@ -29,7 +29,7 @@ object versions {
   val oslib         = "0.11.4"
   val mainargs      = "0.7.6"
   val scoverage     = "2.3.0"
-  val scalajsdom    = "2.8.0"
+  val scalajsdom    = "2.8.1"
 }
 
 object riscvassembler extends Module {
