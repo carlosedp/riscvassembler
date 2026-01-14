@@ -309,4 +309,20 @@ class RISCVAssemblerSpec extends AnyFlatSpec with BeforeAndAfterEach with Before
 
     output should be(correct)
   }
+  it should "generate correct offsets for forward jumps with standalone labels" in {
+    val prog = """
+      start:  jal x0, target
+      target:
+              addi x1, x0, 10
+    """.stripMargin
+    val output = RISCVAssembler.fromString(prog).trim
+
+    val correct =
+      """
+        |0040006f
+        |00a00093
+        |""".stripMargin.toUpperCase.trim
+
+    output should be(correct)
+  }
 }
