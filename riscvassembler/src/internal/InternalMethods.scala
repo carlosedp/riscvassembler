@@ -41,8 +41,7 @@ protected object LineParser {
       if (hasLabel != -1) {
         if (""".+:\s*(\/.*)?$""".r.findFirstIn(data).isDefined) {
           // Has label without code, this label points to next address
-          labelIndex(data.split(":")(0).replace(":", "")) = ((idx + 1) * 4L).toHexString
-          idx += 1
+          labelIndex(data.split(":")(0).replace(":", "")) = (idx * 4L).toHexString
         } else {
           // Has label and code in the same line, this label points to this address
           labelIndex(data.split(':')(0).replace(":", "").trim) = (idx * 4L).toHexString
