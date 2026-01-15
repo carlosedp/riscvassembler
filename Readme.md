@@ -143,7 +143,7 @@ resolvers ++= Seq(
 )
 
 // and change the dependency to latest SNAPSHOT as:
-libraryDependencies += "com.carlosedp" %% "riscvassembler" % "1.11-SNAPSHOT"  //SnapshotVerSBT
+libraryDependencies += "com.carlosedp" %% "riscvassembler" % ""  //SnapshotVerSBT
 ```
 
 Confirm the latest versions displayed on the badges at the top of this readme for both stable and snapshot (without the leading "v").
@@ -164,7 +164,7 @@ def repositoriesTask = T.task { super.repositoriesTask() ++ Seq(
 ) }
 
 def ivyDeps = Agg(
-  ivy"com.carlosedp::riscvassembler:1.11-SNAPSHOT"  //SnapshotVerMill
+  ivy"com.carlosedp::riscvassembler:"  //SnapshotVerMill
   ...
 )
 ```
