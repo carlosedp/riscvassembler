@@ -23,7 +23,7 @@ import com.carlosedp.aliases.*
 object versions:
   val scala213      = "2.13.16"
   val scala3        = "3.3.6"
-  val scalaNative   = "0.5.7"
+  val scalaNative   = "0.5.10"
   val scalaJs       = "1.19.0"
   val scalaVersions = Seq(scala213, scala3)
   val scalatest     = "3.2.19"
@@ -45,12 +45,12 @@ object riscvassembler extends Module:
       def testSourcesJVM   = Task.Sources(super.moduleDir / "jvm")
       override def sources = super.sources() ++ testSourcesJVM()
 
-  object native extends Cross[RiscvAssemblerNativeModule](versions.scalaVersions)
+  object native                    extends Cross[RiscvAssemblerNativeModule](versions.scalaVersions)
   trait RiscvAssemblerNativeModule extends ScalaNativeModule with RiscvAssemblerModule with RiscvAssemblerPublish:
     def scalaNativeVersion = versions.scalaNative
     object test extends ScalaNativeTests with RiscvAssemblerTests
 
-  object scalajs extends Cross[RiscvAssemblerScalajsModule](versions.scalaVersions)
+  object scalajs                    extends Cross[RiscvAssemblerScalajsModule](versions.scalaVersions)
   trait RiscvAssemblerScalajsModule extends ScalaJSModule with RiscvAssemblerModule with RiscvAssemblerPublish:
     def scalaJSVersion = versions.scalaJs
     def mvnDeps        = Seq(mvn"org.scala-js::scalajs-dom::${versions.scalajsdom}")
@@ -69,7 +69,7 @@ trait RiscvAssemblerModule
   def mvnDeps = Seq(
     mvn"com.lihaoyi::os-lib::${versions.oslib}"
   )
-  def artifactName = "riscvassembler"
+  def artifactName  = "riscvassembler"
   def scalacOptions = Task:
     super.scalacOptions() ++
       ScalacOptions.defaultTokensForVersion(
@@ -81,7 +81,7 @@ trait RiscvAssemblerModule
   def currentCommit   = Task(os.proc("git", "rev-parse", "HEAD").call().out.trim())
   def commitDate      = Task(os.proc("git", "log", "-1", "--format=%ai").call().out.trim())
   def currentRevision = Task(s"${publishVer()}+${commits()}-${currentCommit().take(7)}")
-  def publishVer = Task:
+  def publishVer      = Task:
     val isTag = Task.env.get("GITHUB_REF").exists(_.startsWith("refs/tags"))
     if isTag && commits() == 0 then currentTag().stripPrefix("v")
     else
@@ -89,7 +89,7 @@ trait RiscvAssemblerModule
       s"$major.${minor + 1}.$patch-SNAPSHOT"
 
   def buildInfoPackageName = "com.carlosedp.riscvassembler"
-  def buildInfoMembers = Seq(
+  def buildInfoMembers     = Seq(
     BuildInfo.Value("appName", artifactName.toString),
     BuildInfo.Value("appVersion", publishVer()),
     BuildInfo.Value("revision", currentRevision()),
@@ -103,13 +103,13 @@ trait RiscvAssemblerModule
 
 trait RiscvAssemblerPublish extends RiscvAssemblerModule with SonatypeCentralPublishModule:
   def publishVersion = super.publishVer()
-  def pomSettings = PomSettings(
+  def pomSettings    = PomSettings(
     description    = "RiscvAssembler is a RISC-V assembler library to be used on Scala and Chisel HDL projects.",
     organization   = "com.carlosedp",
     url            = "https://github.com/carlosedp/riscvassembler",
     licenses       = Seq(License.MIT),
     versionControl = VersionControl.github("carlosedp", "RiscvAssembler"),
-    developers = Seq(
+    developers     = Seq(
       Developer("carlosedp", "Carlos Eduardo de Paula", "https://github.com/carlosedp")
     ),
   )
@@ -131,7 +131,7 @@ def LLVMTriples = System.getProperty("os.name").toLowerCase match
   case os if os.contains("mac") =>
     Seq("x86_64-apple-darwin20.3.0", "arm64-apple-darwin20.3.0")
 object rvasmclicross extends Cross[RVASMCLI](LLVMTriples)
-trait RVASMCLI extends Cross.Module[String] with RVASMcliBase:
+trait RVASMCLI       extends Cross.Module[String] with RVASMcliBase:
   def nativeTarget = Some(crossValue)
 
 // This trait allows building Scala Native for current platform and cross-building for other platforms
@@ -140,7 +140,7 @@ trait RVASMcliBase extends ScalaNativeModule with ScalafixModule with ScalafmtMo
   def scalaNativeVersion = versions.scalaNative
   def moduleDeps         = Seq(riscvassembler.native(versions.scala3))
   def moduleDir          = build.moduleDir / "rvasmcli"
-  def mvnDeps = Seq(
+  def mvnDeps            = Seq(
     mvn"com.lihaoyi::os-lib::${versions.oslib}",
     mvn"com.lihaoyi::mainargs::${versions.mainargs}",
   )
