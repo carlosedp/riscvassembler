@@ -1,4 +1,4 @@
-//| mill-version: 1.0.1
+//| mill-version: 1.0.6
 //| repositories: [https://s01.oss.sonatype.org/content/repositories/snapshots]
 //| mvnDeps:
 //| - com.lihaoyi::mill-contrib-scoverage:$MILL_VERSION
