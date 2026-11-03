@@ -309,9 +309,10 @@ protected object FillInstruction {
       case InstType.J => {
         val rd  = data("rd").toBinaryString.padZero(5)
         val imm = data("imm").to32Bit.toBinaryString.padZero(21).reverse // reverse to have binary in little endian
-        imm.slice(20, 21).reverse + imm.slice(1, 11).reverse + imm.slice(11, 12).reverse + imm
-          .slice(12, 20)
-          .reverse + rd + op.opcode
+        imm.slice(20, 21).reverse + imm.slice(1, 11).reverse + imm.slice(11, 12).reverse +
+          imm
+            .slice(12, 20)
+            .reverse + rd + op.opcode
       }
     }
 }
